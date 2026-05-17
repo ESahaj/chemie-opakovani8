@@ -1,0 +1,4427 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chemické kvízy – výběr tématu</title>
+  <style>
+    :root {
+      --bg: #fff7d6;
+      --panel: #ffffff;
+      --text: #242424;
+      --muted: #666666;
+      --primary: #ffea00;
+      --accent: #ff2f2f;
+      --accent-dark: #c91414;
+      --ok: #1f9d55;
+      --bad: #d93025;
+      --shadow: 0 18px 45px rgba(120, 45, 0, 0.18);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 47, 47, 0.18), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(255, 234, 0, 0.5), transparent 28rem),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .app {
+      width: min(1040px, 100%);
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255, 47, 47, 0.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px clamp(18px, 4vw, 34px);
+      background: linear-gradient(135deg, var(--primary), #fff6a3);
+      border-bottom: 3px solid rgba(255, 47, 47, 0.3);
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; }
+
+    .logo {
+      width: 64px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .logo svg { width: 45px; height: 45px; }
+    h1 { margin: 0; font-size: clamp(1.45rem, 3vw, 2.35rem); line-height: 1; }
+    .subtitle { margin: 5px 0 0; color: #5f3200; font-weight: 650; font-size: clamp(0.9rem, 1.8vw, 1rem); }
+
+    .scorebar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .pill { background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(201, 20, 20, 0.2); border-radius: 999px; padding: 9px 13px; font-weight: 800; white-space: nowrap; }
+
+    main { padding: clamp(18px, 4vw, 36px); }
+    .screen { display: none; }
+    .screen.active { display: block; animation: fade 220ms ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .intro, .result-card, .question-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+    }
+
+    .intro h2, .result-card h2 { margin-top: 0; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+    .intro p, .result-card p { color: var(--muted); font-size: 1.06rem; line-height: 1.55; }
+
+    .settings { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin: 24px 0; }
+    .field { display: grid; gap: 8px; }
+    label { font-weight: 900; color: #5f3200; }
+    select, button { font: inherit; }
+    select { width: 100%; padding: 13px 14px; border-radius: 15px; border: 2px solid rgba(255, 47, 47, 0.22); background: #fff; color: var(--text); font-weight: 750; }
+
+    .count-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .count-options input { position: absolute; opacity: 0; pointer-events: none; }
+    .count-options span { display: grid; place-items: center; min-height: 51px; border-radius: 15px; border: 2px solid rgba(255, 47, 47, 0.22); background: #fff; font-weight: 950; cursor: pointer; }
+    .count-options input:checked + span { background: #ff2f2f; color: #fff; border-color: #ff2f2f; box-shadow: 0 10px 18px rgba(201, 20, 20, 0.18); }
+
+    .topic-preview { margin-top: 10px; padding: 14px 16px; border-radius: 16px; background: #fff8cf; border: 2px solid rgba(255, 47, 47, 0.14); color: #6c3a00; font-weight: 750; }
+
+    .btn { border: 0; border-radius: 16px; padding: 14px 18px; cursor: pointer; font-weight: 900; transition: transform 130ms ease, filter 130ms ease, box-shadow 130ms ease; box-shadow: 0 10px 18px rgba(201, 20, 20, 0.18); }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.02); }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-secondary { background: #ffe66d; color: #491b00; box-shadow: none; }
+
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; color: var(--muted); font-weight: 800; }
+    .progress { height: 12px; background: #ffe8e8; border-radius: 999px; overflow: hidden; margin: 0 0 24px; }
+    .progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #ff9c00); border-radius: inherit; transition: width 260ms ease; }
+    .question { font-size: clamp(1.3rem, 3vw, 2rem); margin: 0 0 22px; line-height: 1.25; }
+    .answers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .answer { min-height: 76px; text-align: left; border: 2px solid rgba(0, 0, 0, 0.08); border-radius: 18px; background: #fff; padding: 16px; cursor: pointer; font-weight: 800; color: var(--text); transition: transform 120ms ease, border-color 120ms ease, background 120ms ease; }
+    .answer:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--accent); background: #fffdf0; }
+    .answer:disabled { cursor: not-allowed; }
+    .answer.correct { border-color: var(--ok); background: #e9f8ef; }
+    .answer.wrong { border-color: var(--bad); background: #fdecea; }
+
+    .feedback { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: #f7f7f7; display: none; line-height: 1.5; font-weight: 650; }
+    .feedback.show { display: block; }
+    .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+
+    .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
+    .stat { background: #fff8cf; border: 2px solid rgba(255, 47, 47, 0.18); border-radius: 20px; padding: 22px; text-align: center; }
+    .stat strong { display: block; font-size: clamp(2.2rem, 6vw, 4rem); color: var(--accent-dark); line-height: 1; }
+    .stat span { display: block; margin-top: 8px; color: #6c3a00; font-weight: 900; }
+    .review { display: grid; gap: 10px; margin-top: 18px; }
+    .review-item { border-left: 6px solid #ddd; background: #fafafa; border-radius: 14px; padding: 13px 14px; line-height: 1.4; }
+    .review-item.good { border-left-color: var(--ok); }
+    .review-item.bad { border-left-color: var(--bad); }
+    .small { color: var(--muted); font-size: 0.93rem; margin-top: 6px; }
+
+    @media (max-width: 720px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .scorebar { justify-content: flex-start; }
+      .answers, .settings, .result-grid { grid-template-columns: 1fr; }
+      .answer { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><svg viewBox="0 0 100 100" role="img"><polygon points="56 5 22 57 48 48 44 95 78 38 52 48" fill="#ff2f2f"></polygon></svg></div>
+        <div>
+          <h1 id="headerTitle">Chemické kvízy</h1>
+          <p class="subtitle" id="headerSubtitle">Vyber téma a počet otázek</p>
+        </div>
+      </div>
+      <div class="scorebar" aria-label="Stav hry">
+        <div class="pill">Otázka: <span id="roundNow">0</span>/<span id="roundTotal">0</span></div>
+        <div class="pill">Energie: <span id="lightnings">0</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="startScreen" class="screen active">
+        <div class="intro">
+          <h2>Vyber si kvíz</h2>
+          <p>Nejdřív zvol téma a počet otázek. Kvíz pak náhodně vybere otázky z daného balíčku.</p>
+
+          <div class="settings">
+            <div class="field">
+              <label for="topicSelect">Téma</label>
+              <select id="topicSelect"></select>
+              <div id="topicPreview" class="topic-preview"></div>
+            </div>
+            <div class="field">
+              <label>Počet otázek</label>
+              <div class="count-options" role="radiogroup" aria-label="Počet otázek">
+                <label><input type="radio" name="questionCount" value="5"><span>5</span></label>
+                <label><input type="radio" name="questionCount" value="10" checked><span>10</span></label>
+                <label><input type="radio" name="questionCount" value="20"><span>20</span></label>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="startBtn">Spustit hru</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen">
+        <div class="question-card">
+          <div class="topline"><span id="topicLabel">Téma</span><span id="scoreLabel">Správně: 0</span></div>
+          <div class="progress" aria-label="Průběh kola"><div id="progressBar"></div></div>
+          <h2 id="questionText" class="question"></h2>
+          <div id="answers" class="answers"></div>
+          <div id="feedback" class="feedback"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" id="homeBtn">Zpět na výběr</button>
+            <button class="btn btn-secondary" id="nextBtn" hidden>Další otázka</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="resultScreen" class="screen">
+        <div class="result-card">
+          <h2>Výsledek kola</h2>
+          <p id="resultMessage"></p>
+          <div class="result-grid">
+            <div class="stat"><strong id="finalScore">0/10</strong><span>správných odpovědí</span></div>
+            <div class="stat"><strong id="finalLightnings">0</strong><span>získané energie</span></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" id="showReviewBtn">Zobrazit přehled</button>
+            <button class="btn btn-secondary" id="backToMenuBtn">Vybrat jiné téma</button>
+            <button class="btn btn-primary" id="restartBtn">Hrát znovu stejné téma</button>
+          </div>
+          <div id="review" class="review" hidden></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const topics = [
+    {
+      id: "tema-01",
+      title: "Svět chemie a bezpečnost",
+      subtitle: "Základy chemie, laboratoř a bezpečnost",
+      type: "questionBank",
+      questions: [
+      {
+        question: "Který český chemik získal Nobelovu cenu za objev polarografu?",
+        answers: ["Jaroslav Heyrovský", "Otto Wichterle", "Antonín Holý", "František Šorm"],
+        correct: 0,
+        explanation: "Jaroslav Heyrovský získal Nobelovu cenu za chemii za objev a rozvoj polarografické metody."
+      },
+      {
+        question: "Jak se nazývá skleněná nádoba používaná alchymisty při destilaci?",
+        answers: ["Křivule", "Byreta", "Exsikátor", "Kádinka"],
+        correct: 0,
+        explanation: "Křivule je zahnutá skleněná nádoba, která se dříve používala mimo jiné při destilaci."
+      },
+      {
+        question: "Jaký je správný postup při ředění kyseliny vodou?",
+        answers: ["Kyselina se pomalu vlévá do vody", "Voda se rychle vleje do kyseliny", "Obě kapaliny se slívají současně", "Na pořadí vůbec nezáleží"],
+        correct: 0,
+        explanation: "Platí pravidlo: kyselinu lijeme do vody, nikdy ne vodu do kyseliny."
+      },
+      {
+        question: "Jak lze bezpečně zlikvidovat rozlitou rtuť?",
+        answers: ["Posypat sírou", "Vysát vysavačem", "Spláchnout do odpadu", "Setřít holou rukou"],
+        correct: 0,
+        explanation: "Rtuť je toxická. V laboratoři se postupuje podle bezpečnostních pokynů, často se používá síra a odborný sběr."
+      },
+      {
+        question: "Jak se nazývá směs dvou kyselin, která rozpouští i zlato?",
+        answers: ["Luční voda", "Lučavka královská", "Tvrdá voda", "Vápenná voda"],
+        correct: 1,
+        explanation: "Lučavka královská je směs koncentrované kyseliny chlorovodíkové a dusičné v poměru 3:1."
+      },
+      {
+        question: "Na která dvě japonská města byly v závěru druhé světové války svrženy atomové bomby?",
+        answers: ["Hirošima a Nagasaki", "Tokio a Kjóto", "Ósaka a Sapporo", "Nara a Jokohama"],
+        correct: 0,
+        explanation: "Atomové bomby byly svrženy na Hirošimu a Nagasaki v srpnu 1945."
+      },
+      {
+        question: "K čemu slouží Kemlerův a UN kód?",
+        answers: ["K označování nebezpečných látek při přepravě", "K měření teploty varu", "K výpočtu pH", "K pojmenování chemických sloučenin"],
+        correct: 0,
+        explanation: "Tyto kódy pomáhají identifikovat nebezpečí a konkrétní látku při přepravě."
+      },
+      {
+        question: "Který kov roztaje pouhým držením v ruce?",
+        answers: ["Gallium", "Železo", "Měď", "Hliník"],
+        correct: 0,
+        explanation: "Gallium má teplotu tání přibližně 30 °C, takže může tát v teplé dlani."
+      },
+      {
+        question: "K čemu slouží byreta?",
+        answers: ["K přesnému odměřování objemu při titraci", "K drcení pevných látek", "K ohřívání nad plamenem", "K filtrování suspenze"],
+        correct: 0,
+        explanation: "Byreta umožňuje velmi přesné dávkování kapaliny, například při titraci."
+      },
+      {
+        question: "Jaká hodnota pH odpovídá neutrálnímu roztoku?",
+        answers: ["7", "0", "14", "1"],
+        correct: 0,
+        explanation: "Neutrální roztok má pH přibližně 7."
+      },
+      {
+        question: "Kdo je považován za autora periodické tabulky prvků?",
+        answers: ["Dmitrij Ivanovič Mendělejev", "Albert Einstein", "Marie Curie-Skłodowská", "Isaac Newton"],
+        correct: 0,
+        explanation: "Dmitrij Ivanovič Mendělejev sestavil jednu z prvních periodických tabulek prvků."
+      },
+      {
+        question: "Co uděláš jako první, když se v laboratoři stane nehoda?",
+        answers: ["Okamžitě upozorním učitele", "Budu to tajit", "Začnu to nenápadně uklízet", "Uteču ze třídy"],
+        correct: 0,
+        explanation: "Při nehodě je nejdůležitější ihned informovat učitele nebo odpovědnou osobu."
+      },
+{
+  question: "Co v laboratoři nikdy neděláme s chemikáliemi?",
+  answers: ["Neochutnáváme je", "Popisujeme je", "Pozorujeme je", "Vážíme je"],
+  correct: 0,
+  explanation: "V laboratoři se chemikálie nikdy neochutnávají, protože mohou být zdraví nebezpečné."
+},
+{
+  question: "Co musíš v laboratoři nosit kvůli ochraně očí?",
+  answers: ["Ochranné brýle", "Sluchátka", "Čepici", "Šálu"],
+  correct: 0,
+  explanation: "Ochranné brýle chrání oči před prsknutím chemikálie nebo úlomkem skla."
+},
+{
+  question: "Co máš udělat při jakémkoliv poranění v laboratoři?",
+  answers: ["Ihned ho ohlásit učiteli", "Zatajit ho", "Odejít domů", "Pokračovat v práci"],
+  correct: 0,
+  explanation: "Každé poranění se musí ihned oznámit učiteli nebo odpovědné osobě."
+},
+{
+  question: "Co platí pro dlouhé vlasy při práci v laboratoři?",
+  answers: ["Musí být sepnuté", "Musí být rozpuštěné", "Musí být mokré", "Musí být zakryté papírem"],
+  correct: 0,
+  explanation: "Dlouhé vlasy musí být sepnuté, aby se nezachytily nebo nevznítily."
+},
+{
+  question: "Co nesmíš nikdy nechat bez dozoru?",
+  answers: ["Zapálený kahan", "Zavřenou učebnici", "Prázdnou kádinku", "Sešit s poznámkami"],
+  correct: 0,
+  explanation: "Zapálený kahan představuje riziko požáru, proto nesmí zůstat bez dozoru."
+},
+{
+  question: "Co se dělá po ukončení laboratorní práce?",
+  answers: ["Umyjí se pomůcky, uklidí místo a umyjí ruce", "Pomůcky se nechají na stole", "Chemikálie se vrátí kamkoliv", "Ruce se nemyjí"],
+  correct: 0,
+  explanation: "Po práci je nutné uklidit pracovní místo, očistit pomůcky a umýt si ruce."
+},
+{
+  question: "Jak správně ověřujeme zápach látky?",
+  answers: ["Mávnutím ruky směrem k nosu", "Přímým přičichnutím", "Ochutnáním", "Přiložením oka k látce"],
+  correct: 0,
+  explanation: "Výpary se ověřují z bezpečné vzdálenosti mávnutím ruky, nikdy přímým čicháním."
+},
+{
+  question: "Co se při ředění kyseliny vlévá do čeho?",
+  answers: ["Kyselina do vody", "Voda do kyseliny", "Obě látky současně", "Na pořadí nezáleží"],
+  correct: 0,
+  explanation: "Při ředění se vždy pomalu vlévá kyselina do vody, nikdy naopak."
+},
+{
+  question: "Co se nesmí dělat s použitými chemikáliemi?",
+  answers: ["Vracet je zpět do zásobních lahví", "Likvidovat podle pokynů", "Označit je", "Odevzdat je učiteli"],
+  correct: 0,
+  explanation: "Použité chemikálie se nevracejí do zásobních lahví, aby nedošlo ke znečištění obsahu."
+},
+{
+  question: "Co musí být správně označeno na nádobách s chemikáliemi?",
+  answers: ["Štítky", "Víčka barvou podle nálady", "Cena látky", "Jméno posledního žáka"],
+  correct: 0,
+  explanation: "Štítky zabraňují záměně chemikálií a informují o jejich nebezpečnosti."
+},
+{
+  question: "Čím se zabývá chemie?",
+  answers: ["Látkami, jejich složením, vlastnostmi a přeměnami", "Pouze hvězdami", "Pouze výpočty rychlosti", "Pouze stavbou mostů"],
+  correct: 0,
+  explanation: "Chemie zkoumá chemické látky, jejich vlastnosti, složení a chemické reakce."
+},
+{
+  question: "Jak se nazývají přeměny, při kterých z původních látek vznikají látky nové?",
+  answers: ["Chemické reakce", "Fyzikální jednotky", "Mechanické pohyby", "Optické klamy"],
+  correct: 0,
+  explanation: "Při chemických reakcích se původní látky mění na látky nové."
+},
+{
+  question: "Který výrobek patří mezi produkty chemického průmyslu?",
+  answers: ["Šampon", "Kamenný oblouk v přírodě", "Dřevěný pařez", "Sluneční záření"],
+  correct: 0,
+  explanation: "Mycí prostředky a kosmetika, například šampony, jsou produkty chemického průmyslu."
+},
+{
+  question: "Co jsou antibiotika?",
+  answers: ["Léky proti bakteriálním infekcím", "Látky proti plevelům", "Barviva do plastů", "Ochranné pomůcky"],
+  correct: 0,
+  explanation: "Antibiotika se používají k potlačení infekcí bakteriálního původu."
+},
+{
+  question: "Co jsou antipyretika?",
+  answers: ["Léky snižující horečku", "Látky hubící hmyz", "Pomůcky k destilaci", "Plyny pod tlakem"],
+  correct: 0,
+  explanation: "Antipyretika jsou léčiva, která snižují zvýšenou tělesnou teplotu."
+},
+{
+  question: "Co jsou herbicidy?",
+  answers: ["Přípravky proti nežádoucím rostlinám", "Přípravky proti horečce", "Látky na výrobu skla", "Nádoby k titraci"],
+  correct: 0,
+  explanation: "Herbicidy se používají k likvidaci nežádoucích rostlin, například plevelů."
+},
+{
+  question: "Co jsou insekticidy?",
+  answers: ["Přípravky k hubení hmyzu", "Léky proti bolesti", "Přípravky proti plísním", "Skleněné laboratorní nádoby"],
+  correct: 0,
+  explanation: "Insekticidy slouží k hubení hmyzu."
+},
+{
+  question: "Co jsou fungicidy?",
+  answers: ["Přípravky proti houbám a plísním", "Přípravky proti hmyzu", "Léky proti horečce", "Kovy s nízkou teplotou tání"],
+  correct: 0,
+  explanation: "Fungicidy se používají proti houbám a plísním."
+},
+{
+  question: "Co jsou aditiva v potravinářství?",
+  answers: ["Přídatné látky upravující vlastnosti potravin", "Výhradně jedovaté plyny", "Laboratorní sklo", "Přírodní horniny"],
+  correct: 0,
+  explanation: "Aditiva jsou přídatné látky používané ke zlepšení nebo úpravě vlastností potravin."
+},
+{
+  question: "Co označují H-věty na štítku chemikálie?",
+  answers: ["Nebezpečnost látky nebo směsi", "Pokyny pro bezpečné zacházení", "Cenu výrobku", "Barvu látky"],
+  correct: 0,
+  explanation: "H-věty jsou věty o nebezpečnosti chemických látek a směsí."
+},
+{
+  question: "Co označují P-věty na štítku chemikálie?",
+  answers: ["Pokyny pro bezpečné zacházení", "Nebezpečnost látky nebo směsi", "Název výrobce", "Datum výroby"],
+  correct: 0,
+  explanation: "P-věty dávají pokyny pro bezpečné zacházení s chemickými látkami a směsmi."
+},
+{
+  question: "Co znamená piktogram s lebkou a zkříženými hnáty?",
+  answers: ["Toxická látka", "Oxidující látka", "Plyn pod tlakem", "Dráždivá látka"],
+  correct: 0,
+  explanation: "Lebka se zkříženými hnáty označuje toxické neboli jedovaté látky."
+},
+{
+  question: "Co znamená piktogram s plamenem?",
+  answers: ["Hořlavá látka", "Látka pod tlakem", "Látka nebezpečná pro životní prostředí", "Radioaktivní látka"],
+  correct: 0,
+  explanation: "Piktogram s plamenem upozorňuje na hořlavé látky."
+},
+{
+  question: "Co znamená piktogram s vykřičníkem?",
+  answers: ["Dráždivá nebo zdraví škodlivá látka", "Výbušnina", "Tlaková láhev", "Biologická látka"],
+  correct: 0,
+  explanation: "Vykřičník označuje například dráždivé látky nebo látky škodlivé pro zdraví."
+},
+{
+  question: "Co znamená piktogram s mrtvou rybou a stromem?",
+  answers: ["Nebezpečí pro životní prostředí", "Látka vhodná k pití", "Látka bez rizika", "Ochranná pomůcka"],
+  correct: 0,
+  explanation: "Tento piktogram upozorňuje na látky nebezpečné pro životní prostředí."
+},
+{
+  question: "Co znamená neutralizace?",
+  answers: ["Reakce kyseliny s hydroxidem za vzniku soli a vody", "Rozpouštění cukru ve vodě", "Zahřívání kovu", "Míchání dvou plynů bez reakce"],
+  correct: 0,
+  explanation: "Neutralizace je reakce kyseliny se zásadou, při které vzniká sůl a voda."
+},
+{
+  question: "Co uděláš při polití kyselinou nebo hydroxidem?",
+  answers: ["Dlouze oplachuješ vodou a vyhledáš pomoc", "Neutralizuješ to jinou chemikálií", "Zakryješ místo bez oplachu", "Neuděláš nic"],
+  correct: 0,
+  explanation: "Postižené místo se dlouze oplachuje proudem vody. Neutralizace na kůži by mohla poleptání zhoršit."
+},
+{
+  question: "K čemu slouží Kemlerův kód při přepravě?",
+  answers: ["K označení druhu nebezpečí", "K označení ceny nákladu", "K označení značky auta", "K měření objemu cisterny"],
+  correct: 0,
+  explanation: "Kemlerův kód označuje charakter nebezpečí přepravované látky."
+},
+{
+  question: "K čemu slouží UN kód při přepravě?",
+  answers: ["K identifikaci konkrétní nebezpečné látky", "K určení rychlosti vozidla", "K měření tlaku v pneumatikách", "K označení řidiče"],
+  correct: 0,
+  explanation: "UN kód slouží k identifikaci konkrétní nebezpečné látky při přepravě."
+},
+{
+  question: "Jak se nazývá předchůdkyně chemie?",
+  answers: ["Alchymie", "Astronomie", "Astrologie", "Kvantová fyzika"],
+  correct: 0,
+  explanation: "Alchymie je považována za předchůdkyni moderní chemie."
+},
+{
+  question: "Co byl kámen mudrců podle představ alchymistů?",
+  answers: ["Látka schopná přeměnit běžné kovy ve zlato", "Nádoba na kyseliny", "Druh laboratorních brýlí", "Přírodní magnet"],
+  correct: 0,
+  explanation: "Alchymisté věřili, že kámen mudrců dokáže přeměnit obyčejné kovy ve zlato."
+},
+{
+  question: "Který filozof spojoval hmotu se čtyřmi živly?",
+  answers: ["Aristoteles", "James Price", "Jaroslav Heyrovský", "Alfred Nobel"],
+  correct: 0,
+  explanation: "Aristoteles vycházel z teorie čtyř živlů: země, ohně, vody a vzduchu."
+},
+{
+  question: "Které čtyři živly uváděla starověká teorie hmoty?",
+  answers: ["Země, oheň, voda, vzduch", "Kov, sklo, plast, dřevo", "Sůl, cukr, voda, olej", "Led, pára, mlha, déšť"],
+  correct: 0,
+  explanation: "Podle starověké teorie se hmota skládala ze čtyř živlů: země, ohně, vody a vzduchu."
+},
+{
+  question: "Kdo je spojován s takzvanou Glauberovou solí?",
+  answers: ["Johann Rudolf Glauber", "Isaac Newton", "Paracelsus", "James Price"],
+  correct: 0,
+  explanation: "Johann Rudolf Glauber je spojován se síranem sodným, známým jako Glauberova sůl."
+},
+{
+  question: "Co je Glauberova sůl?",
+  answers: ["Síran sodný", "Chlorid sodný", "Kyselina sírová", "Oxid uhličitý"],
+  correct: 0,
+  explanation: "Glauberova sůl je síran sodný."
+},
+{
+  question: "Který alchymista prosazoval, že cílem alchymie má být příprava léků?",
+  answers: ["Paracelsus", "James Price", "Aristoteles", "Rabi Löw"],
+  correct: 0,
+  explanation: "Paracelsus zdůrazňoval využití alchymie v medicíně a při přípravě léků."
+},
+{
+  question: "Jaké laboratorní techniky znali už alchymisté?",
+  answers: ["Destilaci, sublimaci a krystalizaci", "Chromatografii", "Elektrolýzu", "Centrifugace"],
+  correct: 0,
+  explanation: "Alchymisté používali techniky jako destilace, sublimace a krystalizace."
+},
+{
+  question: "K čemu slouží třecí miska s tloučkem?",
+  answers: ["K drcení a roztírání pevných látek", "K přesnému měření objemu", "K ochraně rukou", "K chlazení par"],
+  correct: 0,
+  explanation: "Třecí miska s tloučkem se používá k rozdrcení nebo rozetření pevných látek."
+},
+{
+  question: "K čemu slouží odměrný válec?",
+  answers: ["K odměřování objemu kapalin", "K zahřívání plamenem", "K zachytávání plynů pod tlakem", "K filtrování vzduchu"],
+  correct: 0,
+  explanation: "Odměrný válec se používá k měření objemu kapalin."
+},
+{
+  question: "K čemu slouží laboratorní chladič?",
+  answers: ["Ke chlazení par při destilaci", "K zapalování kahanu", "K vážení prášků", "K měření pH"],
+  correct: 0,
+  explanation: "Chladič ochlazuje páry, které pak kondenzují zpět na kapalinu."
+},
+{
+  question: "K čemu slouží Petriho miska?",
+  answers: ["K práci s malým množstvím vzorku nebo kulturami", "K měření přesného objemu kyseliny", "K hoření plynu", "K uchycení zkumavky"],
+  correct: 0,
+  explanation: "Petriho miska je mělká laboratorní miska využívaná například pro vzorky nebo kultury."
+},
+{
+  question: "Která vlastnost látky říká, zda látka vede elektrický proud?",
+  answers: ["Vodivost", "Barva", "Zápach", "Objem"],
+  correct: 0,
+  explanation: "Vodivost vyjadřuje schopnost látky vést elektrický proud."
+},
+{
+  question: "Jak se nazývá změna z pevného skupenství na kapalné?",
+  answers: ["Tání", "Tuhnutí", "Sublimace", "Kondenzace"],
+  correct: 0,
+  explanation: "Přechod z pevného skupenství do kapalného se nazývá tání."
+},
+{
+  question: "Jak se nazývá změna z kapalného skupenství na plynné?",
+  answers: ["Vypařování", "Tuhnutí", "Desublimace", "Krystalizace"],
+  correct: 0,
+  explanation: "Přechod kapaliny na plyn se nazývá vypařování."
+},
+{
+  question: "Jak se nazývá změna z plynného skupenství na kapalné?",
+  answers: ["Kondenzace", "Tání", "Sublimace", "Tuhnutí"],
+  correct: 0,
+  explanation: "Přechod plynu na kapalinu se nazývá kondenzace neboli zkapalnění."
+},
+{
+  question: "Jak se nazývá změna z pevného skupenství přímo na plynné?",
+  answers: ["Sublimace", "Tání", "Kondenzace", "Tuhnutí"],
+  correct: 0,
+  explanation: "Sublimace je přechod z pevného skupenství přímo do plynného."
+},
+{
+  question: "Jak se nazývá změna z plynného skupenství přímo na pevné?",
+  answers: ["Desublimace", "Vypařování", "Tání", "Var"],
+  correct: 0,
+  explanation: "Desublimace je přechod z plynného skupenství přímo do pevného."
+},
+{
+  question: "Které skupenství má stálý tvar i objem?",
+  answers: ["Pevné", "Kapalné", "Plynné", "Plazma vždy při pokojové teplotě"],
+  correct: 0,
+  explanation: "Pevné látky mají stálý tvar i objem."
+},
+{
+  question: "Které skupenství má stálý objem, ale tvar zaujímá podle nádoby?",
+  answers: ["Kapalné", "Pevné", "Plynné", "Žádné"],
+  correct: 0,
+  explanation: "Kapaliny mají stálý objem, ale tvar zaujímají podle nádoby."
+},
+{
+  question: "Které skupenství nemá stálý tvar ani stálý objem?",
+  answers: ["Plynné", "Pevné", "Kapalné", "Krystalické"],
+  correct: 0,
+  explanation: "Plyny nemají stálý tvar ani objem a vyplňují dostupný prostor."
+},
+{
+  question: "Co je to plazma?",
+  answers: ["Skupenství vznikající za velmi vysokých teplot", "Druh laboratorního skla", "Lék proti horečce", "Typ piktogramu"],
+  correct: 0,
+  explanation: "Plazma vzniká za velmi vysokých teplot a vyskytuje se například v ohni, blescích nebo polární záři."
+},
+{
+  question: "Který z uvedených dějů je chemický?",
+  answers: ["Rezavění železa", "Tání ledu", "Vaření vody", "Rozdrcení křídy"],
+  correct: 0,
+  explanation: "Rezavění železa je chemický děj, protože vznikají nové látky."
+},
+{
+  question: "Který z uvedených dějů je fyzikální?",
+  answers: ["Filtrace odpadní vody", "Hoření síry", "Spalování benzinu", "Trávení potravy"],
+  correct: 0,
+  explanation: "Filtrace je fyzikální děj, protože se při ní nemění chemické složení látek."
+}
+    ]
+    },
+    {
+      id: "tema-02",
+      title: "Směsi",
+      subtitle: "Směsi a dělení složek směsí",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Co je chemicky čistá látka?",
+    answers: ["Látka složená z částic jednoho druhu se stálým složením", "Směs několika látek", "Látka, ve které probíhá chemická reakce", "Látka složená vždy jen z kovů"],
+    correct: 0,
+    explanation: "Chemicky čistá látka je tvořena částicemi jednoho druhu a má stálé složení i vlastnosti."
+  },
+  {
+    question: "Jak se jinak nazývá chemicky čistá látka?",
+    answers: ["Chemické individuum", "Heterogenní látka", "Koloid", "Filtrát"],
+    correct: 0,
+    explanation: "Chemicky čistá látka se označuje také jako chemické individuum."
+  },
+  {
+    question: "Která z možností je příkladem chemicky čisté látky?",
+    answers: ["Destilovaná voda", "Vzduch", "Beton", "Mléko"],
+    correct: 0,
+    explanation: "Destilovaná voda je chemicky čistá látka, protože neobsahuje další rozpuštěné složky."
+  },
+  {
+    question: "Co je směs?",
+    answers: ["Látka složená ze dvou a více chemicky čistých látek", "Látka složená pouze ze stejných atomů", "Látka, která má vždy stejné složení", "Látka, kterou nelze oddělit fyzikálními metodami"],
+    correct: 0,
+    explanation: "Směs se skládá ze dvou a více chemicky čistých látek, kterým říkáme složky."
+  },
+  {
+    question: "Co platí pro složky směsi?",
+    answers: ["Mezi složkami neprobíhají chemické reakce", "Vždy vzniká nová látka", "Složky se nedají oddělit", "Složky jsou vždy viditelné okem"],
+    correct: 0,
+    explanation: "Ve směsi mezi složkami neprobíhá chemická reakce, a proto je často můžeme oddělit fyzikálními metodami."
+  },
+  {
+    question: "Co je prvek?",
+    answers: ["Látka složená ze stejných atomů", "Látka složená z různých atomů", "Směs dvou kapalin", "Roztok pevné látky v kapalině"],
+    correct: 0,
+    explanation: "Prvek je chemicky čistá látka složená ze stejných atomů."
+  },
+  {
+    question: "Co je sloučenina?",
+    answers: ["Látka složená z různých atomů", "Látka složená pouze ze stejných atomů", "Směs pevných látek", "Kapalina získaná filtrací"],
+    correct: 0,
+    explanation: "Sloučenina je chemicky čistá látka složená z různých atomů."
+  },
+  {
+    question: "Jak se nazývá směs, jejíž složky nemůžeme rozeznat okem?",
+    answers: ["Stejnorodá směs", "Různorodá směs", "Suspenze", "Emulze"],
+    correct: 0,
+    explanation: "U stejnorodých směsí nejsou jednotlivé složky rozeznatelné okem."
+  },
+  {
+    question: "Jak se nazývá směs, jejíž složky můžeme rozeznat okem, lupou nebo mikroskopem?",
+    answers: ["Různorodá směs", "Stejnorodá směs", "Chemicky čistá látka", "Sloučenina"],
+    correct: 0,
+    explanation: "Různorodé směsi mají složky rozeznatelné okem, lupou nebo mikroskopem."
+  },
+  {
+    question: "Jak se nazývají směsi s velikostí částic na hranici stejnorodých a různorodých směsí?",
+    answers: ["Koloidní směsi", "Prvky", "Sloučeniny", "Destiláty"],
+    correct: 0,
+    explanation: "Koloidní směsi mají částice větší než stejnorodé směsi, ale menší než běžné různorodé směsi."
+  },
+  {
+    question: "Co je typické pro koloidní roztoky?",
+    answers: ["Dochází v nich k rozptylu světla", "Jejich složky vždy vidíme okem", "Vždy se dají oddělit magnetem", "Jsou tvořeny pouze plyny"],
+    correct: 0,
+    explanation: "V koloidních roztocích dochází k rozptylu světla, což se nazývá Tyndallův efekt."
+  },
+  {
+    question: "Jak se nazývá rozptyl světla v koloidních roztocích?",
+    answers: ["Tyndallův efekt", "Destilační efekt", "Filtrační efekt", "Krystalizační efekt"],
+    correct: 0,
+    explanation: "Rozptyl světla v koloidních směsích se nazývá Tyndallův efekt."
+  },
+  {
+    question: "Která směs je stejnorodá?",
+    answers: ["Vzduch", "Písek ve vodě", "Olej ve vodě", "Křída ve vodě"],
+    correct: 0,
+    explanation: "Vzduch je stejnorodá plynná směs."
+  },
+  {
+    question: "Která směs je kapalný roztok?",
+    answers: ["Minerální voda", "Dým", "Mlha", "Pěna"],
+    correct: 0,
+    explanation: "Minerální voda je kapalná stejnorodá směs, tedy roztok."
+  },
+  {
+    question: "Která směs je pevný roztok?",
+    answers: ["Mosaz", "Mlha", "Šlehačka", "Kouř"],
+    correct: 0,
+    explanation: "Mosaz je slitina kovů, tedy pevný stejnorodý roztok."
+  },
+  {
+    question: "Co je bronz?",
+    answers: ["Slitina mědi a cínu", "Směs vody a oleje", "Roztok cukru ve vodě", "Pevná látka rozptýlená v plynu"],
+    correct: 0,
+    explanation: "Bronz je slitina kovů, konkrétně mědi a cínu."
+  },
+  {
+    question: "Co je mosaz?",
+    answers: ["Slitina mědi a zinku", "Slitina cínu a olova", "Směs vody a písku", "Koloidní směs bílkovin"],
+    correct: 0,
+    explanation: "Mosaz je slitina mědi a zinku."
+  },
+  {
+    question: "Jak se nazývá směs pevné látky rozptýlené v kapalině?",
+    answers: ["Suspenze", "Emulze", "Pěna", "Mlha"],
+    correct: 0,
+    explanation: "Suspenze je heterogenní směs pevné látky rozptýlené v kapalině."
+  },
+  {
+    question: "Která možnost je příkladem suspenze?",
+    answers: ["Písek ve vodě", "Olej ve vodě", "Vzduch", "Cukrová voda"],
+    correct: 0,
+    explanation: "Písek ve vodě je suspenze, protože pevná látka je rozptýlena v kapalině."
+  },
+  {
+    question: "Jak se nazývá směs dvou vzájemně nemísitelných kapalin?",
+    answers: ["Emulze", "Suspenze", "Dým", "Pěna"],
+    correct: 0,
+    explanation: "Emulze vzniká smícháním dvou vzájemně nemísitelných kapalin, například oleje a vody."
+  },
+  {
+    question: "Která možnost je příkladem emulze?",
+    answers: ["Olej a voda", "Písek a voda", "Vzduch", "Sklo"],
+    correct: 0,
+    explanation: "Olej a voda tvoří emulzi, protože jde o dvě vzájemně nemísitelné kapaliny."
+  },
+  {
+    question: "Jak se nazývá směs plynné látky v kapalině nebo pevné látce?",
+    answers: ["Pěna", "Mlha", "Dým", "Suspenze"],
+    correct: 0,
+    explanation: "Pěna je směs, ve které je plyn rozptýlen v kapalině nebo pevné látce."
+  },
+  {
+    question: "Která možnost je příkladem pěny?",
+    answers: ["Šlehačka", "Mlha", "Kouř", "Písek ve vodě"],
+    correct: 0,
+    explanation: "Šlehačka je pěna, protože obsahuje plyn rozptýlený v kapalině."
+  },
+  {
+    question: "Jak se nazývá kapalná látka rozptýlená v plynné látce?",
+    answers: ["Mlha", "Dým", "Suspenze", "Slitina"],
+    correct: 0,
+    explanation: "Mlha je aerosol, ve kterém jsou kapičky kapaliny rozptýleny v plynu."
+  },
+  {
+    question: "Jak se nazývá pevná látka rozptýlená v plynné látce?",
+    answers: ["Dým", "Mlha", "Emulze", "Roztok"],
+    correct: 0,
+    explanation: "Dým je aerosol tvořený pevnými částicemi rozptýlenými v plynu."
+  },
+  {
+    question: "Která metoda slouží k oddělování nerozpustných pevných složek z kapalných směsí?",
+    answers: ["Filtrace", "Destilace", "Krystalizace", "Chromatografie"],
+    correct: 0,
+    explanation: "Filtrace se používá k oddělení pevných složek z kapalných nebo plynných směsí."
+  },
+  {
+    question: "Co je filtrát?",
+    answers: ["Kapalina, která proteče přes filtr", "Pevná látka zachycená na filtru", "Kapalina získaná destilací", "Pevná látka vzniklá krystalizací"],
+    correct: 0,
+    explanation: "Filtrát je kapalná složka, která prošla filtrem."
+  },
+  {
+    question: "Kterou metodou oddělíme písek od vody?",
+    answers: ["Filtrací", "Destilací", "Sublimací", "Chromatografií"],
+    correct: 0,
+    explanation: "Písek je nerozpustná pevná látka, proto ho od vody oddělíme filtrací."
+  },
+  {
+    question: "Která metoda odděluje složky podle rozdílných teplot varu?",
+    answers: ["Destilace", "Filtrace", "Třídění", "Usazování"],
+    correct: 0,
+    explanation: "Destilace odděluje složky homogenních směsí na základě rozdílných teplot varu."
+  },
+  {
+    question: "Co je destilát?",
+    answers: ["Kapalina získaná kondenzací par při destilaci", "Pevná látka zachycená na filtru", "Směs pevné látky a kapaliny", "Nerozpustná složka usazená na dně"],
+    correct: 0,
+    explanation: "Destilát je kapalina, která vznikne ochlazením a kondenzací par při destilaci."
+  },
+  {
+    question: "Kterou metodou lze oddělit líh od vody?",
+    answers: ["Destilací", "Filtrací", "Tříděním", "Magnetickou separací"],
+    correct: 0,
+    explanation: "Líh a voda mají rozdílné teploty varu, proto se oddělují destilací."
+  },
+  {
+    question: "Která metoda se používá při získávání benzinu, nafty a petroleje z ropy?",
+    answers: ["Frakční destilace", "Filtrace", "Krystalizace", "Sublimace"],
+    correct: 0,
+    explanation: "Ropa se rozděluje destilací, protože její složky mají různé teploty varu."
+  },
+  {
+    question: "Které laboratorní sklo slouží ke kondenzaci par při destilaci?",
+    answers: ["Chladič", "Filtrační papír", "Dělící nálevka", "Třecí miska"],
+    correct: 0,
+    explanation: "Chladič ochlazuje páry, které se mění zpět na kapalinu."
+  },
+  {
+    question: "Která metoda odděluje pevné látky podle barvy, tvaru, hmotnosti nebo magnetismu?",
+    answers: ["Třídění", "Destilace", "Extrakce", "Krystalizace"],
+    correct: 0,
+    explanation: "Třídění využívá rozdíly ve vlastnostech pevných látek, například barvu, tvar, hmotnost nebo magnetismus."
+  },
+  {
+    question: "Která metoda se používá k oddělení železa od neželezných kovů ve sběrných dvorech?",
+    answers: ["Třídění pomocí magnetu", "Destilace", "Krystalizace", "Filtrace"],
+    correct: 0,
+    explanation: "Železo lze oddělit pomocí magnetu, protože je magnetické."
+  },
+  {
+    question: "Která separační metoda se používá při čištění obilí proudem vzduchu?",
+    answers: ["Třídění", "Destilace", "Chromatografie", "Sublimace"],
+    correct: 0,
+    explanation: "Proud vzduchu odděluje části podle hmotnosti, jde tedy o třídění."
+  },
+  {
+    question: "Která metoda odděluje nerozpustné složky na základě odlišné hustoty?",
+    answers: ["Usazování", "Filtrace", "Sublimace", "Chromatografie"],
+    correct: 0,
+    explanation: "Usazování odděluje složky směsi podle jejich hustoty."
+  },
+  {
+    question: "Jak lze urychlit usazování?",
+    answers: ["Centrifugací", "Zahřátím na bod varu", "Přidáním filtračního papíru", "Zmrazením"],
+    correct: 0,
+    explanation: "Usazování lze urychlit centrifugací, tedy odstřeďováním."
+  },
+  {
+    question: "Které zařízení se používá k urychlení sedimentace?",
+    answers: ["Centrifuga", "Chladič", "Kahan", "Třecí miska"],
+    correct: 0,
+    explanation: "Centrifuga urychluje sedimentaci pomocí rychlého otáčení."
+  },
+  {
+    question: "Kterou pomůckou lze oddělit vodu a olej?",
+    answers: ["Dělící nálevkou", "Filtračním papírem", "Chladičem", "Magnetem"],
+    correct: 0,
+    explanation: "Voda a olej mají rozdílnou hustotu a nemísí se, proto je lze oddělit dělící nálevkou."
+  },
+  {
+    question: "Která separační metoda se používá při rýžování zlata?",
+    answers: ["Usazování", "Destilace", "Sublimace", "Extrakce"],
+    correct: 0,
+    explanation: "Rýžování zlata využívá rozdílnou hustotu zlata a ostatních částic."
+  },
+  {
+    question: "Která dělící metoda slouží k oddělení rozpuštěné pevné látky v podobě krystalů?",
+    answers: ["Krystalizace", "Filtrace", "Destilace", "Třídění"],
+    correct: 0,
+    explanation: "Při krystalizaci se z roztoku vyloučí pevná složka ve formě krystalů."
+  },
+  {
+    question: "Kterou dělící metodou lze získat sůl z mořské vody?",
+    answers: ["Krystalizací", "Filtrací", "Magnetickou separací", "Chromatografií"],
+    correct: 0,
+    explanation: "Sůl z mořské vody lze získat krystalizací po odpaření vody."
+  },
+  {
+    question: "Která dělící metoda se používá k oddělování sublimujících látek ze směsí?",
+    answers: ["Sublimace", "Filtrace", "Usazování", "Extrakce"],
+    correct: 0,
+    explanation: "Sublimace odděluje látky, které přecházejí z pevného skupenství přímo do plynného."
+  },
+  {
+    question: "Na jakém principu funguje pevný osvěžovač vzduchu na WC?",
+    answers: ["Sublimace", "Filtrace", "Destilace", "Krystalizace"],
+    correct: 0,
+    explanation: "Pevný osvěžovač vzduchu postupně sublimuje, tedy přechází z pevného skupenství do plynného."
+  },
+  {
+    question: "Která metoda spočívá ve vyluhování složky do rozpouštědla?",
+    answers: ["Extrakce", "Destilace", "Sublimace", "Filtrace"],
+    correct: 0,
+    explanation: "Extrakce neboli vyluhování převádí složku směsi do rozpouštědla."
+  },
+  {
+    question: "Která separační metoda se uplatňuje při přípravě čaje ze sáčku?",
+    answers: ["Extrakce", "Destilace", "Krystalizace", "Chromatografie"],
+    correct: 0,
+    explanation: "Při přípravě čaje se látky z čajových lístků vyluhují do vody, jde o extrakci."
+  },
+  {
+    question: "Která dělící metoda odděluje složky podle rozdílné schopnosti vázat se ke dvěma látkám?",
+    answers: ["Chromatografie", "Filtrace", "Usazování", "Sublimace"],
+    correct: 0,
+    explanation: "Chromatografie využívá rozdílnou schopnost složek vázat se na pevnou a pohyblivou fázi."
+  },
+  {
+    question: "Která dělící metoda se používá ke zjišťování barviv nebo látek přidávaných do potravin?",
+    answers: ["Chromatografie", "Krystalizace", "Filtrace", "Třídění"],
+    correct: 0,
+    explanation: "Chromatografie se používá například ke zjišťování barviv a přidaných látek v potravinách."
+  },
+  {
+    question: "Která dělící metoda se využívá v antigenních rychlotestech a těhotenských testech?",
+    answers: ["Chromatografie", "Destilace", "Krystalizace", "Sublimace"],
+    correct: 0,
+    explanation: "Rychlotesty využívají princip chromatografie, při které se látky pohybují po testovacím proužku."
+  },
+  {
+    question: "Jaký roztok je nenasycený?",
+    answers: ["Roztok, ve kterém se za daných podmínek rozpouští další množství látky", "Roztok, ve kterém se už žádná látka nerozpustí", "Roztok s větším množstvím látky, než je běžně možné rozpustit", "Roztok bez rozpouštědla"],
+    correct: 0,
+    explanation: "Nenasycený roztok ještě může rozpustit další množství rozpouštěné látky."
+  },
+  {
+    question: "Jaký roztok je nasycený?",
+    answers: ["Roztok, ve kterém se za daných podmínek nerozpouští další množství látky", "Roztok bez rozpuštěné látky", "Roztok pouze z plynů", "Směs dvou nemísitelných kapalin"],
+    correct: 0,
+    explanation: "Nasycený roztok už za dané teploty a tlaku nerozpouští další množství látky."
+  },
+  {
+    question: "Jaký roztok je přesycený?",
+    answers: ["Roztok s větším množstvím rozpuštěné látky, než by se rozpustilo za normálních podmínek", "Roztok, který neobsahuje žádnou látku", "Roztok, který obsahuje pouze vodu", "Roztok, který vznikl filtrací"],
+    correct: 0,
+    explanation: "Přesycený roztok obsahuje více rozpuštěné látky, než by se za běžných podmínek rozpustilo."
+  },
+  {
+    question: "Co je rozpustnost?",
+    answers: ["Hmotnost látky, která se za dané teploty a tlaku rozpustí v určitém množství rozpouštědla", "Schopnost látky vypařovat se", "Rychlost usazování pevné látky", "Množství kapaliny, které proteče filtrem"],
+    correct: 0,
+    explanation: "Rozpustnost udává, kolik látky se rozpustí v určitém množství rozpouštědla za daných podmínek."
+  },
+  {
+    question: "Jak se většinou mění rozpustnost pevných látek se vzrůstající teplotou?",
+    answers: ["Stoupá", "Klesá", "Nemění se nikdy", "Přestává existovat"],
+    correct: 0,
+    explanation: "U většiny pevných látek rozpustnost se vzrůstající teplotou stoupá."
+  },
+  {
+    question: "U které uvedené látky se rozpustnost se vzrůstající teplotou snižuje?",
+    answers: ["Hydroxid vápenatý", "Chlorid sodný", "Cukr", "Ethanol"],
+    correct: 0,
+    explanation: "Hydroxid vápenatý je uveden jako výjimka, u které rozpustnost s rostoucí teplotou klesá."
+  },
+  {
+    question: "Co udává hmotnostní zlomek?",
+    answers: ["Zastoupení složky v roztoku desetinným číslem", "Zastoupení složky pouze v gramech", "Teplotu varu roztoku", "Hustotu rozpouštědla"],
+    correct: 0,
+    explanation: "Hmotnostní zlomek udává zastoupení složky v roztoku desetinným číslem."
+  },
+  {
+    question: "V jakém rozmezí se pohybuje hmotnostní zlomek?",
+    answers: ["Od 0 do 1", "Od 1 do 100", "Od 0 do 1000", "Od -1 do 1"],
+    correct: 0,
+    explanation: "Hmotnostní zlomek je bezrozměrné číslo a jeho hodnota se pohybuje od 0 do 1."
+  },
+  {
+    question: "Co udává hmotnostní procento?",
+    answers: ["Zastoupení složky v roztoku v procentech", "Hmotnost celé aparatury", "Teplotu varu směsi", "Velikost částic v koloidu"],
+    correct: 0,
+    explanation: "Hmotnostní procento vyjadřuje zastoupení složky v roztoku v procentech."
+  },
+  {
+    question: "Jak převedeme hmotnostní zlomek na hmotnostní procento?",
+    answers: ["Vynásobíme ho 100", "Vydělíme ho 100", "Přičteme 100", "Odečteme ho od 1"],
+    correct: 0,
+    explanation: "Hmotnostní zlomek převedeme na procenta tak, že ho vynásobíme 100."
+  },
+  {
+    question: "Jak převedeme hmotnostní procento na hmotnostní zlomek?",
+    answers: ["Vydělíme ho 100", "Vynásobíme ho 100", "Přičteme 1", "Odečteme ho od 100"],
+    correct: 0,
+    explanation: "Hmotnostní procento převedeme na hmotnostní zlomek tak, že ho vydělíme 100."
+  },
+  {
+    question: "Jaký hmotnostní zlomek odpovídá 25 %",
+    answers: ["0,25", "2,5", "25", "0,025"],
+    correct: 0,
+    explanation: "Procenta převedeme na hmotnostní zlomek vydělením 100, tedy 25 % = 0,25."
+  },
+  {
+    question: "Jaké hmotnostní procento odpovídá hmotnostnímu zlomku 0,6?",
+    answers: ["60 %", "6 %", "0,6 %", "600 %"],
+    correct: 0,
+    explanation: "Hmotnostní zlomek 0,6 vynásobíme 100, takže odpovídá 60 %."
+  },
+  {
+    question: "Jak vypočítáme hmotnost celého roztoku při smíchání rozpouštědla a rozpuštěné látky?",
+    answers: ["Sečteme hmotnost rozpouštědla a rozpuštěné látky", "Odečteme hmotnost látky od vody", "Vynásobíme hmotnost vody stem", "Použijeme pouze hmotnost rozpuštěné látky"],
+    correct: 0,
+    explanation: "Hmotnost celého roztoku je součet hmotnosti rozpouštědla a rozpuštěné látky."
+  },
+  {
+    question: "Jaký je vzorec pro hmotnostní zlomek složky A?",
+    answers: ["wA = mA / m", "wA = m / mA", "wA = mA + m", "wA = mA · 100"],
+    correct: 0,
+    explanation: "Hmotnostní zlomek složky A vypočítáme jako podíl hmotnosti složky a celkové hmotnosti roztoku."
+  },
+  {
+    question: "Co ve vzorci wA = mA/m znamená mA?",
+    answers: ["Hmotnost rozpuštěné látky", "Objem rozpuštěné látky", "Hmotnost prázdné kádinky", "Hmotnost celého roztoku"],
+    correct: 0,
+    explanation: "mA označuje hmotnost rozpouštěné látky nebo sledované složky."
+  },
+  {
+    question: "Jaký je hmotnostní zlomek soli v roztoku, který obsahuje 10 g soli a 90 g vody?",
+    answers: ["0,091", "0,1", "0,9", "9,1"],
+    correct: 1,
+    explanation: "Celková hmotnost roztoku je 100 g. Hmotnostní zlomek soli je 10 / 100 = 0,1."
+  },
+  {
+    question: "Kolik procent soli obsahuje roztok, ve kterém je 10 g soli a 190 g vody?",
+    answers: ["5 %", "10 %", "15 %", "95 %"],
+    correct: 0,
+    explanation: "Celková hmotnost roztoku je 200 g. Podíl soli je 10 / 200 · 100 = 5 %."
+  },
+  {
+    question: "Kolik procent vody je v roztoku, který obsahuje 6,25 % soli?",
+    answers: ["93,75 %", "6,25 %", "100 %", "160 %"],
+    correct: 0,
+    explanation: "Roztok má dohromady 100 %, takže voda tvoří 100 % - 6,25 % = 93,75 %."
+  },
+  {
+    question: "Kolik gramů vody odpovídá 150 ml vody, pokud platí, že 1 ml vody = 1 g?",
+    answers: ["150 g", "15 g", "1,5 g", "1500 g"],
+    correct: 0,
+    explanation: "U vody platí přibližně 1 ml = 1 g, proto 150 ml vody odpovídá 150 g."
+  }
+    ]
+    },
+    {
+      id: "tema-03",
+      title: "Částicové složení látek",
+      subtitle: "Atomy, molekuly, ionty a stavba látek",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Před kolika miliardami let vznikl vesmír podle materiálu?",
+    answers: ["13,7 miliardami let", "5,7 miliardami let", "66 miliony let", "118 miliardami let"],
+    correct: 0,
+    explanation: "V materiálu je uvedeno, že vesmír vznikl před 13,7 miliardami let."
+  },
+  {
+    question: "Jak se nazývá událost, při které vznikl prostor, čas a hmota?",
+    answers: ["Velký třesk", "Supernova", "Srážka planet", "Vznik Slunce"],
+    correct: 0,
+    explanation: "Prostor, čas a hmota vznikly při Velkém třesku."
+  },
+  {
+    question: "Kolik chemických prvků je dnes známo?",
+    answers: ["92", "118", "26", "63"],
+    correct: 1,
+    explanation: "V materiálu je uvedeno, že dnes je známo 118 prvků."
+  },
+  {
+    question: "Kolik prvků se přirozeně vyskytuje v přírodě?",
+    answers: ["28", "66", "92", "118"],
+    correct: 2,
+    explanation: "Přirozeně se v přírodě vyskytuje 92 prvků."
+  },
+  {
+    question: "Které prvky vznikly jako první po Velkém třesku?",
+    answers: ["Železo a zlato", "Vodík a helium", "Uhlík a kyslík", "Sodík a chlor"],
+    correct: 1,
+    explanation: "Prvními prvky byly nejlehčí prvky, hlavně vodík a helium."
+  },
+  {
+    question: "Který prvek vznikl ve stopovém množství v rané fázi vesmíru?",
+    answers: ["Lithium", "Zlato", "Uran", "Železo"],
+    correct: 0,
+    explanation: "V raném vesmíru vzniklo také stopové množství lithia."
+  },
+  {
+    question: "Kde vznikaly těžší prvky až po železo?",
+    answers: ["V oceánech", "Ve hvězdách", "V zemské kůře", "V laboratořích"],
+    correct: 1,
+    explanation: "Těžší prvky až po železo vznikaly termonukleárními reakcemi ve hvězdách."
+  },
+  {
+    question: "Jaké protonové číslo má železo?",
+    answers: ["8", "13", "26", "92"],
+    correct: 2,
+    explanation: "Železo má protonové číslo 26."
+  },
+  {
+    question: "Jak vznikly prvky těžší než železo?",
+    answers: ["Pouze v zemské kůře", "Srážkou neutronových hvězd nebo výbuchem supernov", "Rozpadem vody", "Při fotosyntéze"],
+    correct: 1,
+    explanation: "Prvky těžší než železo vznikaly například při srážkách neutronových hvězd nebo výbuších supernov."
+  },
+  {
+    question: "Který vzácný kov zanechal v zemské kůře meteorit Chicxulub?",
+    answers: ["Iridium", "Lithium", "Sodík", "Vápník"],
+    correct: 0,
+    explanation: "Meteorit Chicxulub zanechal v zemské kůře tenkou vrstvu iridia."
+  },
+  {
+    question: "Který prvek měl protonové číslo 118 a byl uměle připraven v roce 2002?",
+    answers: ["Uhlík", "Ununoctium", "Vodík", "Železo"],
+    correct: 1,
+    explanation: "V materiálu je uveden uměle připravený prvek s protonovým číslem 118 jako Ununoctium."
+  },
+  {
+    question: "Co znamená řecké slovo atomos?",
+    answers: ["Nabitý", "Nedělitelný", "Kulatý", "Neviditelný"],
+    correct: 1,
+    explanation: "Atomos znamená nedělitelný."
+  },
+  {
+    question: "Který řecký učenec je spojován s představou atomů jako nedělitelných částic?",
+    answers: ["Demokritos", "Mendělejev", "Bohr", "Dalton"],
+    correct: 0,
+    explanation: "Demokritos předpokládal, že látky se skládají z malých nedělitelných částic."
+  },
+  {
+    question: "Kdo vzkřísil Demokritovu myšlenku atomů v novověku?",
+    answers: ["John Dalton", "Joseph Thomson", "Ernest Rutherford", "James Chadwick"],
+    correct: 0,
+    explanation: "John Dalton navázal na myšlenku atomů a vytvořil atomovou teorii."
+  },
+  {
+    question: "Jak si John Dalton představoval atom?",
+    answers: ["Jako kladnou kouli s elektrony", "Jako nedělitelnou kuličku", "Jako oblak pravděpodobnosti", "Jako jádro bez elektronů"],
+    correct: 1,
+    explanation: "Dalton si atom představoval jako malou nedělitelnou kuličku."
+  },
+  {
+    question: "Kdo objevil elektron?",
+    answers: ["Joseph Thomson", "Ernest Rutherford", "Niels Bohr", "Dmitrij Mendělejev"],
+    correct: 0,
+    explanation: "Elektron objevil Joseph Thomson."
+  },
+  {
+    question: "Jak se nazývá Thomsonův model atomu?",
+    answers: ["Planetární model", "Pudingový model", "Kvantový model", "Kuličkový model"],
+    correct: 1,
+    explanation: "Thomsonův model se nazývá pudingový model."
+  },
+  {
+    question: "Jak byly podle Thomsona v atomu rozmístěny elektrony?",
+    answers: ["Jako rozinky v pudinku", "Pouze v jádře", "V jediné přímce", "Mimo atom"],
+    correct: 0,
+    explanation: "Thomson si představoval elektrony jako rozinky rozmístěné v kladně nabité kouli."
+  },
+  {
+    question: "Kdo provedl pokus se zlatou fólií?",
+    answers: ["Rutherford", "Bohr", "Dalton", "Schrödinger"],
+    correct: 0,
+    explanation: "Ernest Rutherford provedl pokus se zlatou fólií."
+  },
+  {
+    question: "Co Rutherfordův pokus dokázal?",
+    answers: ["Že atom nemá jádro", "Že protony jsou soustředěny v jádře", "Že elektrony jsou v jádře", "Že atomy neexistují"],
+    correct: 1,
+    explanation: "Rutherfordův pokus ukázal, že kladně nabité částice jsou soustředěny v jádře atomu."
+  },
+  {
+    question: "Jak se nazývá Rutherfordův model atomu?",
+    answers: ["Planetární model", "Kuličkový model", "Pudingový model", "Model triád"],
+    correct: 0,
+    explanation: "Rutherfordův model je označován jako planetární model."
+  },
+  {
+    question: "Kdo rozpracoval Rutherfordův model o představu elektronů na orbitech?",
+    answers: ["Niels Bohr", "James Chadwick", "Joseph Thomson", "Leukippos"],
+    correct: 0,
+    explanation: "Niels Bohr upravil Rutherfordův model a předpokládal, že elektrony obíhají po orbitech."
+  },
+  {
+    question: "Ve kterém roce Niels Bohr rozpracoval Rutherfordův model?",
+    answers: ["1808", "1897", "1913", "1932"],
+    correct: 2,
+    explanation: "Bohrův model vznikl v roce 1913."
+  },
+  {
+    question: "Kdo vytvořil kvantový model atomu?",
+    answers: ["Erwin Schrödinger", "John Dalton", "Dmitrij Mendělejev", "Joseph Thomson"],
+    correct: 0,
+    explanation: "Kvantový model atomu vytvořil Erwin Schrödinger."
+  },
+  {
+    question: "Co popisuje orbital?",
+    answers: ["Přibližnou oblast výskytu elektronu", "Počet protonů v jádře", "Hmotnost celého atomu", "Název prvku"],
+    correct: 0,
+    explanation: "Orbital je přibližná oblast, kde se elektron pravděpodobně vyskytuje."
+  },
+  {
+    question: "Kdo objevil neutron?",
+    answers: ["James Chadwick", "Niels Bohr", "Ernest Rutherford", "John Dalton"],
+    correct: 0,
+    explanation: "Neutron objevil James Chadwick."
+  },
+  {
+    question: "Ve kterém roce byl objeven neutron?",
+    answers: ["430 př. n. l.", "1808", "1911", "1932"],
+    correct: 3,
+    explanation: "Neutron byl objeven v roce 1932."
+  },
+  {
+    question: "Co je atom?",
+    answers: ["Základní stavební částice hmoty", "Pouze druh iontu", "Vždy záporně nabitá částice", "Směs více prvků"],
+    correct: 0,
+    explanation: "Atom je základní stavební částice hmoty."
+  },
+  {
+    question: "Z čeho se skládá atom?",
+    answers: ["Z jádra a elektronového obalu", "Jen z elektronů", "Jen z neutronů", "Z molekul vody"],
+    correct: 0,
+    explanation: "Atom se skládá z atomového jádra a elektronového obalu."
+  },
+  {
+    question: "Které částice se nacházejí v jádře atomu?",
+    answers: ["Protony a neutrony", "Elektrony a protony", "Elektrony a neutrony", "Pouze elektrony"],
+    correct: 0,
+    explanation: "V jádře atomu jsou protony a neutrony."
+  },
+  {
+    question: "Kde se nacházejí elektrony?",
+    answers: ["V elektronovém obalu", "V jádře atomu", "V neutronu", "V protonovém čísle"],
+    correct: 0,
+    explanation: "Elektrony se pohybují v elektronovém obalu kolem jádra."
+  },
+  {
+    question: "Jaký náboj má proton?",
+    answers: ["Kladný", "Záporný", "Nulový", "Proměnlivý"],
+    correct: 0,
+    explanation: "Proton má kladný náboj."
+  },
+  {
+    question: "Jaký náboj má elektron?",
+    answers: ["Kladný", "Záporný", "Nulový", "Žádný prvek ho nemá"],
+    correct: 1,
+    explanation: "Elektron má záporný náboj."
+  },
+  {
+    question: "Jaký náboj má neutron?",
+    answers: ["Kladný", "Záporný", "Nulový", "Dvojnásobně kladný"],
+    correct: 2,
+    explanation: "Neutron je elektroneutrální částice, má nulový náboj."
+  },
+  {
+    question: "Proč je atom elektroneutrální?",
+    answers: ["Má stejný počet protonů a elektronů", "Nemá žádné protony", "Má více neutronů než elektronů", "Má pouze elektrony"],
+    correct: 0,
+    explanation: "Atom je elektroneutrální, protože počet protonů se rovná počtu elektronů."
+  },
+  {
+    question: "Jak se souhrnně nazývají protony a neutrony?",
+    answers: ["Nukleony", "Elektrony", "Valenční částice", "Izotopy"],
+    correct: 0,
+    explanation: "Protony a neutrony se souhrnně nazývají nukleony."
+  },
+  {
+    question: "Co udává protonové číslo?",
+    answers: ["Počet protonů v jádře", "Počet neutronů v jádře", "Počet vrstev v obalu", "Počet izotopů"],
+    correct: 0,
+    explanation: "Protonové číslo udává počet protonů v jádře atomu."
+  },
+  {
+    question: "Co u neutrálního atomu odpovídá protonovému číslu?",
+    answers: ["Počet elektronů", "Počet neutronů", "Počet period", "Počet sloučenin"],
+    correct: 0,
+    explanation: "U neutrálního atomu se počet protonů rovná počtu elektronů."
+  },
+  {
+    question: "Co udává nukleonové číslo?",
+    answers: ["Počet protonů a neutronů v jádře", "Pouze počet elektronů", "Počet chemických vazeb", "Počet valenčních vrstev"],
+    correct: 0,
+    explanation: "Nukleonové číslo udává počet nukleonů, tedy protonů a neutronů v jádře."
+  },
+  {
+    question: "Jak získáme nukleonové číslo z periodické soustavy?",
+    answers: ["Zaokrouhlením relativní atomové hmotnosti", "Sečtením skupiny a periody", "Odečtením elektronů", "Podle barvy prvku"],
+    correct: 0,
+    explanation: "Nukleonové číslo získáme zaokrouhlením relativní atomové hmotnosti na celé číslo."
+  },
+  {
+    question: "Jak vypočítáme neutronové číslo?",
+    answers: ["N = A - Z", "N = A + Z", "N = Z - A", "N = e- + p+"],
+    correct: 0,
+    explanation: "Neutronové číslo vypočítáme jako rozdíl nukleonového čísla a protonového čísla."
+  },
+  {
+    question: "Jak se správně píše značka chemického prvku?",
+    answers: ["První písmeno velké, druhé malé", "Všechna písmena malá", "Všechna písmena velká", "Pouze číslicí"],
+    correct: 0,
+    explanation: "Značka prvku se píše tak, že první písmeno je velké a druhé případné písmeno malé."
+  },
+  {
+    question: "Který prvek má protonové číslo 3?",
+    answers: ["Lithium", "Beryllium", "Vodík", "Uhlík"],
+    correct: 0,
+    explanation: "Lithium má protonové číslo 3."
+  },
+  {
+    question: "Kolik elektronů může mít maximálně první elektronová vrstva K?",
+    answers: ["2", "8", "18", "32"],
+    correct: 0,
+    explanation: "První vrstva K může obsahovat maximálně 2 elektrony."
+  },
+  {
+    question: "Kolik elektronů může mít maximálně druhá vrstva L?",
+    answers: ["2", "8", "18", "1"],
+    correct: 1,
+    explanation: "Druhá vrstva L může obsahovat maximálně 8 elektronů."
+  },
+  {
+    question: "Co udává číslo periody v periodické soustavě?",
+    answers: ["Počet elektronových vrstev", "Počet neutronů", "Počet protonů vždy v jádře", "Počet izotopů"],
+    correct: 0,
+    explanation: "Číslo periody udává počet vrstev v elektronovém obalu."
+  },
+  {
+    question: "Jak se nazývají elektrony v nejvzdálenější vrstvě od jádra?",
+    answers: ["Valenční elektrony", "Nukleony", "Neutrony", "Protony"],
+    correct: 0,
+    explanation: "Elektrony v nejvzdálenější vrstvě se nazývají valenční elektrony."
+  },
+  {
+    question: "Co jsou izotopy?",
+    answers: ["Atomy téhož prvku lišící se počtem neutronů", "Atomy různých prvků se stejným názvem", "Ionty se záporným nábojem", "Elektrony na valenční vrstvě"],
+    correct: 0,
+    explanation: "Izotopy jsou atomy téhož prvku, které se liší počtem neutronů v jádře."
+  },
+  {
+    question: "Jaké jsou izotopy vodíku uvedené v materiálu?",
+    answers: ["Protium, deuterium, tritium", "Bronz, mosaz, pájka", "Kation, anion, atom", "Sodík, chlor, argon"],
+    correct: 0,
+    explanation: "Materiál uvádí izotopy vodíku protium, deuterium a tritium."
+  },
+  {
+    question: "Kdo je autorem periodického zákona?",
+    answers: ["Dmitrij Ivanovič Mendělejev", "Joseph Thomson", "John Dalton", "Erwin Schrödinger"],
+    correct: 0,
+    explanation: "Autorem periodického zákona je Dmitrij Ivanovič Mendělejev."
+  },
+  {
+    question: "Ve kterém roce Mendělejev sestavil periodickou tabulku?",
+    answers: ["1869", "1808", "1913", "1932"],
+    correct: 0,
+    explanation: "Mendělejev přišel s periodickou tabulkou v roce 1869."
+  },
+  {
+    question: "Podle čeho Mendělejev původně seřadil prvky?",
+    answers: ["Podle atomových hmotností", "Podle barvy", "Podle skupenství", "Podle velikosti atomu na obrázku"],
+    correct: 0,
+    explanation: "Mendělejev seřadil prvky podle jejich atomových hmotností."
+  },
+  {
+    question: "Co Mendělejev zjistil o vlastnostech prvků?",
+    answers: ["Pravidelně se opakují", "Jsou vždy stejné", "Nemají žádný řád", "Závisí pouze na barvě"],
+    correct: 0,
+    explanation: "Mendělejev zjistil, že vlastnosti prvků se pravidelně neboli periodicky opakují."
+  },
+  {
+    question: "Které prvky Mendělejev předpověděl jako dosud neobjevené?",
+    answers: ["Eka-aluminium, eka-silicium a eka-bor", "Vodík, helium a lithium", "Zlato, stříbro a měď", "Uran, neptunium a plutonium"],
+    correct: 0,
+    explanation: "Mendělejev předpověděl prvky eka-aluminium, eka-silicium a eka-bor."
+  },
+  {
+    question: "Jak se jmenuje radioaktivní uměle připravený prvek pojmenovaný po Mendělejevovi?",
+    answers: ["Mendelevium", "Einsteinium", "Rutherfordium", "Bohrium"],
+    correct: 0,
+    explanation: "Po Mendělejevovi je pojmenován prvek mendelevium."
+  },
+  {
+    question: "Co je iont?",
+    answers: ["Elektricky nabitá částice", "Vždy neutrální atom", "Pouze částice v jádře", "Jiný název pro neutron"],
+    correct: 0,
+    explanation: "Iont je elektricky nabitá částice."
+  },
+  {
+    question: "Jak vzniká kation?",
+    answers: ["Ztrátou elektronů", "Přijetím elektronů", "Přijetím neutronů", "Ztrátou protonů"],
+    correct: 0,
+    explanation: "Kation vzniká ztrátou jednoho nebo více elektronů."
+  },
+  {
+    question: "Jaký náboj má kation?",
+    answers: ["Kladný", "Záporný", "Nulový", "Vždy dvojitě záporný"],
+    correct: 0,
+    explanation: "Kation má kladný náboj, protože má více protonů než elektronů."
+  },
+  {
+    question: "Jak vzniká anion?",
+    answers: ["Přijetím elektronů", "Ztrátou elektronů", "Ztrátou neutronů", "Rozpadem jádra"],
+    correct: 0,
+    explanation: "Anion vzniká přijetím jednoho nebo více elektronů."
+  },
+  {
+    question: "Jaký náboj má anion?",
+    answers: ["Záporný", "Kladný", "Nulový", "Vždy kladný"],
+    correct: 0,
+    explanation: "Anion má záporný náboj, protože má více elektronů než protonů."
+  },
+  {
+    question: "Jak zapíšeme atom kyslíku, který přijal dva elektrony?",
+    answers: ["O²⁻", "O²⁺", "O⁰", "O⁺"],
+    correct: 0,
+    explanation: "Atom kyslíku, který přijal dva elektrony, se zapíše jako O2-."
+  },
+  {
+    question: "Co se stane s oxidačním číslem, když částice přijímá elektrony?",
+    answers: ["Snižuje se", "Zvyšuje se", "Nemění se", "Vždy se stane nulovým"],
+    correct: 0,
+    explanation: "Když částice přijímá elektrony, její oxidační číslo se snižuje."
+  },
+  {
+    question: "Jak se nazývá kladně nabitý iont?",
+    answers: ["Anion", "Kation", "Nukleon", "Izotop"],
+    correct: 1,
+    explanation: "Kladně nabitý iont se nazývá kation."
+  },
+  {
+    question: "Jak se nazývá záporně nabitý iont?",
+    answers: ["Kation", "Anion", "Proton", "Nukleon"],
+    correct: 1,
+    explanation: "Záporně nabitý iont se nazývá anion."
+  },
+  {
+    question: "Co se stane s atomem lithia, když odevzdá jeden elektron?",
+    answers: ["Vznikne Li+", "Vznikne Li-", "Vznikne neutron", "Vznikne molekula Li2"],
+    correct: 0,
+    explanation: "Lithium odevzdáním elektronu vytvoří kation Li+."
+  },
+  {
+    question: "Co se stane s atomem chloru, když přijme jeden elektron?",
+    answers: ["Vznikne Cl+", "Vznikne Cl-", "Vznikne Cl2+", "Vznikne proton"],
+    correct: 1,
+    explanation: "Chlor přijetím elektronu vytvoří chloridový anion Cl-."
+  },
+  {
+    question: "Jaký iont vznikne z atomu hliníku ztrátou tří elektronů?",
+    answers: ["Al³⁺", "Al³⁻", "Al⁺", "Al⁰"],
+    correct: 0,
+    explanation: "Hliník ztrátou tří elektronů vytvoří kation Al3+."
+  },
+  {
+    question: "Jaký iont vznikne z atomu fosforu přijetím tří elektronů?",
+    answers: ["P³⁺", "P³⁻", "P⁵⁺", "P⁰"],
+    correct: 1,
+    explanation: "Fosfor přijetím tří elektronů vytvoří anion P3-."
+  },
+  {
+    question: "Jak se nazývá ion O²⁻?",
+    answers: ["Oxidový anion", "Kyslíkový kation", "Oxoniový kation", "Síranový anion"],
+    correct: 0,
+    explanation: "Ion O²⁻ se nazývá oxidový anion."
+  },
+  {
+    question: "Jak se nazývá ion S²⁻?",
+    answers: ["Síranový anion", "Sulfidový anion", "Siřičitanový anion", "Sodný kation"],
+    correct: 1,
+    explanation: "Ion S²⁻ se nazývá sulfidový anion."
+  },
+  {
+    question: "Jak se nazývá ion OH⁻?",
+    answers: ["Hydroxidový anion", "Oxidový anion", "Hydridový anion", "Oxoniový kation"],
+    correct: 0,
+    explanation: "Ion OH⁻ se nazývá hydroxidový anion."
+  },
+  {
+    question: "Jak se nazývá ion H₃O⁺?",
+    answers: ["Hydroxidový anion", "Oxoniový kation", "Amonný kation", "Vodíkový anion"],
+    correct: 1,
+    explanation: "H3O+ je oxoniový kation."
+  },
+  {
+    question: "Jak se nazývá ion NH₄⁺?",
+    answers: ["Dusičnanový anion", "Amonný kation", "Oxoniový kation", "Hydroxidový anion"],
+    correct: 1,
+    explanation: "NH₄⁺ je amonný kation."
+  },
+  {
+    question: "Jaký vzorec má síranový anion?",
+    answers: ["SO₄²⁻", "SO₃²⁻", "CO₃²⁻", "NO₃⁻"],
+    correct: 0,
+    explanation: "Síranový anion má vzorec SO4 2-."
+  },
+  {
+    question: "Jaký vzorec má siřičitanový anion?",
+    answers: ["SO₄²⁻", "SO₃²⁻", "NO₂⁻", "ClO₃⁻"],
+    correct: 1,
+    explanation: "Siřičitanový anion má vzorec SO₃²⁻."
+  },
+  {
+    question: "Jaký vzorec má uhličitanový anion?",
+    answers: ["CO₃²⁻", "NO₃⁻", "SO₄²⁻", "MnO₄⁻"],
+    correct: 0,
+    explanation: "Uhličitanový anion má vzorec CO₃²⁻."
+  },
+  {
+    question: "Jaký vzorec má dusičnanový anion?",
+    answers: ["NO₂⁻", "NO₃⁻", "NH₄⁺", "N³⁻"],
+    correct: 1,
+    explanation: "Dusičnanový anion má vzorec NO₃⁻."
+  },
+  {
+    question: "Jaký vzorec má dusitanový anion?",
+    answers: ["NO2-", "NO3-", "N2-", "NH4+"],
+    correct: 0,
+    explanation: "Dusitanový anion má vzorec NO2-."
+  },
+  {
+    question: "Jaký vzorec má chloristanový anion?",
+    answers: ["ClO4-", "ClO3-", "Cl-", "ClO-"],
+    correct: 0,
+    explanation: "Chloristanový anion má vzorec ClO4-."
+  },
+  {
+    question: "Jaký vzorec má chlorečnanový anion?",
+    answers: ["ClO4-", "ClO3-", "ClO-", "Cl-"],
+    correct: 1,
+    explanation: "Chlorečnanový anion má vzorec ClO3-."
+  },
+  {
+    question: "Jaký vzorec má manganistanový anion?",
+    answers: ["MnO4-", "Mg2+", "Mn2+", "CO3 2-"],
+    correct: 0,
+    explanation: "Manganistanový anion má vzorec MnO4-."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu I?",
+    answers: ["-natý", "-ný", "-itý", "-ičitý"],
+    correct: 1,
+    explanation: "Oxidačnímu číslu I odpovídá koncovka -ný."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu II?",
+    answers: ["-natý", "-itý", "-ový", "-istý"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu II odpovídá koncovka -natý."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu III?",
+    answers: ["-ičitý", "-itý", "-ečný", "-ový"],
+    correct: 1,
+    explanation: "Oxidačnímu číslu III odpovídá koncovka -itý."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu IV?",
+    answers: ["-ičitý", "-ičný", "-natý", "-ný"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu IV odpovídá koncovka -ičitý."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu V?",
+    answers: ["-ový", "-istý", "-ičný nebo -ečný", "-natý"],
+    correct: 2,
+    explanation: "Oxidačnímu číslu V odpovídá koncovka -ičný nebo -ečný."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu VI?",
+    answers: ["-ový", "-istý", "-itý", "-ný"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu VI odpovídá koncovka -ový."
+  },
+  {
+    question: "Jaká koncovka odpovídá oxidačnímu číslu VII?",
+    answers: ["-itý", "-istý", "-natý", "-ičitý"],
+    correct: 1,
+    explanation: "Oxidačnímu číslu VII odpovídá koncovka -istý."
+  },
+  {
+    question: "Co platí pro oxidační číslo volného prvku?",
+    answers: ["Je vždy 0", "Je vždy I", "Je vždy -I", "Je vždy VII"],
+    correct: 0,
+    explanation: "Volné prvky, například Al, Mg, H2 nebo Cl2, mají oxidační číslo 0."
+  },
+  {
+    question: "Jaké oxidační číslo má vodík v molekule H2?",
+    answers: ["0", "+I", "-I", "+II"],
+    correct: 0,
+    explanation: "Vodík v molekule H2 je volný prvek, proto má oxidační číslo 0."
+  },
+  {
+    question: "Jaké oxidační číslo má chlor v molekule Cl₂?",
+    answers: ["-I", "0", "+I", "+VII"],
+    correct: 1,
+    explanation: "Chlor v molekule Cl₂ je volný prvek, proto má oxidační číslo 0."
+  },
+  {
+    question: "Co se děje při oxidaci?",
+    answers: ["Oxidační číslo se zvyšuje", "Oxidační číslo se snižuje", "Částice vždy přijímá protony", "Vzniká pouze voda"],
+    correct: 0,
+    explanation: "Při oxidaci se oxidační číslo zvyšuje."
+  },
+  {
+    question: "Co se děje při redukci?",
+    answers: ["Oxidační číslo se zvyšuje", "Oxidační číslo se snižuje", "Částice vždy ztrácí neutrony", "Vzniká vždy kyselina"],
+    correct: 1,
+    explanation: "Při redukci se oxidační číslo snižuje."
+  },
+  {
+    question: "Co částice při oxidaci dělá s elektrony?",
+    answers: ["Odevzdává elektrony", "Přijímá elektrony", "Mění elektrony na neutrony", "Elektrony se nemění"],
+    correct: 0,
+    explanation: "Při oxidaci částice odevzdává elektrony."
+  },
+  {
+    question: "Co částice při redukci dělá s elektrony?",
+    answers: ["Odevzdává elektrony", "Přijímá elektrony", "Ztrácí protony", "Rozpadá se na atomy"],
+    correct: 1,
+    explanation: "Při redukci částice přijímá elektrony."
+  },
+  {
+    question: "Který zápis vyjadřuje oxidaci hořčíku?",
+    answers: ["Mg0 → Mg2+ + 2e-", "Mg2+ + 2e- → Mg0", "Mg0 + 2e- → Mg2+", "Mg2+ → Mg0 + 2e-"],
+    correct: 0,
+    explanation: "Hořčík se oxiduje, protože přechází z oxidačního čísla 0 na +II a odevzdává elektrony."
+  },
+  {
+    question: "Který zápis vyjadřuje redukci vápenatého kationtu?",
+    answers: ["Ca2+ + 2e- → Ca0", "Ca0 → Ca2+ + 2e-", "Ca2+ → Ca4+ + 2e-", "Ca0 + 2e- → Ca2+"],
+    correct: 0,
+    explanation: "Ca2+ se redukuje na Ca0 přijetím dvou elektronů."
+  },
+  {
+    question: "Co je redukční činidlo?",
+    answers: ["Látka, která se sama oxiduje", "Látka, která se sama redukuje", "Látka bez elektronů", "Látka, která nikdy nereaguje"],
+    correct: 0,
+    explanation: "Redukční činidlo vyvolává redukci jiné látky a samo se oxiduje."
+  },
+  {
+    question: "Co je oxidační činidlo?",
+    answers: ["Látka, která se sama redukuje", "Látka, která se sama oxiduje", "Látka, která nemá protony", "Vždy kov vlevo od vodíku"],
+    correct: 0,
+    explanation: "Oxidační činidlo vyvolává oxidaci jiné látky a samo se redukuje."
+  },
+  {
+    question: "Jak se nazývají reakce, při kterých dochází ke změně oxidačních čísel atomů prvků?",
+    answers: ["Redoxní reakce", "Neutralizace", "Srážení", "Vypařování"],
+    correct: 0,
+    explanation: "Redoxní reakce jsou reakce, při kterých dochází ke změně oxidačních čísel."
+  },
+  {
+    question: "Co znamená zkratka ΔX u chemických vazeb?",
+    answers: ["Rozdíl elektronegativit prvků", "Součet protonů", "Počet neutronů", "Hmotnost molekuly"],
+    correct: 0,
+    explanation: "ΔX označuje rozdíl elektronegativit vázaných prvků."
+  },
+  {
+    question: "Jak se vypočítá rozdíl elektronegativit?",
+    answers: ["Větší elektronegativita minus menší elektronegativita", "Součet obou elektronegativit", "Menší minus větší", "Součin elektronegativit"],
+    correct: 0,
+    explanation: "Rozdíl elektronegativit se počítá jako větší hodnota minus menší hodnota."
+  },
+  {
+    question: "Jaký typ vazby vzniká, když je ΔX menší než 0,4?",
+    answers: ["Kovalentní nepolární vazba", "Kovalentní polární vazba", "Iontová vazba", "Kovová vazba"],
+    correct: 0,
+    explanation: "Při ΔX menším než 0,4 vzniká kovalentní nepolární vazba."
+  },
+  {
+    question: "Jaký typ vazby vzniká, když je ΔX mezi 0,4 a 1,7?",
+    answers: ["Kovalentní polární vazba", "Kovalentní nepolární vazba", "Iontová vazba", "Jaderná vazba"],
+    correct: 0,
+    explanation: "Při rozdílu elektronegativit mezi 0,4 a 1,7 vzniká kovalentní polární vazba."
+  },
+  {
+    question: "Jaký typ vazby vzniká, když je ΔX větší než 1,7?",
+    answers: ["Iontová vazba", "Kovalentní nepolární vazba", "Kovalentní polární vazba", "Vodíková vazba"],
+    correct: 0,
+    explanation: "Při ΔX větším než 1,7 vzniká iontová vazba."
+  },
+  {
+    question: "Jaký typ vazby je v molekule I2?",
+    answers: ["Kovalentní nepolární", "Kovalentní polární", "Iontová", "Kovová"],
+    correct: 0,
+    explanation: "V molekule I2 jsou stejné atomy, rozdíl elektronegativit je 0, proto je vazba nepolární."
+  },
+  {
+    question: "Jaký typ vazby je v molekule HCl podle rozdílu elektronegativit uvedeného v materiálu?",
+    answers: ["Kovalentní polární", "Kovalentní nepolární", "Iontová", "Kovová"],
+    correct: 0,
+    explanation: "U HCl je ΔX přibližně 0,86, proto jde o kovalentní polární vazbu."
+  },
+  {
+    question: "Jaký typ vazby vzniká mezi lithiem a chlorem podle materiálu?",
+    answers: ["Iontová", "Kovalentní nepolární", "Kovalentní polární", "Kovová"],
+    correct: 0,
+    explanation: "Lithium odevzdá elektron a chlor ho přijme, proto vzniká iontová vazba."
+  },
+  {
+    question: "Co platí pro vazebný elektronový pár v kovalentní nepolární vazbě?",
+    answers: ["Leží mezi oběma vázanými atomy rovnoměrně", "Je úplně vytržen jedním atomem", "Leží pouze v jádře", "Neexistuje"],
+    correct: 0,
+    explanation: "U nepolární kovalentní vazby je vazebný elektronový pár sdílen rovnoměrně."
+  },
+  {
+    question: "Co platí pro vazebný elektronový pár v kovalentní polární vazbě?",
+    answers: ["Je posunut blíže k elektronegativnějšímu prvku", "Leží pouze u elektropozitivnějšího prvku", "Je zcela ztracen", "Nachází se v jádře atomu"],
+    correct: 0,
+    explanation: "V polární kovalentní vazbě je elektronový pár více přitahován elektronegativnějším prvkem."
+  },
+  {
+    question: "Na kterém atomu v molekule vody vzniká částečný záporný náboj?",
+    answers: ["Na kyslíku", "Na vodíku", "Na obou stejně", "Na žádném atomu"],
+    correct: 0,
+    explanation: "Kyslík je elektronegativnější, proto na něm vzniká částečný záporný náboj."
+  },
+  {
+    question: "Na kterém atomu v molekule vody vzniká částečný kladný náboj?",
+    answers: ["Na vodíku", "Na kyslíku", "Na elektronu", "Na neutronu"],
+    correct: 0,
+    explanation: "Vodík má v molekule vody částečný kladný náboj."
+  },
+  {
+    question: "Kdo sestavil Beketovovu řadu napětí kovů?",
+    answers: ["Nikolaj Nikolajevič Beketov", "Dmitrij Mendělejev", "Niels Bohr", "John Dalton"],
+    correct: 0,
+    explanation: "Beketovovu řadu napětí kovů sestavil ruský chemik Nikolaj Nikolajevič Beketov."
+  },
+  {
+    question: "Podle čeho Beketov rozdělil kovy na ušlechtilé a neušlechtilé?",
+    answers: ["Podle reakce s kyselinami", "Podle barvy", "Podle skupenství", "Podle vůně"],
+    correct: 0,
+    explanation: "Kovy rozdělil podle jejich reakce s kyselinami."
+  },
+  {
+    question: "Co platí pro neušlechtilé kovy v Beketovově řadě?",
+    answers: ["Reagují s kyselinami za vzniku vodíku", "Nikdy nereagují", "Jsou vždy kapalné", "Jsou napravo od zlata"],
+    correct: 0,
+    explanation: "Neušlechtilé kovy reagují s kyselinami za vzniku vodíku."
+  },
+  {
+    question: "Co platí pro ušlechtilé kovy v Beketovově řadě?",
+    answers: ["Nereagují s kyselinami za vzniku vodíku", "Vždy reagují s vodou", "Vždy vytěsňují vodík z kyselin", "Jsou vždy vlevo od vodíku"],
+    correct: 0,
+    explanation: "Ušlechtilé kovy nereagují s kyselinami za vzniku vodíku."
+  },
+  {
+    question: "Kde v Beketovově řadě stojí kovy, které vytěsňují vodík z kyselin?",
+    answers: ["Nalevo od vodíku", "Napravo od vodíku", "Pouze za zlatem", "Pouze mezi mědí a stříbrem"],
+    correct: 0,
+    explanation: "Kovy nalevo od vodíku vytěsňují vodík z kyselin."
+  },
+  {
+    question: "Které kovy podle materiálu reagují s vodou za vzniku hydroxidu a vodíku?",
+    answers: ["Na, K, Ca", "Cu, Ag, Au", "Hg, Au, H", "Sn, Pb, Cu"],
+    correct: 0,
+    explanation: "Kovy zcela nalevo v řadě, například Na, K a Ca, reagují s vodou za vzniku hydroxidu a vodíku."
+  },
+  {
+    question: "Které kovy podle materiálu reagují s vodní parou za vzniku oxidu kovu a vodíku?",
+    answers: ["Mg, Al, Zn", "Cu, Ag, Au", "Hg, Au, H", "Ag, Hg, Au"],
+    correct: 0,
+    explanation: "Méně reaktivní kovy nalevo od vodíku, například Mg, Al a Zn, reagují s vodní parou."
+  },
+  {
+    question: "Co dokáže kov vůči kovům, které jsou v Beketovově řadě napravo od něj?",
+    answers: ["Vytěsnit je z roztoku", "Změnit je na vodík", "Změnit je na nekovy", "Zabránit jejich existenci"],
+    correct: 0,
+    explanation: "Kov je schopen vytěsnit z roztoku kovy, které jsou v řadě napravo od něj."
+  },
+  {
+    question: "Který z uvedených kovů leží v Beketovově řadě napravo od vodíku?",
+    answers: ["Měď", "Zinek", "Hořčík", "Vápník"],
+    correct: 0,
+    explanation: "Měď leží napravo od vodíku, proto nevytěsňuje vodík z běžných kyselin."
+  },
+  {
+    question: "S kterými kyselinami mohou reagovat kovy napravo od vodíku?",
+    answers: ["S kyselinami se silnými oxidačními účinky", "Pouze s vodou", "Pouze s hydroxidy", "S žádnými látkami"],
+    correct: 0,
+    explanation: "Kovy napravo od vodíku mohou reagovat s kyselinami se silnými oxidačními účinky, například H2SO4 a HNO3."
+  },
+  {
+    question: "Co vzniká při reakci kovu nalevo od vodíku s kyselinou?",
+    answers: ["Sůl a vodík", "Hydroxid a kyslík", "Oxid a dusík", "Pouze voda"],
+    correct: 0,
+    explanation: "Kov nalevo od vodíku vytěsňuje vodík z kyseliny, vzniká sůl a vodík."
+  },
+  {
+    question: "Pro částici O2– platí:",
+    answers: ["Je to kation", "Je to nukleon", "Je to anion", "Je to izotop"],
+    correct: 2,
+    explanation: "Částice O2– má záporný náboj, proto je to anion."
+  },
+  {
+    question: "Pro částici 8O2– platí:",
+    answers: ["Má 8 protonů a 8 elektronů", "Má 8 neutronů a 8 elektronů", "Má 8 protonů a 10 elektronů", "Má 10 protonů a 8 elektronů"],
+    correct: 2,
+    explanation: "Kyslík má protonové číslo 8, tedy 8 protonů. Náboj 2– znamená, že má o 2 elektrony více, tedy 10 elektronů."
+  },
+  {
+    question: "Pro částici Na+ platí:",
+    answers: ["Je to kation", "Je to nukleon", "Je to anion", "Je to izotop"],
+    correct: 0,
+    explanation: "Částice Na+ má kladný náboj, proto je to kation."
+  },
+  {
+    question: "Pro částici 11Na+ platí:",
+    answers: ["Má 11 protonů a 11 elektronů", "Má 11 neutronů a 11 elektronů", "Má 11 protonů a 12 elektronů", "Má 11 protonů a 10 elektronů"],
+    correct: 3,
+    explanation: "Sodík má protonové číslo 11, tedy 11 protonů. Náboj + znamená, že má o jeden elektron méně, tedy 10 elektronů."
+  },
+  {
+    question: "Ve které možnosti jsou uvedené vzorce pouze reálně existujících iontů?",
+    answers: ["H+, Na+, O6–", "K+, Cl–, F–", "Fe7+, Ag+, S2–", "H2, Na, O2"],
+    correct: 1,
+    explanation: "K+, Cl– a F– jsou běžné reálně existující ionty."
+  },
+  {
+    question: "Ve které možnosti jsou správně uvedené vzorce prvků?",
+    answers: ["Br₂, He₂, O₂", "F₂, Fe₂, I₂", "N₂, Cl₂, H₂", "C₂, Na₂, Si₂"],
+    correct: 2,
+    explanation: "Dusík, chlor a vodík se běžně vyskytují jako dvouatomové molekuly N₂, Cl₂ a H₂."
+  },
+  {
+    question: "Jak se nazývá částice se záporným elektrickým nábojem?",
+    answers: ["Anion", "Kation", "Proton", "Neutron"],
+    correct: 0,
+    explanation: "Záporně nabitý iont se nazývá anion."
+  },
+  {
+    question: "Jak se nazývá částice s kladným elektrickým nábojem?",
+    answers: ["Kation", "Anion", "Elektron", "Neutron"],
+    correct: 0,
+    explanation: "Kladně nabitý iont se nazývá kation."
+  },
+  {
+    question: "Která částice má záporný elektrický náboj?",
+    answers: ["Elektron", "Proton", "Neutron", "Nukleon"],
+    correct: 0,
+    explanation: "Elektron je záporně nabitá částice v atomovém obalu."
+  },
+  {
+    question: "Která částice má kladný elektrický náboj?",
+    answers: ["Proton", "Elektron", "Neutron", "Molekula"],
+    correct: 0,
+    explanation: "Proton je kladně nabitá částice v atomovém jádře."
+  },
+  {
+    question: "Která částice nemá elektrický náboj?",
+    answers: ["Neutron", "Proton", "Elektron", "Kation"],
+    correct: 0,
+    explanation: "Neutron je elektricky neutrální částice v atomovém jádře."
+  },
+  {
+    question: "Kde se v atomu nacházejí protony a neutrony?",
+    answers: ["V atomovém jádře", "V elektronovém obalu", "Mimo atom", "Pouze v molekulách"],
+    correct: 0,
+    explanation: "Protony a neutrony tvoří atomové jádro."
+  },
+  {
+    question: "Kde se v atomu nacházejí elektrony?",
+    answers: ["V elektronovém obalu", "V atomovém jádře", "Pouze v nukleonech", "Pouze v protonech"],
+    correct: 0,
+    explanation: "Elektrony se nacházejí v elektronovém obalu atomu."
+  },
+  {
+    question: "Co udává protonové číslo prvku?",
+    answers: ["Počet protonů v jádře", "Počet neutronů v jádře", "Počet molekul", "Počet chemických vazeb"],
+    correct: 0,
+    explanation: "Protonové číslo udává počet protonů v jádře atomu."
+  },
+  {
+    question: "Co platí pro elektricky neutrální atom?",
+    answers: ["Má stejný počet protonů a elektronů", "Má více elektronů než protonů", "Má více protonů než elektronů", "Nemá žádné protony"],
+    correct: 0,
+    explanation: "Elektricky neutrální atom má stejný počet kladných protonů a záporných elektronů."
+  }
+          ]
+    },
+    {
+      id: "tema-04",
+      title: "PSP – značky a názvy prvků",
+      subtitle: "Chemické značky a názvy prvků",
+      type: "elements",
+      elements: [
+      { symbol: "H", name: "vodík" },
+      { symbol: "He", name: "helium" },
+      { symbol: "Li", name: "lithium" },
+      { symbol: "Be", name: "beryllium" },
+      { symbol: "B", name: "bor" },
+      { symbol: "C", name: "uhlík" },
+      { symbol: "N", name: "dusík" },
+      { symbol: "O", name: "kyslík" },
+      { symbol: "F", name: "fluor" },
+      { symbol: "Ne", name: "neon" },
+      { symbol: "Na", name: "sodík" },
+      { symbol: "Mg", name: "hořčík" },
+      { symbol: "Al", name: "hliník" },
+      { symbol: "Si", name: "křemík" },
+      { symbol: "P", name: "fosfor" },
+      { symbol: "S", name: "síra" },
+      { symbol: "Cl", name: "chlor" },
+      { symbol: "Ar", name: "argon" },
+      { symbol: "K", name: "draslík" },
+      { symbol: "Ca", name: "vápník" },
+      { symbol: "Sc", name: "skandium" },
+      { symbol: "Ti", name: "titan" },
+      { symbol: "V", name: "vanad" },
+      { symbol: "Cr", name: "chrom" },
+      { symbol: "Mn", name: "mangan" },
+      { symbol: "Fe", name: "železo" },
+      { symbol: "Co", name: "kobalt" },
+      { symbol: "Ni", name: "nikl" },
+      { symbol: "Cu", name: "měď" },
+      { symbol: "Zn", name: "zinek" },
+      { symbol: "Ga", name: "gallium" },
+      { symbol: "Ge", name: "germanium" },
+      { symbol: "As", name: "arsen" },
+      { symbol: "Se", name: "selen" },
+      { symbol: "Br", name: "brom" },
+      { symbol: "Kr", name: "krypton" },
+      { symbol: "Rb", name: "rubidium" },
+      { symbol: "Sr", name: "stroncium" },
+      { symbol: "Y", name: "yttrium" },
+      { symbol: "Zr", name: "zirkonium" },
+      { symbol: "Nb", name: "niob" },
+      { symbol: "Mo", name: "molybden" },
+      { symbol: "Tc", name: "technecium" },
+      { symbol: "Ru", name: "ruthenium" },
+      { symbol: "Rh", name: "rhodium" },
+      { symbol: "Pd", name: "palladium" },
+      { symbol: "Ag", name: "stříbro" },
+      { symbol: "Cd", name: "kadmium" },
+      { symbol: "In", name: "indium" },
+      { symbol: "Sn", name: "cín" },
+      { symbol: "Sb", name: "antimon" },
+      { symbol: "Te", name: "tellur" },
+      { symbol: "I", name: "jod" },
+      { symbol: "Xe", name: "xenon" },
+      { symbol: "Cs", name: "cesium" },
+      { symbol: "Ba", name: "baryum" },
+      { symbol: "Hf", name: "hafnium" },
+      { symbol: "Ta", name: "tantal" },
+      { symbol: "W", name: "wolfram" },
+      { symbol: "Re", name: "rhenium" },
+      { symbol: "Os", name: "osmium" },
+      { symbol: "Ir", name: "iridium" },
+      { symbol: "Pt", name: "platina" },
+      { symbol: "Au", name: "zlato" },
+      { symbol: "Hg", name: "rtuť" },
+      { symbol: "Tl", name: "thallium" },
+      { symbol: "Pb", name: "olovo" },
+      { symbol: "Bi", name: "bismut" },
+      { symbol: "Po", name: "polonium" },
+      { symbol: "At", name: "astat" },
+      { symbol: "Rn", name: "radon" },
+      { symbol: "Fr", name: "francium" },
+      { symbol: "Ra", name: "radium" },
+      { symbol: "Rf", name: "rutherfordium" },
+      { symbol: "Db", name: "dubnium" },
+      { symbol: "Sg", name: "seaborgium" },
+      { symbol: "Bh", name: "bohrium" },
+      { symbol: "Hs", name: "hassium" },
+      { symbol: "Mt", name: "meitnerium" },
+      { symbol: "Ds", name: "darmstadtium" },
+      { symbol: "Rg", name: "roentgenium" },
+      { symbol: "Cn", name: "kopernicium" },
+      { symbol: "Nh", name: "nihonium" },
+      { symbol: "Fl", name: "flerovium" },
+      { symbol: "Mc", name: "moscovium" },
+      { symbol: "Lv", name: "livermorium" },
+      { symbol: "Ts", name: "tennessin" },
+      { symbol: "Og", name: "oganesson" }
+    ]
+    },
+    {
+      id: "tema-05",
+      title: "Prvky v PSP",
+      subtitle: "Periodická soustava prvků",
+      type: "questionBank",
+      questions: [
+        {
+          question: "Která vlastnost je typická pro většinu kovů?",
+          answers: ["Dobře vedou elektrický proud a teplo", "Snadno tvoří plynné molekuly", "Mají velmi nízkou hustotu", "Jsou za běžných podmínek vždy kapalné"],
+          correct: 0,
+          explanation: "Většina kovů dobře vede elektrický proud i teplo, má kovový lesk a je dobře zpracovatelná."
+        },
+        {
+          question: "Která vlastnost je typická pro většinu nekovů?",
+          answers: ["Obvykle špatně vedou elektrický proud", "Mají vysokou elektrickou vodivost", "Jsou vždy kujné a tažné", "Vždy vytvářejí slitiny"],
+          correct: 0,
+          explanation: "Nekovy většinou špatně vedou elektrický proud a nemají typické kovové vlastnosti."
+        },
+        {
+          question: "Proč se měď často používá na elektrické vodiče?",
+          answers: ["Má velmi dobrou elektrickou vodivost", "Je nejreaktivnější kov", "Má velmi nízkou teplotu tání", "Je za běžných podmínek kapalná"],
+          correct: 0,
+          explanation: "Měď má výbornou elektrickou vodivost, proto se používá ve vodičích, kabelech a kontaktech."
+        },
+        {
+          question: "Která vlastnost mědi je důležitá při výrobě vodičů a kontaktů?",
+          answers: ["Tažnost a elektrická vodivost", "Křehkost a malá hustota", "Radioaktivita a tvrdost", "Hořlavost a rozpustnost ve vodě"],
+          correct: 0,
+          explanation: "Měď je dobře tažná a velmi dobře vede elektrický proud, proto je vhodná pro elektrotechniku."
+        },
+        {
+          question: "Proč se hliník používá v dopravě a konstrukcích?",
+          answers: ["Je lehký, pevný a dobře zpracovatelný", "Je velmi těžký a křehký", "Snadno rezaví ve vlhkém vzduchu", "Je za běžných podmínek kapalný"],
+          correct: 0,
+          explanation: "Hliník má malou hustotu, je poměrně pevný a dobře se tvaruje, proto se využívá v dopravě i konstrukcích."
+        },
+        {
+          question: "Proč hliník na vzduchu poměrně dobře odolává korozi?",
+          answers: ["Na povrchu se vytváří ochranná vrstva oxidu", "Hliník vůbec nereaguje s kyslíkem", "Hliník se ve vzduchu mění na slitinu", "Na povrchu se tvoří vrstva uhlíku"],
+          correct: 0,
+          explanation: "Na povrchu hliníku vzniká tenká vrstva oxidu hlinitého, která chrání kov před další korozí."
+        },
+        {
+          question: "Který kov je základem oceli?",
+          answers: ["Železo", "Měď", "Hliník", "Zinek"],
+          correct: 0,
+          explanation: "Ocel je slitina, jejímž hlavním základem je železo."
+        },
+        {
+          question: "Co se děje se železem ve vlhkém prostředí za přístupu kyslíku?",
+          answers: ["Koroduje a vzniká rez", "Mění se na ocel", "Pasivuje se", "Sublimuje"],
+          correct: 0,
+          explanation: "Železo ve vlhku reaguje s kyslíkem a vodou. Výsledkem je koroze, běžně označovaná jako rezavění."
+        },
+        {
+          question: "Která slitina se běžně používá na výrobu příborů?",
+        answers: ["Nerezová ocel", "Amalgám", "Mosaz", "Pájka"],
+        correct: 0,
+        explanation: "Nerezová ocel je odolná vůči korozi, pevná a hygienicky vhodná, proto se používá na výrobu příborů, nádobí a kuchyňských pomůcek."
+        },
+        {
+          question: "Proč je železo důležité pro lidské tělo?",
+          answers: ["Je součástí krevního barviva přenášejícího kyslík", "Je hlavní stavební složkou kostí", "Zajišťuje tvorbu zubní skloviny", "Nahrazuje v těle vápník"],
+          correct: 0,
+          explanation: "Železo je součástí hemoglobinu, který pomáhá přenášet kyslík v krvi."
+        },
+        {
+          question: "Proč se zinek používá k ochraně železa před korozí?",
+          answers: ["Vytváří ochranný povlak na povrchu železa", "Zvyšuje rozpustnost železa ve vodě", "Mění železo na nerezovou ocel", "Odstraňuje z povrchu železa kyslík"],
+          correct: 0,
+          explanation: "Pozinkování chrání železo před korozí, protože zinek tvoří ochrannou vrstvu."
+        },
+        {
+          question: "Která slitina vzniká smícháním mědi a zinku?",
+          answers: ["Mosaz", "Bronz", "Ocel", "Dural"],
+          correct: 0,
+          explanation: "Mosaz je slitina mědi a zinku."
+        },
+        {
+          question: "Která slitina vzniká smícháním mědi a cínu?",
+          answers: ["Bronz", "Mosaz", "Nerezová ocel", "Pájka"],
+          correct: 0,
+          explanation: "Bronz je slitina mědi a cínu."
+        },
+        {
+          question: "Proč se zlato používá ve šperkařství?",
+          answers: ["Je chemicky stálé, lesklé a dobře zpracovatelné", "Snadno koroduje a mění barvu", "Je velmi křehké a špatně kujné", "Je běžně rozpustné ve vodě"],
+          correct: 0,
+          explanation: "Zlato je ušlechtilý kov. Je stálé, má výrazný lesk a dobře se zpracovává."
+        },
+        {
+          question: "Proč se stříbro využívá v elektrotechnice?",
+          answers: ["Má velmi vysokou elektrickou vodivost", "Je nejlehčí ze všech kovů", "Je zcela odolné vůči černání", "Je za běžných podmínek plynné"],
+          correct: 0,
+          explanation: "Stříbro patří mezi nejlepší vodiče elektrického proudu, proto má význam v elektrotechnice."
+        },
+        {
+          question: "Proč může stříbro při delším pobytu na vzduchu černat?",
+          answers: ["Na povrchu vznikají sloučeniny stříbra se sírou", "Stříbro se mění na grafit", "Stříbro reaguje s dusíkem na vzduchu", "Stříbro se postupně rozpouští ve vodní páře"],
+          correct: 0,
+          explanation: "Stříbro může černat kvůli vzniku tmavých sloučenin na povrchu, zejména reakcí se sloučeninami síry."
+        },
+        {
+          question: "Který kov je za běžných podmínek kapalný?",
+          answers: ["Rtuť", "Cín", "Olovo", "Zinek"],
+          correct: 0,
+          explanation: "Rtuť je kov, který je za běžných podmínek kapalný."
+        },
+        {
+          question: "Proč se s rtutí musí zacházet velmi opatrně?",
+          answers: ["Je toxická a nebezpečné jsou i její páry", "Je velmi hořlavá na vzduchu", "Je silně radioaktivní", "Při dotyku okamžitě tuhne"],
+          correct: 0,
+          explanation: "Rtuť a její páry jsou toxické, proto je nutné zabránit úniku rtuti a jejímu vdechování."
+        },
+        {
+          question: "Proč se olovo dnes používá omezeněji než dříve?",
+          answers: ["Je toxické pro člověka i životní prostředí", "Je příliš lehké pro technické použití", "Snadno se rozpouští v čisté vodě", "Nelze jej zpracovávat do slitin"],
+          correct: 0,
+          explanation: "Olovo je toxický těžký kov, proto se jeho použití v mnoha výrobcích omezuje."
+        },
+        {
+          question: "K čemu se využívá olovo díky své vysoké hustotě?",
+          answers: ["K ochraně před některými druhy záření", "K výrobě lehkých konstrukcí letadel", "K plnění potápěčských lahví", "K výrobě elektrických izolantů"],
+          correct: 0,
+          explanation: "Olovo má vysokou hustotu a dobře pohlcuje některé druhy záření, proto se používá jako stínicí materiál."
+        },
+        {
+          question: "Která vlastnost kyslíku je důležitá při hoření?",
+          answers: ["Podporuje hoření látek", "Brání každé oxidaci", "Je inertní vůči většině prvků", "Je hlavní složkou zemního plynu"],
+          correct: 0,
+          explanation: "Kyslík sám nehoří, ale podporuje hoření jiných látek."
+        },
+        {
+          question: "Proč je kyslík nezbytný pro člověka?",
+          answers: ["Je potřebný pro dýchání buněk", "Je hlavní stavební složkou kostí", "Zajišťuje trávení tuků v žaludku", "Nahrazuje v těle vodu"],
+          correct: 0,
+          explanation: "Kyslík je nezbytný pro buněčné dýchání, při kterém organismy získávají energii."
+        },
+        {
+          question: "Který prvek je nejvíce zastoupeným plynem ve vzduchu?",
+          answers: ["Dusík", "Kyslík", "Oxid uhličitý", "Argon"],
+          correct: 0,
+          explanation: "Největší objemovou část vzduchu tvoří dusík."
+        },
+        {
+          question: "Proč dusík za běžných podmínek nepodporuje hoření?",
+          answers: ["Je poměrně málo reaktivní", "Je silné oxidační činidlo", "Snadno se rozkládá na kyslík", "Má výrazné dezinfekční účinky"],
+          correct: 0,
+          explanation: "Dusík je za běžných podmínek málo reaktivní, a proto hoření nepodporuje."
+        },
+        {
+          question: "K čemu se dusík používá díky své malé reaktivitě?",
+          answers: ["K vytváření ochranné atmosféry", "K bělení textilu", "K dezinfekci pitné vody", "K výrobě skla z písku"],
+          correct: 0,
+          explanation: "Dusík se používá jako inertní atmosféra tam, kde je potřeba omezit reakce se vzdušným kyslíkem."
+        },
+        {
+          question: "K čemu se používá kapalný dusík?",
+          answers: ["Jako chladicí médium", "Jako palivo pro běžné spalovací motory", "Jako dezinfekce bazénové vody", "Jako základní složka kuchyňské soli"],
+          correct: 0,
+          explanation: "Kapalný dusík má velmi nízkou teplotu, proto se využívá k chlazení."
+        },
+        {
+          question: "Proč je vodík považován za velmi lehký plyn?",
+          answers: ["Má nejmenší hustotu ze všech plynů", "Obsahuje nejvíce protonů v jádře", "Je těžší než vzduch", "Je tvořen velkými částicemi kovu"],
+          correct: 0,
+          explanation: "Vodík je nejlehčí prvek a má velmi malou hustotu."
+        },
+        {
+          question: "Proč se vodík dříve používal k plnění balónů?",
+          answers: ["Je lehčí než vzduch", "Je méně reaktivní než helium", "Má dezinfekční účinky", "Je hlavní složkou vzduchu"],
+          correct: 0,
+          explanation: "Vodík je velmi lehký plyn, takže umožňoval balónům stoupat."
+        },
+        {
+          question: "Proč je použití vodíku v balónech nebezpečné?",
+          answers: ["Je hořlavý a se vzduchem může tvořit výbušnou směs", "Je silně jedovatý i v malém množství", "Má vysokou hustotu", "Při běžné teplotě samovolně tuhne"],
+          correct: 0,
+          explanation: "Vodík je hořlavý a směs vodíku se vzduchem může být výbušná."
+        },
+        {
+          question: "K čemu se vodík významně používá v chemickém průmyslu?",
+          answers: ["K výrobě amoniaku", "K výrobě kuchyňské soli", "K bělení papíru chlornany", "K plnění běžných žárovek"],
+          correct: 0,
+          explanation: "Vodík se používá například při syntéze amoniaku, který je důležitý pro výrobu hnojiv."
+        },
+        {
+          question: "Proč je helium vhodnější k plnění balónků než vodík?",
+          answers: ["Je lehké a nehořlavé", "Je těžší a reaktivnější", "Podporuje hoření", "Snadno reaguje s kyslíkem"],
+          correct: 0,
+          explanation: "Helium je lehčí než vzduch a zároveň nehořlavé, proto je bezpečnější než vodík."
+        },
+        {
+          question: "Která vlastnost je typická pro vzácné plyny?",
+          answers: ["Mají velmi malou reaktivitu", "Snadno vytvářejí soli s kovy", "Jsou za běžných podmínek pevné", "Silně podporují hoření"],
+          correct: 0,
+          explanation: "Vzácné plyny mají zaplněnou valenční vrstvu elektronů, proto jsou velmi málo reaktivní."
+        },
+        {
+          question: "Proč se vzácné plyny používají v ochranných atmosférách?",
+          answers: ["Brání nežádoucím reakcím se vzdušným kyslíkem", "Zvyšují rychlost koroze", "Snadno reagují s kovy", "Rozkládají vodu na vodík a kyslík"],
+          correct: 0,
+          explanation: "Díky malé reaktivitě chrání vzácné plyny látky před reakcemi s kyslíkem a dalšími složkami vzduchu."
+        },
+        {
+          question: "Kde se využívá schopnost některých vzácných plynů svítit ve výboji?",
+          answers: ["V reklamních a osvětlovacích trubicích", "Při výrobě hnojiv", "Při výrobě cementu", "Při pozinkování železa"],
+          correct: 0,
+          explanation: "Vzácné plyny mohou ve výbojových trubicích vydávat světlo, proto se využívají v osvětlovací technice."
+        },
+        {
+          question: "Proč se argon používá například při svařování?",
+          answers: ["Vytváří ochrannou inertní atmosféru", "Zvyšuje obsah kyslíku v okolí svaru", "Reaguje s kovem a vytváří rez", "Slouží jako silné oxidační činidlo"],
+          correct: 0,
+          explanation: "Argon chrání svařovaný kov před nežádoucí reakcí se vzdušným kyslíkem."
+        },
+        {
+          question: "Která vlastnost je typická pro halogeny?",
+          answers: ["Jsou reaktivní nekovy", "Jsou málo reaktivní vzácné plyny", "Jsou kujné a tažné kovy", "Jsou hlavní složkou slitin"],
+          correct: 0,
+          explanation: "Halogeny jsou reaktivní nekovy, které snadno tvoří sloučeniny."
+        },
+        {
+          question: "Proč se halogeny v přírodě obvykle nevyskytují jako volné prvky?",
+          answers: ["Jsou velmi reaktivní a tvoří sloučeniny", "Mají příliš nízkou hustotu", "Jsou všechny radioaktivní", "Nerozpouštějí se v žádných látkách"],
+          correct: 0,
+          explanation: "Halogeny snadno reagují s jinými prvky, a proto se v přírodě nacházejí hlavně ve sloučeninách."
+        },
+        {
+          question: "K čemu se používá chlor při úpravě vody?",
+          answers: ["K dezinfekci vody", "Ke zvýšení tvrdosti vody", "K odstranění všech minerálních látek", "K výrobě kyslíku z vody"],
+          correct: 0,
+          explanation: "Chlor ničí mikroorganismy, proto se používá k dezinfekci vody."
+        },
+        {
+          question: "Které použití chloru je běžné v průmyslu?",
+          answers: ["Výroba chlorovaných organických sloučenin a plastů", "Výroba hliníku z bauxitu", "Plnění potápěčských lahví", "Výroba dusíkatých hnojiv"],
+          correct: 0,
+          explanation: "Chlor se používá například při výrobě chlorovaných organických sloučenin, které mají význam při výrobě některých plastů."
+        },
+        {
+          question: "Jaká vlastnost chloru vyžaduje opatrnost při zacházení?",
+          answers: ["Je toxický a dráždivý plyn", "Je zcela netečný plyn", "Je biologicky nezbytný k dýchání", "Je pevný kov s vysokou hustotou"],
+          correct: 0,
+          explanation: "Chlor je toxický a dráždivý, proto se s ním musí zacházet opatrně."
+        },
+        {
+          question: "Proč je fluor považován za mimořádně reaktivní prvek?",
+          answers: ["Snadno reaguje s mnoha látkami", "Má vlastnosti vzácného plynu", "Je velmi málo elektronegativní", "V přírodě se běžně vyskytuje volný"],
+          correct: 0,
+          explanation: "Fluor patří mezi nejreaktivnější prvky a je velmi silným oxidačním činidlem."
+        },
+        {
+          question: "Proč je jód důležitý pro lidský organismus?",
+          answers: ["Je potřebný pro správnou činnost štítné žlázy", "Je hlavním zdrojem energie pro svaly", "Je základní složkou krevního barviva", "Je stavební složkou zubní skloviny místo vápníku"],
+          correct: 0,
+          explanation: "Jód je důležitý pro tvorbu hormonů štítné žlázy."
+        },
+        {
+          question: "Proč se do kuchyňské soli někdy přidávají sloučeniny jódu?",
+          answers: ["Pomáhají předcházet nedostatku jódu ve stravě", "Zvyšují obsah kyslíku v soli", "Způsobují lepší elektrickou vodivost soli", "Mění sůl na dezinfekční prostředek"],
+          correct: 0,
+          explanation: "Jodidovaná sůl pomáhá doplňovat jód, který je důležitý pro štítnou žlázu."
+        },
+        {
+          question: "Která vlastnost jódu se často ukazuje při školních pokusech?",
+          answers: ["Sublimace", "Koroze", "Krystalizace z kovové taveniny", "Elektrická vodivost jako u kovů"],
+          correct: 0,
+          explanation: "Jód může přecházet z pevného skupenství přímo na páry, což se nazývá sublimace."
+        },
+        {
+          question: "Která vlastnost je typická pro síru?",
+          answers: ["Je žlutá pevná nekovová látka", "Je bezbarvý vzácný plyn", "Je kapalný kov", "Je stříbrolesklý alkalický kov"],
+          correct: 0,
+          explanation: "Síra je známá jako žlutá pevná látka a patří mezi nekovy."
+        },
+        {
+          question: "K čemu se využívá velká část síry v průmyslu?",
+          answers: ["K výrobě kyseliny sírové", "K výrobě hliníkových slitin", "K plnění výbojek", "K výrobě kapalného dusíku"],
+          correct: 0,
+          explanation: "Síra je významnou surovinou pro výrobu kyseliny sírové."
+        },
+        {
+          question: "K čemu se používá síra při zpracování kaučuku?",
+          answers: ["K vulkanizaci", "K elektrolýze", "K pasivaci", "K frakční destilaci"],
+          correct: 0,
+          explanation: "Síra se používá při vulkanizaci kaučuku, čímž se zlepšují vlastnosti pryže."
+        },
+        {
+          question: "Jak poznáme sulfan podle zápachu?",
+          answers: ["Zapáchá po zkažených vejcích", "Má zápach po chloru", "Je typicky nasládlý", "Je zcela bez zápachu"],
+          correct: 0,
+          explanation: "Sulfan je jedovatý plyn se zápachem po zkažených vejcích."
+        },
+        {
+          question: "Proč je uhlík významný pro živé organismy?",
+          answers: ["Je základním prvkem organických látek", "Je hlavní složkou vzduchu", "Je nezbytný pouze pro tvorbu kovů", "Nahrazuje v organismech vodík"],
+          correct: 0,
+          explanation: "Uhlík tvoří základ organických látek, ze kterých jsou stavěna těla živých organismů."
+        },
+        {
+          question: "Která forma uhlíku je velmi tvrdá a používá se k broušení nebo řezání?",
+          answers: ["Diamant", "Grafit", "Aktivní uhlí", "Saze"],
+          correct: 0,
+          explanation: "Diamant je velmi tvrdá forma uhlíku a využívá se ve šperkařství i v průmyslu."
+        },
+        {
+          question: "Proč se grafit používá v tužkách?",
+          answers: ["Je měkký a zanechává stopu na papíře", "Je průhledný a velmi tvrdý", "Snadno se taví při pokojové teplotě", "Je kapalný a dobře se rozpíjí"],
+          correct: 0,
+          explanation: "Grafit je měkký a jeho vrstvy po sobě snadno kloužou, proto zanechává stopu."
+        },
+        {
+          question: "Proč grafit vede elektrický proud?",
+          answers: ["Obsahuje pohyblivé elektrony ve své struktuře", "Je složen z iontů kuchyňské soli", "Je kapalný kov", "Obsahuje velké množství vody"],
+          correct: 0,
+          explanation: "Ve struktuře grafitu jsou pohyblivé elektrony, které umožňují vedení elektrického proudu."
+        },
+        {
+          question: "K čemu se používá aktivní uhlí?",
+          answers: ["K zachycování některých nečistot a plynů", "K výrobě chlorované vody", "K výrobě kovových slitin", "K nahrazení kyslíku při dýchání"],
+          correct: 0,
+          explanation: "Aktivní uhlí má velký povrch a dokáže na sebe vázat některé látky, proto se používá ve filtrech."
+        },
+        {
+          question: "Proč se oxid uhličitý používá v některých hasicích přístrojích?",
+          answers: ["Omezuje přístup kyslíku k hořící látce", "Podporuje hoření paliva", "Rozkládá vodu na vodík a kyslík", "Zvyšuje teplotu plamene"],
+          correct: 0,
+          explanation: "Oxid uhličitý nepodporuje hoření a vytlačuje kyslík z okolí plamene."
+        },
+        {
+          question: "Co je suchý led?",
+          answers: ["Pevný oxid uhličitý", "Zmrzlá destilovaná voda", "Pevný kyslík", "Krystalický chlorid sodný"],
+          correct: 0,
+          explanation: "Suchý led je pevný oxid uhličitý, který za běžného tlaku sublimuje."
+        },
+        {
+          question: "Proč se křemík používá v elektronice?",
+          answers: ["Má polovodičové vlastnosti", "Je nejlepší kovový vodič", "Je běžně kapalný", "Je silně radioaktivní"],
+          correct: 0,
+          explanation: "Křemík je polovodič, proto je důležitý při výrobě čipů a elektronických součástek."
+        },
+        {
+          question: "Kde se křemík v přírodě nejčastěji vyskytuje?",
+          answers: ["Ve sloučeninách, například v křemeni a křemičitanech", "Jako volný plyn ve vzduchu", "Pouze v živých organismech", "Jako kapalný kov v rudách"],
+          correct: 0,
+          explanation: "Křemík se v přírodě vyskytuje hlavně v oxidu křemičitém a křemičitanech."
+        },
+        {
+          question: "Proč jsou sloučeniny křemíku důležité ve stavebnictví?",
+          answers: ["Jsou součástí skla, keramiky, cementu a hornin", "Používají se výhradně jako paliva", "Jsou hlavní složkou vzduchu", "Nahrazují železo při výrobě oceli"],
+          correct: 0,
+          explanation: "Sloučeniny křemíku jsou součástí mnoha přírodních i technických materiálů, například skla, keramiky a cementu."
+        },
+        {
+          question: "Která vlastnost alkalických kovů, například sodíku a draslíku, je pro ně typická?",
+          answers: ["Jsou velmi reaktivní", "Jsou zcela inertní", "Jsou za běžných podmínek plynné", "Patří mezi ušlechtilé kovy"],
+          correct: 0,
+          explanation: "Alkalické kovy jsou velmi reaktivní, zejména při styku s vodou."
+        },
+        {
+          question: "Proč se sodík nesmí vhazovat do vody?",
+          answers: ["Prudce reaguje s vodou a vzniká vodík", "Okamžitě se mění na kuchyňskou sůl", "Voda se působením sodíku stává inertní", "Sodík s vodou vůbec nereaguje"],
+          correct: 0,
+          explanation: "Sodík prudce reaguje s vodou. Při reakci vzniká vodík, který se může vznítit."
+        },
+        {
+          question: "Proč je draslík důležitý pro rostliny?",
+          answers: ["Je významnou živinou a součástí některých hnojiv", "Je hlavní složkou atmosféry", "Je zdrojem kyslíku při fotosyntéze", "Je základní složkou skla"],
+          correct: 0,
+          explanation: "Draslík patří mezi důležité živiny rostlin a dodává se například ve formě hnojiv."
+        },
+        {
+          question: "Proč je vápník důležitý pro lidské tělo?",
+          answers: ["Je důležitý pro stavbu kostí a zubů", "Je hlavní součástí krevního barviva", "Je zdrojem energie pro buňky", "Nahrazuje v těle železo"],
+          correct: 0,
+          explanation: "Vápník je důležitý pro pevnost kostí a zubů."
+        },
+        {
+          question: "Které ionty se významně podílejí na tvrdosti vody?",
+          answers: ["Ionty vápníku a hořčíku", "Ionty stříbra a zlata", "Ionty vodíku a kyslíku", "Ionty dusíku a chloru"],
+          correct: 0,
+          explanation: "Tvrdost vody způsobují hlavně rozpuštěné sloučeniny vápníku a hořčíku."
+        },
+        {
+          question: "Proč je hořčík důležitý pro lidský organismus?",
+          answers: ["Podílí se na činnosti svalů a nervové soustavy", "Je hlavní složkou zubní skloviny", "Nahrazuje kyslík v krvi", "Zajišťuje tvorbu kuchyňské soli"],
+          correct: 0,
+          explanation: "Hořčík je důležitý pro správnou činnost svalů, nervů a řadu dějů v těle."
+        },
+        {
+          question: "Proč je fosfor důležitý pro rostliny?",
+          answers: ["Podporuje růst a je součástí hnojiv", "Způsobuje korozi kovů", "Je hlavní složkou vzduchu", "Používá se místo vody při fotosyntéze"],
+          correct: 0,
+          explanation: "Sloučeniny fosforu jsou důležité pro výživu rostlin a používají se v hnojivech."
+        },
+        {
+          question: "Kde se fosfor běžně využívá?",
+          answers: ["Při výrobě zápalek", "K plnění balónků", "K výrobě ochranných atmosfér", "K výrobě elektrických vodičů"],
+          correct: 0,
+          explanation: "Fosfor se využívá například při výrobě zápalek."
+        },
+        {
+          question: "Proč se mangan přidává do některých ocelí?",
+          answers: ["Zvyšuje tvrdost a odolnost proti opotřebení", "Snižuje pevnost oceli", "Mění ocel na barevné sklo", "Způsobuje, že ocel snadno rezaví"],
+          correct: 0,
+          explanation: "Mangan se používá jako přísada do ocelí, protože může zlepšovat jejich tvrdost a odolnost."
+        },
+        {
+          question: "K čemu se používá manganistan draselný?",
+          answers: ["Jako oxidační činidlo a k dezinfekci", "Jako plnivo do balónků", "Jako kovový vodič", "Jako hlavní složka cementu"],
+          correct: 0,
+          explanation: "Manganistan draselný má silné oxidační účinky a používá se například k dezinfekci."
+        },
+        {
+          question: "Proč se cín používá k pocínování plechu?",
+          answers: ["Chrání povrch před korozí", "Zvyšuje hořlavost plechu", "Mění plech na slitinu bronzu", "Způsobuje rychlé rezavění"],
+          correct: 0,
+          explanation: "Cínová vrstva chrání plech před působením vzduchu a vody."
+        },
+        {
+          question: "Které použití cínu je běžné v technické praxi?",
+          answers: ["Pájky a ochranné povlaky", "Výroba kapalného dusíku", "Dezinfekce pitné vody", "Plnění výbojek"],
+          correct: 0,
+          explanation: "Cín se používá například v pájkách a k vytváření ochranných povlaků na kovových materiálech."
+        },
+        {
+          question: "Proč se některé kovy používají na výrobu nádobí?",
+          answers: ["Dobře vedou teplo a jsou mechanicky odolné", "Jsou špatnými vodiči tepla", "Snadno se rozpouštějí ve vodě", "Jsou za běžných podmínek plynné"],
+          correct: 0,
+          explanation: "Kovy se na nádobí hodí díky dobré tepelné vodivosti a pevnosti."
+        },
+        {
+          question: "Proč se některé kovy pokrývají ochrannou vrstvou?",
+          answers: ["Aby se zpomalila koroze", "Aby se zvýšila jejich rozpustnost ve vodě", "Aby se změnily na nekovy", "Aby ztratily pevnost"],
+          correct: 0,
+          explanation: "Ochranné vrstvy omezují přístup kyslíku, vody nebo jiných látek k povrchu kovu a tím zpomalují korozi."
+        },
+        {
+          question: "Která skupina prvků se používá v osvětlovací technice díky svícení ve výboji?",
+          answers: ["Vzácné plyny", "Alkalické kovy", "Kovy alkalických zemin", "Přechodné kovy"],
+          correct: 0,
+          explanation: "Vzácné plyny se využívají ve výbojkách a reklamních trubicích, protože při elektrickém výboji mohou svítit."
+        },
+        {
+          question: "Proč jsou kovy vhodné pro výrobu drátů a plechů?",
+          answers: ["Jsou kujné a tažné", "Jsou vždy křehké", "Mají velmi nízkou pevnost", "Vždy tvoří plynné molekuly"],
+          correct: 0,
+          explanation: "Kujnost a tažnost umožňují kovy zpracovávat na plechy, dráty a další tvary."
+        },
+        {
+          question: "Jaký je hlavní rozdíl mezi kovem a nekovem z hlediska elektrické vodivosti?",
+          answers: ["Kovy většinou vedou proud dobře, nekovy většinou špatně", "Nekovy vždy vedou proud lépe než kovy", "Kovy elektrický proud nikdy nevedou", "Vodivost s typem prvku nijak nesouvisí"],
+          correct: 0,
+          explanation: "Dobrá elektrická vodivost je typická vlastnost kovů, zatímco většina nekovů proud vede špatně."
+        }
+          ]
+    },
+    {
+      id: "tema-06",
+      title: "Oxidy",
+      subtitle: "Oxidy a jejich vlastnosti",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Mezi dvouprvkové sloučeniny patří:",
+    answers: ["Halogenidy, oxidy, sulfidy, hydroxidy", "Halogenidy, oxidy, sulfidy, bezkyslíkaté kyseliny", "Halogenidy, oxidy, sulfidy, kyslíkaté kyseliny", "Halogenidy, oxidy, sulfidy, soli kyslíkatých kyselin"],
+    correct: 1,
+    explanation: "Dvouprvkové sloučeniny jsou tvořeny dvěma prvky. Patří mezi ně například halogenidy, oxidy, sulfidy a bezkyslíkaté kyseliny."
+  },
+  {
+    question: "Co jsou oxidy?",
+    answers: ["Dvouprvkové sloučeniny kyslíku s jiným prvkem", "Sloučeniny vodíku a uhlíku", "Sloučeniny kovů s chlorem", "Sloučeniny obsahující vždy skupinu OH"],
+    correct: 0,
+    explanation: "Oxidy jsou dvouprvkové sloučeniny kyslíku s dalším prvkem."
+  },
+  {
+    question: "Jaké oxidační číslo má kyslík ve většině oxidů?",
+    answers: ["O⁻ᴵᴵ", "O⁺ᴵ", "O⁺ᴵᴵ", "O⁰"],
+    correct: 0,
+    explanation: "Kyslík má ve většině oxidů oxidační číslo −II."
+  },
+  {
+    question: "Jaký je správný název sloučeniny CO₂?",
+    answers: ["Oxid uhličitý", "Oxid uhelnatý", "Oxid uhlíkový", "Oxid uhličitanový"],
+    correct: 0,
+    explanation: "CO₂ se nazývá oxid uhličitý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny CO?",
+    answers: ["Oxid uhelnatý", "Oxid uhličitý", "Oxid uhličný", "Oxid uhlanový"],
+    correct: 0,
+    explanation: "CO se nazývá oxid uhelnatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny SiO₂?",
+    answers: ["Oxid křemičitý", "Oxid křemenný", "Oxid křemičitanový", "Oxid křemíkový"],
+    correct: 0,
+    explanation: "SiO₂ se nazývá oxid křemičitý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny Al₂O₃?",
+    answers: ["Oxid hlinitý", "Oxid hliníkový", "Oxid hlinitanový", "Oxid hlinatý"],
+    correct: 0,
+    explanation: "Al₂O₃ se nazývá oxid hlinitý."
+  },
+  {
+    question: "Jaký je správný vzorec oxidu vápenatého?",
+    answers: ["CaO", "Ca₂O", "CaO₂", "Ca₂O₃"],
+    correct: 0,
+    explanation: "Vápník má oxidační číslo Ca⁺ᴵᴵ a kyslík O⁻ᴵᴵ, proto je vzorec CaO."
+  },
+  {
+    question: "Jaký je správný vzorec oxidu sodného?",
+    answers: ["Na₂O", "NaO", "NaO₂", "Na₂O₃"],
+    correct: 0,
+    explanation: "Sodík má oxidační číslo Na⁺ᴵ a kyslík O⁻ᴵᴵ, proto je vzorec Na₂O."
+  },
+  {
+    question: "Jaký je správný vzorec oxidu železitého?",
+    answers: ["Fe₂O₃", "FeO", "Fe₃O₂", "FeO₃"],
+    correct: 0,
+    explanation: "V oxidu železitém má železo oxidační číslo Fe⁺ᴵᴵᴵ a kyslík O⁻ᴵᴵ, proto je vzorec Fe₂O₃."
+  },
+  {
+    question: "Jaký je správný vzorec oxidu železnatého?",
+    answers: ["FeO", "Fe₂O₃", "FeO₂", "Fe₃O₄"],
+    correct: 0,
+    explanation: "V oxidu železnatém má železo oxidační číslo Fe⁺ᴵᴵ, proto je vzorec FeO."
+  },
+  {
+    question: "Jaké oxidační číslo má uhlík ve sloučenině CO₂?",
+    answers: ["C⁺ᴵⱽ", "C⁺ᴵᴵ", "C⁻ᴵᴵ", "C⁰"],
+    correct: 0,
+    explanation: "V CO₂ má kyslík oxidační číslo O⁻ᴵᴵ. Dva atomy kyslíku mají celkem −IV, proto uhlík má C⁺ᴵⱽ."
+  },
+  {
+    question: "Jaké oxidační číslo má uhlík ve sloučenině CO?",
+    answers: ["C⁺ᴵᴵ", "C⁺ᴵⱽ", "C⁻ᴵᴵ", "C⁰"],
+    correct: 0,
+    explanation: "V CO má kyslík oxidační číslo O⁻ᴵᴵ, proto uhlík musí mít oxidační číslo C⁺ᴵᴵ."
+  },
+  {
+    question: "Jaké oxidační číslo má křemík ve sloučenině SiO₂?",
+    answers: ["Si⁺ᴵⱽ", "Si⁺ᴵᴵ", "Si⁻ᴵⱽ", "Si⁰"],
+    correct: 0,
+    explanation: "V SiO₂ mají dva atomy kyslíku celkem oxidační číslo −IV, proto má křemík Si⁺ᴵⱽ."
+  },
+  {
+    question: "Jaké oxidační číslo má hliník ve sloučenině Al₂O₃?",
+    answers: ["Al⁺ᴵᴵᴵ", "Al⁺ᴵᴵ", "Al⁺ᴵ", "Al⁻ᴵᴵᴵ"],
+    correct: 0,
+    explanation: "V Al₂O₃ má kyslík oxidační číslo O⁻ᴵᴵ a hliník Al⁺ᴵᴵᴵ."
+  },
+  {
+    question: "Která koncovka v názvosloví oxidů odpovídá oxidačnímu číslu +II?",
+    answers: ["-natý", "-itý", "-ičitý", "-ový"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +II odpovídá koncovka -natý."
+  },
+  {
+    question: "Která koncovka v názvosloví oxidů odpovídá oxidačnímu číslu +III?",
+    answers: ["-itý", "-natý", "-ičitý", "-ečný"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +III odpovídá koncovka -itý."
+  },
+  {
+    question: "Která koncovka v názvosloví oxidů odpovídá oxidačnímu číslu +IV?",
+    answers: ["-ičitý", "-natý", "-itý", "-ový"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +IV odpovídá koncovka -ičitý."
+  },
+  {
+    question: "Která koncovka v názvosloví oxidů odpovídá oxidačnímu číslu +VI?",
+    answers: ["-ový", "-ičný", "-itý", "-natý"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +VI odpovídá koncovka -ový."
+  },
+  {
+    question: "Který oxid je jedovatý, bezbarvý a bez zápachu?",
+    answers: ["CO", "CO₂", "SiO₂", "Al₂O₃"],
+    correct: 0,
+    explanation: "Oxid uhelnatý CO je velmi jedovatý plyn, který nemá barvu ani zápach."
+  },
+  {
+    question: "Jak oxid uhelnatý CO vzniká?",
+    answers: ["Nedokonalým spalováním látek obsahujících uhlík", "Dokonalým spalováním vodíku", "Rozpouštěním soli ve vodě", "Krystalizací křemene"],
+    correct: 0,
+    explanation: "Oxid uhelnatý vzniká při nedokonalém spalování uhlíkatých látek, například při nedostatku kyslíku."
+  },
+  {
+    question: "Proč je oxid uhelnatý CO nebezpečný pro člověka?",
+    answers: ["Váže se na krevní barvivo a brání přenosu kyslíku", "Je silně kyselý a rozpouští kosti", "Je viditelný a dráždí oči", "Okamžitě mění vodu na led"],
+    correct: 0,
+    explanation: "CO se váže na hemoglobin mnohem pevněji než kyslík, a tím omezuje přenos kyslíku v těle."
+  },
+  {
+    question: "Který příznak může patřit k otravě oxidem uhelnatým?",
+    answers: ["Bolest hlavy a nevolnost", "Růst vlasů", "Zmodrání skla", "Zlepšení dýchání"],
+    correct: 0,
+    explanation: "Otrava CO se může projevit bolestí hlavy, nevolností, únavou, zmateností až bezvědomím."
+  },
+  {
+    question: "Co je správné udělat při podezření na otravu oxidem uhelnatým?",
+    answers: ["Odejít na čerstvý vzduch, větrat a přivolat pomoc", "Zůstat v místnosti a čekat", "Zapálit svíčku", "Přikrýt se dekou a spát"],
+    correct: 0,
+    explanation: "Při podezření na otravu CO je nutné dostat osoby na čerstvý vzduch, větrat a zavolat pomoc."
+  },
+  {
+    question: "Které zařízení pomáhá odhalit nebezpečný oxid uhelnatý v domácnosti?",
+    answers: ["Detektor oxidu uhelnatého", "Teploměr", "Vlhkoměr", "Kuchyňská váha"],
+    correct: 0,
+    explanation: "CO není vidět ani cítit, proto se v domácnostech používají detektory oxidu uhelnatého."
+  },
+  {
+    question: "Který oxid je v pevném skupenství známý jako suchý led?",
+    answers: ["CO₂", "CO", "SiO₂", "SO₂"],
+    correct: 0,
+    explanation: "Suchý led je pevný oxid uhličitý CO₂."
+  },
+  {
+    question: "Která informace o CO₂ je správná?",
+    answers: ["Je těžší než vzduch a nepodporuje hoření", "Je prudce hořlavý", "Je kovově lesklá pevná látka", "Je vždy jedovatější než CO"],
+    correct: 0,
+    explanation: "Oxid uhličitý je těžší než vzduch a nepodporuje hoření."
+  },
+  {
+    question: "Kde může vznikat oxid uhličitý CO₂?",
+    answers: ["Při hoření, dýchání a kvašení", "Pouze při tání ledu", "Pouze při krystalizaci soli", "Pouze při výrobě železa"],
+    correct: 0,
+    explanation: "CO₂ vzniká například při hoření, dýchání organismů a kvašení."
+  },
+  {
+    question: "Která informace neplatí pro CO₂?",
+    answers: ["Jeho koncentrace v atmosféře je asi 5 %", "Je běžnou součástí atmosféry", "V pevném stavu se nazývá suchý led", "Vzniká například při kvašení"],
+    correct: 0,
+    explanation: "Koncentrace CO₂ v atmosféře není asi 5 %, ale mnohem nižší."
+  },
+  {
+    question: "Jaký význam má oxid uhličitý CO₂ pro rostliny?",
+    answers: ["Rostliny ho využívají při fotosyntéze", "Rostliny ho používají jako pevnou stavební oporu", "Zcela zastavuje růst rostlin", "Mění listy na sklo"],
+    correct: 0,
+    explanation: "Rostliny využívají CO₂ při fotosyntéze k tvorbě organických látek."
+  },
+  {
+    question: "Proč je zvýšené množství CO₂ v atmosféře problém?",
+    answers: ["Přispívá ke skleníkovému efektu", "Okamžitě ničí všechen kyslík", "Mění vzduch na pevnou látku", "Způsobuje vznik zlata"],
+    correct: 0,
+    explanation: "Oxid uhličitý je skleníkový plyn a jeho zvýšené množství přispívá ke změně klimatu."
+  },
+  {
+    question: "Který oxid se používá při výrobě skla jako důležitá surovina?",
+    answers: ["SiO₂", "CO", "NO₂", "SO₂"],
+    correct: 0,
+    explanation: "Oxid křemičitý SiO₂ je hlavní složkou křemičitého písku používaného při výrobě skla."
+  },
+  {
+    question: "Jak se nazývá přírodní krystalická forma oxidu křemičitého SiO₂?",
+    answers: ["Křemen", "Halit", "Sádrovec", "Vápenec"],
+    correct: 0,
+    explanation: "Oxid křemičitý se v přírodě vyskytuje například jako minerál křemen."
+  },
+  {
+    question: "Která z uvedených možností je odrůdou křemene?",
+    answers: ["Ametyst", "Halit", "Magnetit", "Grafit"],
+    correct: 0,
+    explanation: "Ametyst je fialová odrůda křemene."
+  },
+  {
+    question: "Která odrůda křemene je čirá a bezbarvá?",
+    answers: ["Křišťál", "Ametyst", "Růženín", "Záhněda"],
+    correct: 0,
+    explanation: "Křišťál je čirá bezbarvá odrůda křemene."
+  },
+  {
+    question: "Která odrůda křemene má fialovou barvu?",
+    answers: ["Ametyst", "Křišťál", "Růženín", "Citrín"],
+    correct: 0,
+    explanation: "Ametyst je fialová odrůda křemene."
+  },
+  {
+    question: "Která odrůda křemene má růžovou barvu?",
+    answers: ["Růženín", "Ametyst", "Křišťál", "Záhněda"],
+    correct: 0,
+    explanation: "Růženín je růžově zbarvená odrůda křemene."
+  },
+  {
+    question: "Která odrůda křemene má žluté až žlutohnědé zbarvení?",
+    answers: ["Citrín", "Ametyst", "Křišťál", "Růženín"],
+    correct: 0,
+    explanation: "Citrín je žlutá až žlutohnědá odrůda křemene."
+  },
+  {
+    question: "Která informace neplatí pro SiO₂?",
+    answers: ["Je to bezbarvý plyn bez zápachu", "Je odolný vůči mnoha chemikáliím", "Vyskytuje se jako křemen", "Používá se při výrobě skla"],
+    correct: 0,
+    explanation: "SiO₂ není plyn, ale pevná látka."
+  },
+  {
+    question: "Která kyselina dokáže narušovat oxid křemičitý SiO₂?",
+    answers: ["Kyselina fluorovodíková", "Kyselina octová", "Kyselina uhličitá", "Kyselina citronová"],
+    correct: 0,
+    explanation: "Oxid křemičitý je odolný vůči mnoha chemikáliím, ale reaguje s kyselinou fluorovodíkovou."
+  },
+  {
+    question: "Co je křemičitý písek?",
+    answers: ["Písek s vysokým obsahem SiO₂", "Písek tvořený hlavně NaCl", "Písek z čistého železa", "Písek obsahující pouze vodu"],
+    correct: 0,
+    explanation: "Křemičitý písek obsahuje velké množství oxidu křemičitého SiO₂."
+  },
+  {
+    question: "Které suroviny se běžně používají při výrobě skla?",
+    answers: ["Křemičitý písek, soda a vápenec", "Cukr, sůl a mouka", "Uhlí, síra a železo", "Ocet, voda a papír"],
+    correct: 0,
+    explanation: "K výrobě běžného skla se používá křemičitý písek, soda a vápenec."
+  },
+  {
+    question: "Která vlastnost je typická pro oxid hlinitý Al₂O₃?",
+    answers: ["Je velmi tvrdý a odolný", "Je jedovatý plyn bez zápachu", "Je hlavní složkou vzduchu", "Je kapalina s vůní octa"],
+    correct: 0,
+    explanation: "Oxid hlinitý je tvrdá a odolná pevná látka."
+  },
+  {
+    question: "Jak se nazývá minerál tvořený hlavně oxidem hlinitým Al₂O₃?",
+    answers: ["Korund", "Halit", "Kalcit", "Síra"],
+    correct: 0,
+    explanation: "Korund je minerál tvořený převážně oxidem hlinitým Al₂O₃."
+  },
+  {
+    question: "Který drahokam je barevnou odrůdou korundu?",
+    answers: ["Rubín", "Křišťál", "Halit", "Grafit"],
+    correct: 0,
+    explanation: "Rubín je červená odrůda korundu, tedy oxidu hlinitého."
+  },
+  {
+    question: "Který drahokam může být modrou odrůdou korundu?",
+    answers: ["Safír", "Ametyst", "Růženín", "Citrín"],
+    correct: 0,
+    explanation: "Safír je drahokamová odrůda korundu, často modře zbarvená."
+  },
+  {
+    question: "K čemu se využívá tvrdost oxidu hlinitého Al₂O₃?",
+    answers: ["K výrobě brusiv", "K výrobě limonád", "K plnění hasicích přístrojů", "K zimnímu solení silnic"],
+    correct: 0,
+    explanation: "Díky tvrdosti se oxid hlinitý používá například jako brusivo."
+  },
+  {
+    question: "Jaký je správný vzorec oxidu siřičitého?",
+    answers: ["SO₂", "SO₃", "S₂O", "H₂SO₄"],
+    correct: 0,
+    explanation: "Oxid siřičitý má vzorec SO₂."
+  },
+  {
+    question: "Jaký je správný vzorec oxidu sírového?",
+    answers: ["SO₃", "SO₂", "S₂O₃", "H₂SO₃"],
+    correct: 0,
+    explanation: "Oxid sírový má vzorec SO₃."
+  },
+  {
+    question: "Pro SO₂ a NO₂ neplatí:",
+    answers: ["Jsou to bezbarvé pevné látky", "Mohou poškozovat životní prostředí", "Jsou jedovaté", "Mohou se podílet na vzniku kyselých dešťů"],
+    correct: 0,
+    explanation: "SO₂ a NO₂ nejsou bezbarvé pevné látky. Jsou to plynné látky škodlivé pro zdraví i životní prostředí."
+  },
+  {
+    question: "Které oxidy se mohou podílet na vzniku kyselých dešťů?",
+    answers: ["SO₂ a NO₂", "SiO₂ a Al₂O₃", "Na₂O a CaO", "CO a Al₂O₃"],
+    correct: 0,
+    explanation: "Oxidy síry a dusíku mohou v atmosféře reagovat s vodou a podílet se na vzniku kyselých dešťů."
+  },
+  {
+    question: "Jaký je správný název sloučeniny NO₂?",
+    answers: ["Oxid dusičitý", "Oxid dusný", "Oxid dusnatý", "Oxid dusičný"],
+    correct: 0,
+    explanation: "NO₂ se nazývá oxid dusičitý, protože dusík má oxidační číslo N⁺ᴵⱽ."
+  },
+  {
+    question: "Jaké oxidační číslo má dusík ve sloučenině NO₂?",
+    answers: ["N⁺ᴵⱽ", "N⁺ᴵᴵ", "N⁺ᴵ", "N⁻ᴵᴵᴵ"],
+    correct: 0,
+    explanation: "V NO₂ mají dva atomy kyslíku celkem oxidační číslo −IV, proto má dusík N⁺ᴵⱽ."
+  },
+  {
+    question: "Jaký je správný název sloučeniny SO₂?",
+    answers: ["Oxid siřičitý", "Oxid sírový", "Oxid sirný", "Oxid sirovodíkový"],
+    correct: 0,
+    explanation: "SO₂ je oxid siřičitý, protože síra má oxidační číslo S⁺ᴵⱽ."
+  },
+  {
+    question: "Jaké oxidační číslo má síra ve sloučenině SO₃?",
+    answers: ["S⁺ⱽᴵ", "S⁺ᴵⱽ", "S⁺ᴵᴵ", "S⁻ᴵᴵ"],
+    correct: 0,
+    explanation: "V SO₃ mají tři atomy kyslíku celkem oxidační číslo −VI, proto má síra S⁺ⱽᴵ."
+  },
+  {
+    question: "Který oxid se používá jako pálené vápno?",
+    answers: ["CaO", "CO₂", "SiO₂", "Al₂O₃"],
+    correct: 0,
+    explanation: "Oxid vápenatý CaO se nazývá pálené vápno."
+  },
+  {
+    question: "Co vzniká reakcí oxidu vápenatého CaO s vodou?",
+    answers: ["Hydroxid vápenatý Ca(OH)₂", "Oxid uhličitý CO₂", "Křemen SiO₂", "Chlorid sodný NaCl"],
+    correct: 0,
+    explanation: "Reakcí CaO s vodou vzniká hydroxid vápenatý Ca(OH)₂, tedy hašené vápno."
+  },
+  {
+    question: "Který oxid je zásadotvorný?",
+    answers: ["CaO", "CO₂", "SO₂", "NO₂"],
+    correct: 0,
+    explanation: "Oxid vápenatý CaO je zásadotvorný oxid, protože s vodou tvoří hydroxid vápenatý."
+  },
+  {
+    question: "Který oxid je kyselinotvorný?",
+    answers: ["CO₂", "CaO", "Na₂O", "MgO"],
+    correct: 0,
+    explanation: "Oxid uhličitý CO₂ je kyselinotvorný oxid, protože s vodou tvoří kyselinu uhličitou H₂CO₃."
+  },
+  {
+    question: "Jaká kyselina vzniká reakcí CO₂ s vodou?",
+    answers: ["Kyselina uhličitá H₂CO₃", "Kyselina sírová H₂SO₄", "Kyselina chlorovodíková HCl", "Kyselina dusičná HNO₃"],
+    correct: 0,
+    explanation: "Oxid uhličitý reaguje s vodou za vzniku kyseliny uhličité H₂CO₃."
+  },
+  {
+    question: "Která železná ruda má vzorec Fe₂O₃?",
+    answers: ["Hematit", "Magnetit", "Limonit", "Bauxit"],
+    correct: 0,
+    explanation: "Hematit, česky krevel, je významná železná ruda se vzorcem Fe₂O₃."
+  },
+  {
+    question: "Která železná ruda má vzorec Fe₃O₄?",
+    answers: ["Magnetit", "Hematit", "Limonit", "Korund"],
+    correct: 0,
+    explanation: "Magnetit, česky magnetovec, je železná ruda se vzorcem Fe₃O₄."
+  },
+  {
+    question: "Která železná ruda se označuje přibližným vzorcem Fe₂O₃ · nH₂O?",
+    answers: ["Limonit", "Magnetit", "Hematit", "Křemen"],
+    correct: 0,
+    explanation: "Limonit, česky hnědel, je hydratovaný oxid železitý a často se zapisuje jako Fe₂O₃ · nH₂O."
+  },
+  {
+    question: "Jak se česky nazývá hematit?",
+    answers: ["Krevel", "Magnetovec", "Hnědel", "Kazivec"],
+    correct: 0,
+    explanation: "Hematit se česky nazývá krevel."
+  },
+  {
+    question: "Jak se česky nazývá magnetit?",
+    answers: ["Magnetovec", "Krevel", "Hnědel", "Sádrovec"],
+    correct: 0,
+    explanation: "Magnetit se česky nazývá magnetovec."
+  },
+  {
+    question: "Jak se česky nazývá limonit?",
+    answers: ["Hnědel", "Krevel", "Magnetovec", "Křišťál"],
+    correct: 0,
+    explanation: "Limonit se česky nazývá hnědel."
+  },
+  {
+    question: "Která z uvedených rud je magnetická?",
+    answers: ["Magnetit Fe₃O₄", "Hematit Fe₂O₃", "Limonit Fe₂O₃ · nH₂O", "Bauxit"],
+    correct: 0,
+    explanation: "Magnetit Fe₃O₄ je známý svými magnetickými vlastnostmi."
+  },
+  {
+    question: "Která dvojice správně spojuje železnou rudu a její vzorec?",
+    answers: ["Hematit — Fe₂O₃", "Magnetit — Fe₂O₃ · nH₂O", "Limonit — Fe₃O₄", "Křemen — Fe₂O₃"],
+    correct: 0,
+    explanation: "Hematit má vzorec Fe₂O₃."
+  },
+  {
+    question: "Která dvojice správně spojuje železnou rudu a její český název?",
+    answers: ["Magnetit — magnetovec", "Hematit — hnědel", "Limonit — krevel", "Bauxit — křišťál"],
+    correct: 0,
+    explanation: "Magnetit se česky nazývá magnetovec."
+  },
+  {
+    question: "Která z uvedených látek je železná ruda?",
+    answers: ["Hematit Fe₂O₃", "Oxid uhličitý CO₂", "Křemen SiO₂", "Chlorid sodný NaCl"],
+    correct: 0,
+    explanation: "Hematit Fe₂O₃ je významná železná ruda."
+  }
+    ]
+    },
+    {
+      id: "tema-07",
+      title: "Sulfidy",
+      subtitle: "Sulfidy a jejich vlastnosti",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Co jsou sulfidy?",
+    answers: ["Dvouprvkové sloučeniny síry s jiným prvkem", "Sloučeniny kyslíku s jiným prvkem", "Sloučeniny obsahující skupinu OH", "Soli kyseliny uhličité"],
+    correct: 0,
+    explanation: "Sulfidy jsou dvouprvkové sloučeniny síry s dalším prvkem."
+  },
+  {
+    question: "Jaké oxidační číslo má síra ve většině sulfidů?",
+    answers: ["S⁻ᴵᴵ", "S⁺ᴵᴵ", "S⁺ᴵⱽ", "S⁰"],
+    correct: 0,
+    explanation: "Síra má ve většině sulfidů oxidační číslo −II."
+  },
+  {
+    question: "Mezi dvouprvkové sloučeniny patří:",
+    answers: ["Oxidy, sulfidy, halogenidy a bezkyslíkaté kyseliny", "Hydroxidy, kyslíkaté kyseliny a soli", "Sacharidy, bílkoviny a tuky", "Pouze látky obsahující kyslík"],
+    correct: 0,
+    explanation: "Dvouprvkové sloučeniny jsou tvořeny dvěma prvky. Patří mezi ně například oxidy, sulfidy, halogenidy a bezkyslíkaté kyseliny."
+  },
+  {
+    question: "Který vzorec patří sulfidu železnatému?",
+    answers: ["FeS", "Fe₂S₃", "FeSO₄", "FeS₂"],
+    correct: 0,
+    explanation: "V sulfidu železnatém má železo oxidační číslo Fe⁺ᴵᴵ a síra S⁻ᴵᴵ, proto je vzorec FeS."
+  },
+  {
+    question: "Který vzorec patří sulfidu železitému?",
+    answers: ["Fe₂S₃", "FeS", "FeS₂", "FeSO₃"],
+    correct: 0,
+    explanation: "V sulfidu železitém má železo oxidační číslo Fe⁺ᴵᴵᴵ a síra S⁻ᴵᴵ, proto je vzorec Fe₂S₃."
+  },
+  {
+    question: "Který vzorec patří sulfidu sodnému?",
+    answers: ["Na₂S", "NaS", "NaS₂", "Na₂SO₄"],
+    correct: 0,
+    explanation: "Sodík má oxidační číslo Na⁺ᴵ a síra S⁻ᴵᴵ, proto je vzorec sulfidu sodného Na₂S."
+  },
+  {
+    question: "Který vzorec patří sulfidu vápenatému?",
+    answers: ["CaS", "Ca₂S", "CaS₂", "CaSO₄"],
+    correct: 0,
+    explanation: "Vápník má oxidační číslo Ca⁺ᴵᴵ a síra S⁻ᴵᴵ, proto vzniká vzorec CaS."
+  },
+  {
+    question: "Který vzorec patří sulfidu hlinitému?",
+    answers: ["Al₂S₃", "AlS", "Al₃S₂", "AlSO₄"],
+    correct: 0,
+    explanation: "Hliník má oxidační číslo Al⁺ᴵᴵᴵ a síra S⁻ᴵᴵ, proto je vzorec Al₂S₃."
+  },
+  {
+    question: "Jaký je správný název sloučeniny PbS?",
+    answers: ["Sulfid olovnatý", "Sulfid olovitý", "Síran olovnatý", "Oxid olovnatý"],
+    correct: 0,
+    explanation: "V PbS má olovo oxidační číslo Pb⁺ᴵᴵ, proto se sloučenina nazývá sulfid olovnatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny ZnS?",
+    answers: ["Sulfid zinečnatý", "Sulfid zinitý", "Síran zinečnatý", "Oxid zinečnatý"],
+    correct: 0,
+    explanation: "V ZnS má zinek oxidační číslo Zn⁺ᴵᴵ, proto se sloučenina nazývá sulfid zinečnatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny HgS?",
+    answers: ["Sulfid rtuťnatý", "Sulfid rtuťný", "Síran rtuťnatý", "Oxid rtuťnatý"],
+    correct: 0,
+    explanation: "V HgS má rtuť oxidační číslo Hg⁺ᴵᴵ, proto se sloučenina nazývá sulfid rtuťnatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny CuS?",
+    answers: ["Sulfid měďnatý", "Sulfid měďný", "Síran měďnatý", "Oxid měďnatý"],
+    correct: 0,
+    explanation: "V CuS má měď oxidační číslo Cu⁺ᴵᴵ, proto je název sulfid měďnatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny Cu₂S?",
+    answers: ["Sulfid měďný", "Sulfid měďnatý", "Sulfid měditý", "Síran měďný"],
+    correct: 0,
+    explanation: "V Cu₂S má měď oxidační číslo Cu⁺ᴵ, proto je název sulfid měďný."
+  },
+  {
+    question: "Jaké oxidační číslo má olovo ve sloučenině PbS?",
+    answers: ["Pb⁺ᴵᴵ", "Pb⁺ᴵⱽ", "Pb⁺ᴵ", "Pb⁰"],
+    correct: 0,
+    explanation: "Síra má v sulfidech oxidační číslo S⁻ᴵᴵ, proto má olovo v PbS oxidační číslo Pb⁺ᴵᴵ."
+  },
+  {
+    question: "Jaké oxidační číslo má zinek ve sloučenině ZnS?",
+    answers: ["Zn⁺ᴵᴵ", "Zn⁺ᴵ", "Zn⁺ᴵᴵᴵ", "Zn⁰"],
+    correct: 0,
+    explanation: "Síra má oxidační číslo S⁻ᴵᴵ, proto má zinek v ZnS oxidační číslo Zn⁺ᴵᴵ."
+  },
+  {
+    question: "Jaké oxidační číslo má rtuť ve sloučenině HgS?",
+    answers: ["Hg⁺ᴵᴵ", "Hg⁺ᴵ", "Hg⁺ᴵᴵᴵ", "Hg⁰"],
+    correct: 0,
+    explanation: "Síra má oxidační číslo S⁻ᴵᴵ, proto má rtuť v HgS oxidační číslo Hg⁺ᴵᴵ."
+  },
+  {
+    question: "Který minerál má vzorec FeS₂?",
+    answers: ["Pyrit", "Galenit", "Sfalerit", "Cinabarit"],
+    correct: 0,
+    explanation: "Pyrit má vzorec FeS₂ a je známý také jako kočičí zlato."
+  },
+  {
+    question: "Jak se přezdívá pyritu FeS₂?",
+    answers: ["Kočičí zlato", "Suchý led", "Hašené vápno", "Křišťál"],
+    correct: 0,
+    explanation: "Pyrit má kovový lesk a zlatavou barvu, proto se mu říká kočičí zlato."
+  },
+  {
+    question: "Který minerál má vzorec PbS?",
+    answers: ["Galenit", "Pyrit", "Sfalerit", "Korund"],
+    correct: 0,
+    explanation: "Galenit je sulfid olovnatý PbS a je významnou rudou olova."
+  },
+  {
+    question: "Který minerál je významnou rudou olova?",
+    answers: ["Galenit PbS", "Sfalerit ZnS", "Pyrit FeS₂", "Křemen SiO₂"],
+    correct: 0,
+    explanation: "Galenit PbS je nejvýznamnější rudou olova."
+  },
+  {
+    question: "Který minerál má vzorec ZnS?",
+    answers: ["Sfalerit", "Galenit", "Cinabarit", "Magnetit"],
+    correct: 0,
+    explanation: "Sfalerit má vzorec ZnS a je významnou rudou zinku."
+  },
+  {
+    question: "Který minerál je významnou rudou zinku?",
+    answers: ["Sfalerit ZnS", "Galenit PbS", "Cinabarit HgS", "Hematit Fe₂O₃"],
+    correct: 0,
+    explanation: "Sfalerit ZnS je významnou rudou zinku."
+  },
+  {
+    question: "Který minerál má vzorec HgS?",
+    answers: ["Cinabarit", "Sfalerit", "Pyrit", "Halit"],
+    correct: 0,
+    explanation: "Cinabarit neboli rumělka má vzorec HgS a je rudou rtuti."
+  },
+  {
+    question: "Jak se jinak nazývá cinabarit HgS?",
+    answers: ["Rumělka", "Krevel", "Magnetovec", "Křišťál"],
+    correct: 0,
+    explanation: "Cinabarit HgS se také nazývá rumělka."
+  },
+  {
+    question: "Který minerál je významnou rudou rtuti?",
+    answers: ["Cinabarit HgS", "Galenit PbS", "Sfalerit ZnS", "Pyrit FeS₂"],
+    correct: 0,
+    explanation: "Cinabarit HgS je významnou rudou rtuti."
+  },
+  {
+    question: "Která dvojice správně spojuje minerál a jeho vzorec?",
+    answers: ["Galenit — PbS", "Sfalerit — PbS", "Cinabarit — ZnS", "Pyrit — HgS"],
+    correct: 0,
+    explanation: "Galenit je sulfid olovnatý a má vzorec PbS."
+  },
+  {
+    question: "Která dvojice správně spojuje minerál a jeho vzorec?",
+    answers: ["Sfalerit — ZnS", "Galenit — ZnS", "Pyrit — PbS", "Cinabarit — FeS₂"],
+    correct: 0,
+    explanation: "Sfalerit je sulfid zinečnatý a má vzorec ZnS."
+  },
+  {
+    question: "Která dvojice správně spojuje minerál a jeho využití?",
+    answers: ["Galenit — ruda olova", "Sfalerit — ruda rtuti", "Cinabarit — ruda zinku", "Pyrit — ruda sodíku"],
+    correct: 0,
+    explanation: "Galenit PbS je důležitou rudou olova."
+  },
+  {
+    question: "Která dvojice správně spojuje minerál a jeho využití?",
+    answers: ["Sfalerit — ruda zinku", "Galenit — ruda hliníku", "Cinabarit — ruda olova", "Pyrit — ruda vápníku"],
+    correct: 0,
+    explanation: "Sfalerit ZnS je důležitou rudou zinku."
+  },
+  {
+    question: "Který z uvedených minerálů obsahuje rtuť?",
+    answers: ["Cinabarit HgS", "Galenit PbS", "Sfalerit ZnS", "Pyrit FeS₂"],
+    correct: 0,
+    explanation: "Cinabarit HgS obsahuje rtuť."
+  },
+  {
+    question: "Který z uvedených minerálů obsahuje olovo?",
+    answers: ["Galenit PbS", "Sfalerit ZnS", "Cinabarit HgS", "Pyrit FeS₂"],
+    correct: 0,
+    explanation: "Galenit PbS obsahuje olovo."
+  },
+  {
+    question: "Který z uvedených minerálů obsahuje zinek?",
+    answers: ["Sfalerit ZnS", "Galenit PbS", "Cinabarit HgS", "Pyrit FeS₂"],
+    correct: 0,
+    explanation: "Sfalerit ZnS obsahuje zinek."
+  },
+  {
+    question: "Který z uvedených minerálů obsahuje železo?",
+    answers: ["Pyrit FeS₂", "Galenit PbS", "Sfalerit ZnS", "Cinabarit HgS"],
+    correct: 0,
+    explanation: "Pyrit FeS₂ obsahuje železo a síru."
+  },
+  {
+    question: "Který sulfid má zlatavou barvu a kovový lesk?",
+    answers: ["Pyrit", "Křemen", "Halit", "Sádrovec"],
+    correct: 0,
+    explanation: "Pyrit je známý svou zlatavou barvou a kovovým leskem."
+  },
+  {
+    question: "Který minerál se mohl dříve používat jako červený pigment?",
+    answers: ["Cinabarit neboli rumělka", "Křišťál", "Halit", "Kalcit"],
+    correct: 0,
+    explanation: "Cinabarit HgS neboli rumělka má výraznou červenou barvu a používal se jako pigment."
+  },
+  {
+    question: "Proč je potřeba být opatrný u minerálů obsahujících rtuť nebo olovo?",
+    answers: ["Rtuť i olovo jsou toxické prvky", "Jsou vždy radioaktivní", "Okamžitě hoří na vzduchu", "Mění se na kuchyňskou sůl"],
+    correct: 0,
+    explanation: "Rtuť a olovo patří mezi toxické prvky a mohou ohrožovat zdraví i životní prostředí."
+  },
+  {
+    question: "Která z uvedených látek není sulfid?",
+    answers: ["SiO₂", "PbS", "ZnS", "HgS"],
+    correct: 0,
+    explanation: "SiO₂ je oxid křemičitý, zatímco PbS, ZnS a HgS jsou sulfidy."
+  },
+  {
+    question: "Která z uvedených látek je sulfid?",
+    answers: ["PbS", "CO₂", "NaCl", "Ca(OH)₂"],
+    correct: 0,
+    explanation: "PbS je sulfid olovnatý, tedy sulfid."
+  },
+  {
+    question: "Jaký je název sloučeniny Na₂S?",
+    answers: ["Sulfid sodný", "Síran sodný", "Siřičitan sodný", "Oxid sodný"],
+    correct: 0,
+    explanation: "Na₂S je sulfid sodný."
+  },
+  {
+    question: "Jaký je název sloučeniny K₂S?",
+    answers: ["Sulfid draselný", "Síran draselný", "Oxid draselný", "Chlorid draselný"],
+    correct: 0,
+    explanation: "Draslík má oxidační číslo K⁺ᴵ a síra S⁻ᴵᴵ, proto je vzorec K₂S sulfid draselný."
+  },
+  {
+    question: "Jaký je vzorec sulfidu hořečnatého?",
+    answers: ["MgS", "Mg₂S", "MgS₂", "MgSO₄"],
+    correct: 0,
+    explanation: "Hořčík má oxidační číslo Mg⁺ᴵᴵ a síra S⁻ᴵᴵ, proto je vzorec MgS."
+  },
+  {
+    question: "Jaký je vzorec sulfidu stříbrného?",
+    answers: ["Ag₂S", "AgS", "AgS₂", "Ag₂SO₄"],
+    correct: 0,
+    explanation: "Stříbro má obvykle oxidační číslo Ag⁺ᴵ a síra S⁻ᴵᴵ, proto je vzorec sulfidu stříbrného Ag₂S."
+  },
+  {
+    question: "Jaký je správný název sloučeniny Ag₂S?",
+    answers: ["Sulfid stříbrný", "Sulfid stříbřitý", "Síran stříbrný", "Oxid stříbrný"],
+    correct: 0,
+    explanation: "Ag₂S se nazývá sulfid stříbrný."
+  },
+  {
+    question: "Proč stříbrné předměty časem tmavnou?",
+    answers: ["Na povrchu vzniká sulfid stříbrný Ag₂S", "Mění se na kuchyňskou sůl", "Vzniká oxid uhličitý", "Voda se mění na kov"],
+    correct: 0,
+    explanation: "Stříbro může reagovat se sirnými látkami ve vzduchu a na povrchu vzniká tmavý sulfid stříbrný Ag₂S."
+  },
+  {
+    question: "Která koncovka názvu odpovídá oxidačnímu číslu +I?",
+    answers: ["-ný", "-natý", "-itý", "-ičitý"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +I odpovídá koncovka -ný."
+  },
+  {
+    question: "Která koncovka názvu odpovídá oxidačnímu číslu +II?",
+    answers: ["-natý", "-ný", "-itý", "-ičitý"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +II odpovídá koncovka -natý."
+  },
+  {
+    question: "Která koncovka názvu odpovídá oxidačnímu číslu +III?",
+    answers: ["-itý", "-natý", "-ičitý", "-ečný"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +III odpovídá koncovka -itý."
+  },
+  {
+    question: "Která dvojice správně odpovídá oxidačnímu číslu a koncovce?",
+    answers: ["Pb⁺ᴵᴵ — olovnatý", "Pb⁺ᴵᴵ — olovitý", "Pb⁺ᴵᴵ — olovičný", "Pb⁺ᴵᴵ — olovový"],
+    correct: 0,
+    explanation: "Oxidačnímu číslu +II odpovídá koncovka -natý, proto Pb⁺ᴵᴵ je olovnatý."
+  },
+  {
+    question: "Která možnost obsahuje pouze sulfidy?",
+    answers: ["PbS, ZnS, HgS", "CO₂, SiO₂, Al₂O₃", "NaCl, KBr, CaF₂", "NaOH, KOH, Ca(OH)₂"],
+    correct: 0,
+    explanation: "PbS, ZnS a HgS jsou sulfidy."
+  },
+  {
+    question: "Která možnost obsahuje pouze dvouprvkové sloučeniny?",
+    answers: ["NaCl, PbS, CO₂", "NaOH, H₂SO₄, CaCO₃", "H₂O, NaOH, HNO₃", "Ca(OH)₂, Na₂SO₄, H₂CO₃"],
+    correct: 0,
+    explanation: "NaCl, PbS a CO₂ obsahují vždy jen dva různé prvky."
+  },
+  {
+    question: "Která možnost není dvouprvková sloučenina?",
+    answers: ["NaOH", "NaCl", "PbS", "CO₂"],
+    correct: 0,
+    explanation: "NaOH obsahuje tři prvky: sodík, kyslík a vodík, proto to není dvouprvková sloučenina."
+  },
+  {
+    question: "Které ionty tvoří sulfid sodný Na₂S?",
+    answers: ["Na⁺ a S²⁻", "Na²⁺ a S⁻", "Na⁻ a S²⁺", "Na⁺ a SO₄²⁻"],
+    correct: 0,
+    explanation: "Sulfid sodný je tvořen kationty Na⁺ a anionty S²⁻."
+  }
+    ]
+    },
+    {
+      id: "tema-08",
+      title: "Halogenidy",
+      subtitle: "Halogenidy a jejich vlastnosti",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Co jsou halogenidy?",
+    answers: ["Dvouprvkové sloučeniny halogenu s jiným prvkem", "Sloučeniny kyslíku s jiným prvkem", "Sloučeniny obsahující skupinu OH", "Soli kyseliny sírové"],
+    correct: 0,
+    explanation: "Halogenidy jsou dvouprvkové sloučeniny halogenu, například chloru, fluoru, bromu nebo jódu, s jiným prvkem."
+  },
+  {
+    question: "Mezi halogeny patří:",
+    answers: ["Fluor, chlor, brom, jod", "Kyslík, síra, selen, tellur", "Dusík, fosfor, arsen, antimon", "Sodík, draslík, lithium, cesium"],
+    correct: 0,
+    explanation: "Mezi halogeny patří fluor, chlor, brom, jod a astat."
+  },
+  {
+    question: "Který vzorec patří chloridu sodnému?",
+    answers: ["NaCl", "Na₂Cl", "NaCl₂", "NaOH"],
+    correct: 0,
+    explanation: "Chlorid sodný má vzorec NaCl."
+  },
+  {
+    question: "Jak se běžně nazývá chlorid sodný NaCl?",
+    answers: ["Kuchyňská sůl", "Jedlá soda", "Hašené vápno", "Suchý led"],
+    correct: 0,
+    explanation: "Chlorid sodný NaCl je známý jako kuchyňská sůl."
+  },
+  {
+    question: "Který název se také používá pro přírodní chlorid sodný?",
+    answers: ["Halit", "Pyrit", "Křemen", "Korund"],
+    correct: 0,
+    explanation: "Minerál tvořený chloridem sodným NaCl se nazývá halit."
+  },
+  {
+    question: "Pro chlorid sodný NaCl se nepoužívá pojmenování:",
+    answers: ["Amoniak", "Halit", "Sůl kamenná", "Kuchyňská sůl"],
+    correct: 0,
+    explanation: "Amoniak je sloučenina dusíku a vodíku NH₃, ne chlorid sodný."
+  },
+  {
+    question: "Který vzorec patří chloridu draselnému?",
+    answers: ["KCl", "K₂Cl", "KCl₂", "KOH"],
+    correct: 0,
+    explanation: "Chlorid draselný má vzorec KCl."
+  },
+  {
+    question: "Jaký ion vzniká ze sodíku v chloridu sodném?",
+    answers: ["Na⁺", "Na⁻", "Na²⁺", "Na²⁻"],
+    correct: 0,
+    explanation: "Sodík v chloridu sodném tvoří kation Na⁺."
+  },
+  {
+    question: "Jaký ion vzniká z chloru v chloridu sodném?",
+    answers: ["Cl⁻", "Cl⁺", "Cl²⁻", "Cl²⁺"],
+    correct: 0,
+    explanation: "Chlor v chloridu sodném tvoří anion Cl⁻."
+  },
+  {
+    question: "Které ionty tvoří chlorid sodný NaCl?",
+    answers: ["Na⁺ a Cl⁻", "Na²⁺ a Cl²⁻", "Na⁻ a Cl⁺", "Na⁺ a O²⁻"],
+    correct: 0,
+    explanation: "Chlorid sodný je tvořen ionty Na⁺ a Cl⁻."
+  },
+  {
+    question: "Jaké oxidační číslo má sodík ve sloučenině NaCl?",
+    answers: ["Na⁺ᴵ", "Na⁺ᴵᴵ", "Na⁻ᴵ", "Na⁰"],
+    correct: 0,
+    explanation: "Sodík má v NaCl oxidační číslo +I."
+  },
+  {
+    question: "Jaké oxidační číslo má chlor ve sloučenině NaCl?",
+    answers: ["Cl⁻ᴵ", "Cl⁺ᴵ", "Cl⁺ⱽᴵᴵ", "Cl⁰"],
+    correct: 0,
+    explanation: "Chlor má v NaCl oxidační číslo −I."
+  },
+  {
+    question: "Jaké oxidační číslo má draslík ve sloučenině KCl?",
+    answers: ["K⁺ᴵ", "K⁺ᴵᴵ", "K⁻ᴵ", "K⁰"],
+    correct: 0,
+    explanation: "Draslík má v KCl oxidační číslo +I."
+  },
+  {
+    question: "Jaké oxidační číslo má chlor ve sloučenině KCl?",
+    answers: ["Cl⁻ᴵ", "Cl⁺ᴵ", "Cl⁺ᴵᴵᴵ", "Cl⁰"],
+    correct: 0,
+    explanation: "Chlor má v chloridu draselném KCl oxidační číslo −I."
+  },
+  {
+    question: "Který vzorec patří fluoridu vápenatému?",
+    answers: ["CaF₂", "CaF", "Ca₂F", "Ca₂F₃"],
+    correct: 0,
+    explanation: "Vápník má oxidační číslo Ca⁺ᴵᴵ a fluor F⁻ᴵ, proto je vzorec CaF₂."
+  },
+  {
+    question: "Jak se nazývá minerál CaF₂?",
+    answers: ["Fluorit", "Halit", "Galenit", "Sfalerit"],
+    correct: 0,
+    explanation: "Fluorid vápenatý CaF₂ se v přírodě vyskytuje jako minerál fluorit."
+  },
+  {
+    question: "Který vzorec patří chloridu vápenatému?",
+    answers: ["CaCl₂", "CaCl", "Ca₂Cl", "Ca₂Cl₃"],
+    correct: 0,
+    explanation: "Vápník má oxidační číslo Ca⁺ᴵᴵ a chlor Cl⁻ᴵ, proto je vzorec CaCl₂."
+  },
+  {
+    question: "Jaký je správný název sloučeniny CaCl₂?",
+    answers: ["Chlorid vápenatý", "Chlorid vápný", "Chlorid vápenitý", "Chloristan vápenatý"],
+    correct: 0,
+    explanation: "CaCl₂ se nazývá chlorid vápenatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny MgCl₂?",
+    answers: ["Chlorid hořečnatý", "Chlorid hořečný", "Chlorid hořčitý", "Chloristan hořečnatý"],
+    correct: 0,
+    explanation: "MgCl₂ je chlorid hořečnatý."
+  },
+  {
+    question: "Jaký je správný název sloučeniny AlCl₃?",
+    answers: ["Chlorid hlinitý", "Chlorid hliníkový", "Chlorid hlinitanový", "Chlorid hlinatý"],
+    correct: 0,
+    explanation: "Hliník má oxidační číslo Al⁺ᴵᴵᴵ, proto se AlCl₃ nazývá chlorid hlinitý."
+  },
+  {
+    question: "Který vzorec patří chloridu hlinitému?",
+    answers: ["AlCl₃", "AlCl", "AlCl₂", "Al₂Cl₃"],
+    correct: 0,
+    explanation: "Hliník má oxidační číslo Al⁺ᴵᴵᴵ a chlor Cl⁻ᴵ, proto je vzorec AlCl₃."
+  },
+  {
+    question: "Který vzorec patří jodidu draselnému?",
+    answers: ["KI", "K₂I", "KI₂", "KIO₃"],
+    correct: 0,
+    explanation: "Jodid draselný má vzorec KI."
+  },
+  {
+    question: "Jaký je správný název sloučeniny KI?",
+    answers: ["Jodid draselný", "Chlorid draselný", "Fluorid draselný", "Bromid draselný"],
+    correct: 0,
+    explanation: "KI je jodid draselný."
+  },
+  {
+    question: "Který vzorec patří bromidu sodnému?",
+    answers: ["NaBr", "Na₂Br", "NaBr₂", "NaBO₃"],
+    correct: 0,
+    explanation: "Bromid sodný má vzorec NaBr."
+  },
+  {
+    question: "Která možnost obsahuje pouze halogenidy?",
+    answers: ["NaCl, KCl, CaF₂", "CO₂, SiO₂, Al₂O₃", "NaOH, KOH, Ca(OH)₂", "H₂SO₄, HNO₃, H₂CO₃"],
+    correct: 0,
+    explanation: "NaCl, KCl a CaF₂ jsou halogenidy."
+  },
+  {
+    question: "Která možnost neobsahuje halogenid?",
+    answers: ["NaOH", "NaCl", "KCl", "CaF₂"],
+    correct: 0,
+    explanation: "NaOH je hydroxid sodný, ne halogenid."
+  },
+  {
+    question: "Která možnost obsahuje pouze dvouprvkové sloučeniny?",
+    answers: ["NaCl, KCl, CaF₂", "NaOH, H₂SO₄, CaCO₃", "HNO₃, KOH, Na₂SO₄", "Ca(OH)₂, H₂CO₃, NaHCO₃"],
+    correct: 0,
+    explanation: "NaCl, KCl a CaF₂ obsahují vždy jen dva různé prvky."
+  },
+  {
+    question: "Která možnost není dvouprvková sloučenina?",
+    answers: ["CaCO₃", "NaCl", "KCl", "CaF₂"],
+    correct: 0,
+    explanation: "CaCO₃ obsahuje tři prvky: vápník, uhlík a kyslík."
+  },
+  {
+    question: "Kde se v přírodě vyskytuje chlorid sodný?",
+    answers: ["V mořské vodě a solných dolech", "Pouze ve vzduchu", "Pouze v čistém železe", "Pouze v rostlinném oleji"],
+    correct: 0,
+    explanation: "Chlorid sodný se vyskytuje například v mořské vodě a jako sůl kamenná v solných dolech."
+  },
+  {
+    question: "Kde se chlorid sodný NaCl běžně nevyskytuje ve větším množství?",
+    answers: ["V čisté dešťové vodě", "V mořské vodě", "V solných dolech", "V kamenné soli"],
+    correct: 0,
+    explanation: "V dešťové vodě nebývá chlorid sodný ve větším množství, zatímco v mořské vodě a solných dolech ano."
+  },
+  {
+    question: "Co je sůl kamenná?",
+    answers: ["Přírodní chlorid sodný NaCl", "Přírodní oxid uhličitý CO₂", "Hydroxid sodný NaOH", "Kyselina chlorovodíková HCl"],
+    correct: 0,
+    explanation: "Sůl kamenná je přírodní forma chloridu sodného NaCl."
+  },
+  {
+    question: "Jak se nazývají místa, kde se těží sůl kamenná?",
+    answers: ["Solné doly", "Uhelné elektrárny", "Skleníky", "Vápencové pece"],
+    correct: 0,
+    explanation: "Sůl kamenná se těží v solných dolech."
+  },
+  {
+    question: "Kde se nachází známý solný důl Wieliczka?",
+    answers: ["V Polsku", "V České republice", "V Egyptě", "V Norsku"],
+    correct: 0,
+    explanation: "Wieliczka je slavný historický solný důl v Polsku."
+  },
+  {
+    question: "Čím je známý solný důl Wieliczka?",
+    answers: ["Podzemními chodbami, kaplemi a sochami ze soli", "Těžbou diamantů", "Výrobou ropy", "Pěstováním tropických rostlin"],
+    correct: 0,
+    explanation: "Solný důl Wieliczka je známý rozsáhlými podzemními prostorami a uměleckými díly ze soli."
+  },
+  {
+    question: "Která látka je hlavní složkou kuchyňské soli?",
+    answers: ["NaCl", "KCl", "NaOH", "CaCO₃"],
+    correct: 0,
+    explanation: "Hlavní složkou kuchyňské soli je chlorid sodný NaCl."
+  },
+  {
+    question: "Který halogenid se může používat jako náhrada části kuchyňské soli?",
+    answers: ["KCl", "CO₂", "SiO₂", "Ca(OH)₂"],
+    correct: 0,
+    explanation: "Chlorid draselný KCl se někdy používá jako náhrada části chloridu sodného v soli."
+  },
+  {
+    question: "Proč člověk potřebuje malé množství soli?",
+    answers: ["Sodné a chloridové ionty jsou důležité pro správnou činnost těla", "Sůl nahrazuje kyslík při dýchání", "Sůl je hlavním zdrojem energie", "Sůl tvoří kosti místo vápníku"],
+    correct: 0,
+    explanation: "Sodné a chloridové ionty se podílejí například na hospodaření s vodou a činnosti nervů a svalů."
+  },
+  {
+    question: "Co může způsobit dlouhodobě nadměrný příjem soli?",
+    answers: ["Zvýšené riziko vysokého krevního tlaku", "Okamžité zlepšení zraku", "Vznik kyslíku v krvi", "Změnu soli na cukr"],
+    correct: 0,
+    explanation: "Nadměrný příjem soli může přispívat ke zvýšení krevního tlaku a zatěžovat organismus."
+  },
+  {
+    question: "Které potraviny často obsahují hodně soli?",
+    answers: ["Uzeniny, chipsy a slané pochutiny", "Čistá voda", "Čerstvé ovoce bez úpravy", "Nesolená rýže"],
+    correct: 0,
+    explanation: "Hodně soli bývá v uzeninách, slaných pochutinách a některých průmyslově zpracovaných potravinách."
+  },
+  {
+    question: "Jak lze snížit příjem soli ve stravě?",
+    answers: ["Méně solit a omezit slané průmyslově zpracované potraviny", "Pít pouze slanou vodu", "Přidávat sůl do každého nápoje", "Jíst jen chipsy"],
+    correct: 0,
+    explanation: "Příjem soli lze snížit omezením dosolování a výběrem méně slaných potravin."
+  },
+  {
+    question: "K čemu se používá chlorid sodný v zimě?",
+    answers: ["K posypu namrzlých silnic a chodníků", "K výrobě skla jako hlavní surovina", "K plnění hasicích přístrojů", "K výrobě kyslíku v nemocnicích"],
+    correct: 0,
+    explanation: "Chlorid sodný se používá k zimní údržbě komunikací, protože pomáhá snižovat teplotu tání ledu."
+  },
+  {
+    question: "Jaký negativní dopad může mít solení silnic?",
+    answers: ["Zasolení půdy a poškození rostlin", "Vznik čistého kyslíku", "Okamžité zlepšení kvality půdy", "Změnu asfaltu na sklo"],
+    correct: 0,
+    explanation: "Sůl ze silnic může pronikat do půdy a vody a škodit rostlinám i některým organismům."
+  },
+  {
+    question: "K čemu se NaCl používá ve zdravotnictví?",
+    answers: ["K přípravě fyziologického roztoku", "Jako barevný pigment", "Jako jedovatý plyn", "Jako palivo do motoru"],
+    correct: 0,
+    explanation: "Fyziologický roztok obsahuje chlorid sodný ve vodě."
+  },
+  {
+    question: "K čemu se chlorid sodný NaCl nepoužívá?",
+    answers: ["Jako barevný pigment", "K přípravě fyziologického roztoku", "K zimní údržbě komunikací", "Jako kuchyňská sůl"],
+    correct: 0,
+    explanation: "Chlorid sodný se běžně nepoužívá jako barevný pigment."
+  },
+  {
+    question: "Která látka se vyrábí z roztoku NaCl elektrolýzou?",
+    answers: ["Chlor", "Oxid uhličitý", "Křemen", "Ametyst"],
+    correct: 0,
+    explanation: "Elektrolýzou roztoku chloridu sodného lze vyrábět například chlor."
+  },
+  {
+    question: "Které látky lze průmyslově získávat z chloridu sodného?",
+    answers: ["Sodík, chlor a hydroxid sodný", "Zlato, diamant a kyslík", "Křemen, rubín a safír", "Vápník, uhlík a síru"],
+    correct: 0,
+    explanation: "Chlorid sodný je důležitou surovinou pro výrobu sodíku, chloru a dalších chemikálií."
+  },
+  {
+    question: "Který halogenid je důležitý pro doplnění jodu v potravě?",
+    answers: ["Jodid draselný KI", "Chlorid sodný NaCl", "Oxid uhličitý CO₂", "Sulfid olovnatý PbS"],
+    correct: 0,
+    explanation: "Jodid draselný KI může být zdrojem jodu, který je důležitý pro správnou činnost štítné žlázy."
+  },
+  {
+    question: "Proč se někdy kuchyňská sůl joduje?",
+    answers: ["Aby pomáhala doplnit jod potřebný pro štítnou žlázu", "Aby se změnila na cukr", "Aby byla silně jedovatá", "Aby se z ní stal kov"],
+    correct: 0,
+    explanation: "Jodovaná sůl obsahuje malé množství sloučenin jodu, které pomáhají předcházet nedostatku jodu."
+  },
+  {
+    question: "Které tvrzení o soli a zdraví je správné?",
+    answers: ["Malé množství soli je potřebné, nadbytek může škodit", "Sůl se nesmí přijímat nikdy", "Čím více soli, tím zdravější tělo", "Sůl nemá s tělem žádnou souvislost"],
+    correct: 0,
+    explanation: "Sůl je v malém množství důležitá, ale dlouhodobě vysoký příjem může zatěžovat zdraví."
+  },
+  {
+    question: "Jaký je rozdíl mezi NaCl a KCl?",
+    answers: ["NaCl obsahuje sodík, KCl obsahuje draslík", "NaCl obsahuje kyslík, KCl obsahuje uhlík", "NaCl je oxid, KCl je sulfid", "NaCl je kyselina, KCl je hydroxid"],
+    correct: 0,
+    explanation: "NaCl je chlorid sodný a KCl je chlorid draselný."
+  },
+  {
+    question: "Který vzorec patří chloridu stříbrnému?",
+    answers: ["AgCl", "AgCl₂", "Ag₂Cl", "Ag₂Cl₃"],
+    correct: 0,
+    explanation: "Stříbro má obvykle oxidační číslo Ag⁺ᴵ a chlor Cl⁻ᴵ, proto je vzorec AgCl."
+  },
+  {
+    question: "Jaký je správný název sloučeniny AgCl?",
+    answers: ["Chlorid stříbrný", "Chlorid stříbřitý", "Chlorid stříbrnatý", "Chloristan stříbrný"],
+    correct: 0,
+    explanation: "AgCl se nazývá chlorid stříbrný."
+  },
+  {
+    question: "Který halogenid se dříve využíval ve fotografii díky citlivosti na světlo?",
+    answers: ["Chlorid stříbrný AgCl", "Chlorid sodný NaCl", "Chlorid draselný KCl", "Fluorid vápenatý CaF₂"],
+    correct: 0,
+    explanation: "Některé halogenidy stříbra, například AgCl, jsou citlivé na světlo a využívaly se ve fotografii."
+  },
+  {
+    question: "Které tvrzení o NaCl je správné?",
+    answers: ["Je to iontová sloučenina tvořená pravidelnou krystalovou mřížkou", "Je to jedovatý plyn bez zápachu", "Je to kapalina s kyselým pH", "Je to kov s elektrony volně pohyblivými jako v železe"],
+    correct: 0,
+    explanation: "Chlorid sodný je iontová sloučenina, jejíž ionty tvoří krystalovou mřížku."
+  },
+  {
+    question: "Co se stane s NaCl po rozpuštění ve vodě?",
+    answers: ["Rozpadá se na ionty Na⁺ a Cl⁻", "Vzniká z něj CO₂", "Mění se na čistý sodík a chlor bez elektrolýzy", "Změní se na sklo"],
+    correct: 0,
+    explanation: "Při rozpouštění ve vodě se NaCl odděluje na ionty Na⁺ a Cl⁻."
+  }
+    ]
+    },
+    {
+      id: "tema-09",
+      title: "Kyseliny, zásaditost a pH",
+      subtitle: "Kyselost, zásaditost a pH",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Z uvedených vzorců vyber vzorec pro kyselinu sírovou.",
+    answers: ["H2S", "H2SO3", "H2SO4", "HSO6"],
+    correct: 2,
+    explanation: "Kyselina sírová má vzorec H2SO4."
+  },
+  {
+    question: "Z uvedených vzorců vyber vzorec pro hydroxid sodný.",
+    answers: ["NaOH", "SOH", "Na(OH)2", "Na2O"],
+    correct: 0,
+    explanation: "Hydroxid sodný má vzorec NaOH."
+  },
+  {
+    question: "Ve které možnosti jsou uvedené vzorce pouze kyselin?",
+    answers: ["HF, H2O2, SO3", "KF, HNO3, Na2S", "H3PO4, HCOOH, Na2CO3", "HCl, CH3COOH, H2CO3"],
+    correct: 3,
+    explanation: "HCl, CH3COOH a H2CO3 jsou kyseliny."
+  },
+  {
+    question: "Ve které možnosti jsou uvedené vzorce pouze hydroxidů?",
+    answers: ["NaOH, Cu(OH)2, CH3OH", "NaCl, Ca(OH)2, Fe(OH)3", "KOH, Zn(OH)2, CH3COOH", "Mg(OH)2, LiOH, Co(OH)3"],
+    correct: 3,
+    explanation: "Mg(OH)2, LiOH a Co(OH)3 jsou hydroxidy."
+  },
+  {
+    question: "Ve které možnosti je správně uvedená rovnice disociace hydroxidu draselného?",
+    answers: ["KOH → K+ + OH–", "DrOH → Dr+ + OH–", "KOH → K- + OH+", "DrOH → Dr- + OH+"],
+    correct: 0,
+    explanation: "Hydroxid draselný disociuje na ionty K+ a OH–."
+  },
+  {
+    question: "Ve které možnosti je správně uvedená rovnice disociace kyseliny sírové?",
+    answers: ["H2SO4 → H2+ + SO42–", "H2SO4 → 2H+ + SO42–", "H2SO3 → 2H+ + SO32–", "H2SO3 → H2+ + SO32–"],
+    correct: 1,
+    explanation: "Kyselina sírová disociuje na dva vodíkové kationty a síranový anion."
+  },
+  {
+    question: "Která z uvedených látek se používá jako acidobazický indikátor?",
+    answers: ["Lakmus", "Sulfan", "Amoniak", "Berlínská modř"],
+    correct: 0,
+    explanation: "Lakmus je acidobazický indikátor, který mění barvu podle pH prostředí."
+  },
+  {
+    question: "Která z uvedených látek se nepoužívá jako acidobazický indikátor?",
+    answers: ["Antokyany obsažené např. v červeném zelí", "Fenolftalein", "Jedlá soda", "Methyloranž"],
+    correct: 2,
+    explanation: "Jedlá soda není acidobazický indikátor, ale zásaditá látka."
+  },
+  {
+    question: "Kterou z uvedených hodnot pH má neutrální roztok?",
+    answers: ["0", "5", "7", "10"],
+    correct: 2,
+    explanation: "Neutrální roztok má pH 7."
+  },
+  {
+    question: "Kterou z uvedených hodnot pH má nejkyselejší roztok?",
+    answers: ["2", "4,5", "6", "10"],
+    correct: 0,
+    explanation: "Čím nižší je pH, tím kyselejší je roztok. Nejkyselejší je tedy pH 2."
+  },
+  {
+    question: "Která z látek v domácnosti má kyselé pH?",
+    answers: ["Ocet", "Cukr", "Sůl", "Jedlá soda"],
+    correct: 0,
+    explanation: "Ocet obsahuje kyselinu octovou, proto má kyselé pH."
+  },
+  {
+    question: "Která z látek v domácnosti má zásadité pH?",
+    answers: ["Ocet", "Cukr", "Sůl", "Jedlá soda"],
+    correct: 3,
+    explanation: "Jedlá soda má ve vodném roztoku zásadité pH."
+  },
+  {
+    question: "Co pro NaOH neplatí?",
+    answers: ["Jedná se o hydroxid sodný, starší názvy jsou louh sodný nebo natron", "Používá se například při výrobě mýdla a čištění potrubí", "Leptá tkáně organismů", "Roztok má pH menší než 7"],
+    correct: 3,
+    explanation: "NaOH je silná zásada, jeho roztok má pH větší než 7."
+  },
+  {
+    question: "Co označuje hodnota pH?",
+    answers: ["Kyselost nebo zásaditost roztoku", "Hmotnost pevné látky", "Teplotu varu", "Barvu plamene"],
+    correct: 0,
+    explanation: "pH vyjadřuje, zda je roztok kyselý, neutrální nebo zásaditý."
+  },
+  {
+    question: "Jaké pH mají kyselé roztoky?",
+    answers: ["Menší než 7", "Přesně 7", "Větší než 7", "Vždy 14"],
+    correct: 0,
+    explanation: "Kyselé roztoky mají pH menší než 7."
+  },
+  {
+    question: "Jaké pH mají zásadité roztoky?",
+    answers: ["Menší než 7", "Přesně 7", "Větší než 7", "Vždy 0"],
+    correct: 2,
+    explanation: "Zásadité roztoky mají pH větší než 7."
+  },
+  {
+    question: "Který roztok je neutrální?",
+    answers: ["Čistá voda", "Ocet", "Kyselina chlorovodíková", "Roztok hydroxidu sodného"],
+    correct: 0,
+    explanation: "Čistá voda má za běžných podmínek přibližně neutrální pH 7."
+  },
+  {
+    question: "Který ion je typický pro kyseliny ve vodném roztoku?",
+    answers: ["H+", "Na+", "Cl–", "OH–"],
+    correct: 0,
+    explanation: "Kyseliny ve vodném roztoku uvolňují vodíkové kationty H+."
+  },
+  {
+    question: "Který ion je typický pro hydroxidy ve vodném roztoku?",
+    answers: ["OH–", "H+", "Na+", "SO42–"],
+    correct: 0,
+    explanation: "Hydroxidy ve vodném roztoku uvolňují hydroxidové anionty OH–."
+  },
+  {
+    question: "Jak se nazývá reakce kyseliny se zásadou?",
+    answers: ["Neutralizace", "Sublimace", "Dimerizace", "Fotosyntéza"],
+    correct: 0,
+    explanation: "Neutralizace je reakce kyseliny se zásadou, při které vzniká sůl a voda."
+  },
+  {
+    question: "Co obvykle vzniká při neutralizaci kyseliny hydroxidem?",
+    answers: ["Sůl a voda", "Pouze kyslík", "Pouze vodík", "Cukr a oxid uhličitý"],
+    correct: 0,
+    explanation: "Při neutralizaci kyseliny hydroxidem vzniká sůl a voda."
+  },
+  {
+    question: "Která rovnice správně popisuje neutralizaci HCl hydroxidem sodným?",
+    answers: ["HCl + NaOH → NaCl + H2O", "HCl + NaOH → NaH + ClOH", "NaCl + H2O → HCl + NaOH", "H2 + Cl2 → 2 HCl"],
+    correct: 0,
+    explanation: "Kyselina chlorovodíková reaguje s hydroxidem sodným za vzniku chloridu sodného a vody."
+  },
+  {
+    question: "Jak se nazývá sůl vzniklá reakcí HCl a NaOH?",
+    answers: ["Chlorid sodný", "Síran sodný", "Dusičnan sodný", "Uhličitan sodný"],
+    correct: 0,
+    explanation: "Při reakci HCl a NaOH vzniká NaCl, tedy chlorid sodný."
+  },
+  {
+    question: "Jaký je běžný název pro chlorid sodný?",
+    answers: ["Kuchyňská sůl", "Jedlá soda", "Ocet", "Vápno"],
+    correct: 0,
+    explanation: "Chlorid sodný je známý jako kuchyňská sůl."
+  },
+  {
+    question: "Který vzorec patří kyselině chlorovodíkové?",
+    answers: ["HCl", "NaCl", "KOH", "CaCO3"],
+    correct: 0,
+    explanation: "Kyselina chlorovodíková má vzorec HCl."
+  },
+  {
+    question: "Který vzorec patří kyselině dusičné?",
+    answers: ["HNO3", "H2CO3", "NaNO3", "NO2"],
+    correct: 0,
+    explanation: "Kyselina dusičná má vzorec HNO3."
+  },
+  {
+    question: "Který vzorec patří kyselině uhličité?",
+    answers: ["H2CO3", "H2SO4", "HCl", "Na2CO3"],
+    correct: 0,
+    explanation: "Kyselina uhličitá má vzorec H2CO3."
+  },
+  {
+    question: "Který vzorec patří kyselině octové?",
+    answers: ["CH3COOH", "CH3OH", "NaOH", "CO2"],
+    correct: 0,
+    explanation: "Kyselina octová má vzorec CH3COOH a je obsažena v octu."
+  },
+  {
+    question: "Jaký indikátor je obsažen například v červeném zelí?",
+    answers: ["Antokyany", "Chlorid sodný", "Oxid uhličitý", "Glukóza"],
+    correct: 0,
+    explanation: "Červené zelí obsahuje antokyany, které mění barvu podle pH."
+  },
+  {
+    question: "Jak se fenolftalein zbarví v zásaditém prostředí?",
+    answers: ["Růžově až fialově", "Bezbarvě", "Černě", "Modrozeleně"],
+    correct: 0,
+    explanation: "Fenolftalein se v zásaditém prostředí zbarvuje růžově až fialově."
+  },
+  {
+    question: "Jaký je fenolftalein v kyselém prostředí?",
+    answers: ["Bezbarvý", "Růžový", "Žlutý", "Černý"],
+    correct: 0,
+    explanation: "Fenolftalein je v kyselém prostředí bezbarvý."
+  },
+  {
+    question: "Jak se lakmus zbarví v kyselém prostředí?",
+    answers: ["Červeně", "Modře", "Zeleně", "Černě"],
+    correct: 0,
+    explanation: "Lakmus se v kyselém prostředí zbarvuje červeně."
+  },
+  {
+    question: "Jak se lakmus zbarví v zásaditém prostředí?",
+    answers: ["Modře", "Červeně", "Žlutě", "Oranžově"],
+    correct: 0,
+    explanation: "Lakmus se v zásaditém prostředí zbarvuje modře."
+  },
+  {
+    question: "Která látka má obvykle velmi nízké pH?",
+    answers: ["Kyselina chlorovodíková", "Mýdlový roztok", "Jedlá soda", "Čistá voda"],
+    correct: 0,
+    explanation: "Kyselina chlorovodíková je silná kyselina, proto má velmi nízké pH."
+  },
+  {
+    question: "Která látka má obvykle vysoké pH?",
+    answers: ["Hydroxid sodný", "Ocet", "Citronová šťáva", "Kyselina chlorovodíková"],
+    correct: 0,
+    explanation: "Hydroxid sodný je silná zásada, proto má vysoké pH."
+  },
+  {
+    question: "Který roztok je kyselejší?",
+    answers: ["Roztok s pH 3", "Roztok s pH 6", "Roztok s pH 7", "Roztok s pH 9"],
+    correct: 0,
+    explanation: "Čím nižší pH, tím kyselejší roztok. pH 3 je z uvedených hodnot nejkyselejší."
+  },
+  {
+    question: "Který roztok je nejzásaditější?",
+    answers: ["Roztok s pH 13", "Roztok s pH 8", "Roztok s pH 7", "Roztok s pH 4"],
+    correct: 0,
+    explanation: "Čím vyšší pH, tím zásaditější roztok. pH 13 je z uvedených hodnot nejzásaditější."
+  },
+  {
+    question: "Jaké pH má roztok, který je méně kyselý než roztok s pH 3?",
+    answers: ["pH 5", "pH 1", "pH 2", "pH 0"],
+    correct: 0,
+    explanation: "Vyšší pH znamená menší kyselost, proto je pH 5 méně kyselé než pH 3."
+  },
+  {
+    question: "Jaké pH má roztok, který je zásaditější než roztok s pH 9?",
+    answers: ["pH 12", "pH 7", "pH 5", "pH 2"],
+    correct: 0,
+    explanation: "Zásaditost roste se zvyšujícím se pH, proto je pH 12 zásaditější než pH 9."
+  },
+  {
+    question: "Která z uvedených látek je silná zásada?",
+    answers: ["NaOH", "HCl", "CH3COOH", "H2CO3"],
+    correct: 0,
+    explanation: "NaOH je hydroxid sodný, tedy silná zásada."
+  },
+  {
+    question: "Která z uvedených látek je kyselina?",
+    answers: ["HNO3", "NaOH", "KOH", "Ca(OH)2"],
+    correct: 0,
+    explanation: "HNO3 je kyselina dusičná."
+  },
+  {
+    question: "Která z uvedených látek je hydroxid?",
+    answers: ["Ca(OH)2", "H2SO4", "HCl", "CH3COOH"],
+    correct: 0,
+    explanation: "Ca(OH)2 je hydroxid vápenatý."
+  },
+  {
+    question: "Jaký je název látky Ca(OH)2?",
+    answers: ["Hydroxid vápenatý", "Kyselina vápenatá", "Chlorid vápenatý", "Oxid vápenatý"],
+    correct: 0,
+    explanation: "Ca(OH)2 je hydroxid vápenatý."
+  },
+  {
+    question: "Jaký je název látky KOH?",
+    answers: ["Hydroxid draselný", "Kyselina draselná", "Chlorid draselný", "Oxid draselný"],
+    correct: 0,
+    explanation: "KOH je hydroxid draselný."
+  },
+  {
+    question: "Která látka je známá jako hašené vápno?",
+    answers: ["Ca(OH)2", "NaOH", "HCl", "H2SO4"],
+    correct: 0,
+    explanation: "Hašené vápno je hydroxid vápenatý, Ca(OH)2."
+  },
+  {
+    question: "Která látka se používá k úpravě kyselé půdy?",
+    answers: ["Vápno nebo hydroxid vápenatý", "Ocet", "Kyselina sírová", "Kyselina chlorovodíková"],
+    correct: 0,
+    explanation: "Kyselá půda se může upravovat vápněním, například látkami obsahujícími vápník."
+  },
+  {
+    question: "Co se stane s pH kyselého roztoku při přidání zásady?",
+    answers: ["pH se zvýší", "pH se sníží", "pH bude vždy 0", "pH se nedá nijak ovlivnit"],
+    correct: 0,
+    explanation: "Přidáním zásady se kyselý roztok neutralizuje a jeho pH se zvyšuje."
+  },
+  {
+    question: "Co se stane s pH zásaditého roztoku při přidání kyseliny?",
+    answers: ["pH se sníží", "pH se zvýší", "pH bude vždy 14", "Roztok se změní na kov"],
+    correct: 0,
+    explanation: "Přidáním kyseliny se zásaditý roztok neutralizuje a jeho pH se snižuje."
+  },
+  {
+    question: "Proč jsou silné kyseliny a zásady nebezpečné?",
+    answers: ["Mohou leptat pokožku a poškozovat tkáně", "Jsou vždy sladké", "Jsou bezpečné k pití", "Nemohou reagovat s jinými látkami"],
+    correct: 0,
+    explanation: "Silné kyseliny a zásady jsou žíraviny a mohou způsobit vážné poleptání."
+  },
+  {
+    question: "Jak se má správně pracovat se silnými kyselinami a hydroxidy?",
+    answers: ["S ochrannými pomůckami a podle pokynů učitele", "Bez brýlí a rukavic", "Ochutnáváním látek", "Mícháním neznámých látek doma"],
+    correct: 0,
+    explanation: "Při práci s žíravinami je nutné používat ochranné pomůcky a dodržovat bezpečnostní pravidla."
+  },
+  {
+    question: "Co je správné udělat při potřísnění pokožky kyselinou nebo zásadou?",
+    answers: ["Oplachovat zasažené místo velkým množstvím vody a říct dospělému", "Zakryt místo papírem a čekat", "Potřít místo olejem", "Pokračovat v práci bez upozornění"],
+    correct: 0,
+    explanation: "Při potřísnění je nutné místo ihned oplachovat vodou a informovat učitele nebo dospělého."
+  },
+  {
+    question: "Která látka z domácnosti obsahuje kyselinu citronovou?",
+    answers: ["Citronová šťáva", "Mýdlo", "Jedlá soda", "Prací prášek"],
+    correct: 0,
+    explanation: "Citronová šťáva obsahuje kyselinu citronovou, proto chutná kysele."
+  },
+  {
+    question: "Která látka z domácnosti bývá zásaditá?",
+    answers: ["Mýdlový roztok", "Citronová šťáva", "Ocet", "Kyselina v baterii"],
+    correct: 0,
+    explanation: "Mýdlový roztok mívá zásadité pH."
+  },
+  {
+    question: "Jaká chuť je typická pro mnoho kyselin v potravinách?",
+    answers: ["Kyselá", "Slaná", "Hořká kovová", "Pálivá bez příčiny"],
+    correct: 0,
+    explanation: "Mnohé slabé kyseliny v potravinách, například kyselina citronová nebo octová, mají kyselou chuť."
+  },
+  {
+    question: "Proč se v chemii nesmí látky ochutnávat?",
+    answers: ["Mohou být jedovaté nebo žíravé", "Protože všechny chutnají stejně", "Protože všechny jsou sladké", "Protože se tím zvyšuje pH"],
+    correct: 0,
+    explanation: "Chemické látky mohou být nebezpečné, proto se nikdy neochutnávají."
+  }
+          ]
+    },
+    {
+      id: "tema-10",
+      title: "Chemický průmysl a prostředí",
+      subtitle: "Průmysl, suroviny a životní prostředí",
+      type: "questionBank",
+      questions: [
+  {
+    question: "Jak se nazývá průmysl, který se zabývá výrobou chemických látek a výrobků?",
+    answers: ["Chemický průmysl", "Textilní průmysl", "Dřevařský průmysl", "Potravinářský průmysl"],
+    correct: 0,
+    explanation: "Chemický průmysl vyrábí chemické látky, například kyseliny, hnojiva, plasty nebo léčiva."
+  },
+  {
+    question: "Která kyselina se průmyslově vyrábí Ostwaldovým postupem?",
+    answers: ["Kyselina dusičná", "Kyselina sírová", "Kyselina chlorovodíková", "Kyselina octová"],
+    correct: 0,
+    explanation: "Ostwaldův postup se používá k výrobě kyseliny dusičné."
+  },
+  {
+    question: "Jaká látka je hlavní surovinou pro výrobu kyseliny dusičné?",
+    answers: ["Amoniak", "Methan", "Oxid uhličitý", "Chlorid sodný"],
+    correct: 0,
+    explanation: "Při výrobě kyseliny dusičné se jako výchozí látka používá amoniak."
+  },
+  {
+    question: "Jak se nazývá průmyslový postup výroby amoniaku?",
+    answers: ["Haberův-Boschův postup", "Ostwaldův postup", "Elektrolýza", "Destilace"],
+    correct: 0,
+    explanation: "Amoniak se vyrábí Haberovým-Boschovým postupem z dusíku a vodíku."
+  },
+  {
+    question: "K čemu se v chemickém průmyslu často používá amoniak?",
+    answers: ["K výrobě hnojiv", "K výrobě skla", "K výrobě papíru", "K výrobě cihel"],
+    correct: 0,
+    explanation: "Amoniak je důležitou surovinou pro výrobu dusíkatých hnojiv."
+  },
+  {
+    question: "Které látky se označují jako dusíkatá hnojiva?",
+    answers: ["Hnojiva obsahující dusík", "Hnojiva obsahující pouze uhlík", "Hnojiva bez chemických prvků", "Hnojiva obsahující jen vodík"],
+    correct: 0,
+    explanation: "Dusíkatá hnojiva obsahují dusík, který rostliny potřebují k růstu."
+  },
+  {
+    question: "Jaký pozitivní vliv mají průmyslově vyráběná hnojiva?",
+    answers: ["Zvyšují úrodu zemědělských plodin", "Způsobují jen znečištění", "Zastavují růst rostlin", "Odstraňují kyslík z půdy"],
+    correct: 0,
+    explanation: "Hnojiva dodávají rostlinám živiny a mohou zvýšit zemědělskou úrodu."
+  },
+  {
+    question: "Jaký negativní dopad může mít nadměrné používání hnojiv?",
+    answers: ["Znečištění vody", "Vznik čistého kyslíku", "Zmenšení průmyslu", "Vznik kovů v půdě"],
+    correct: 0,
+    explanation: "Přebytečná hnojiva se mohou dostat do řek a podzemních vod a způsobit jejich znečištění."
+  },
+  {
+    question: "Jak se nazývá proces, kdy se do vody dostává příliš mnoho živin a dochází k přemnožení řas?",
+    answers: ["Eutrofizace", "Destilace", "Krystalizace", "Dimerizace"],
+    correct: 0,
+    explanation: "Eutrofizace vzniká například kvůli nadbytku dusíkatých a fosforečných látek ve vodě."
+  },
+  {
+    question: "Který prvek je obsažen v kyselině dusičné?",
+    answers: ["Dusík", "Železo", "Vápník", "Helium"],
+    correct: 0,
+    explanation: "Kyselina dusičná má vzorec HNO3 a obsahuje dusík."
+  },
+  {
+    question: "Jaký je sumární vzorec kyseliny dusičné?",
+    answers: ["HNO3", "H2SO4", "HCl", "NaOH"],
+    correct: 0,
+    explanation: "Sumární vzorec kyseliny dusičné je HNO3."
+  },
+  {
+    question: "Jaká je přibližná molární hmotnost kyseliny dusičné?",
+    answers: ["63 g/mol", "18 g/mol", "44 g/mol", "100 g/mol"],
+    correct: 0,
+    explanation: "Kyselina dusičná má přibližnou molární hmotnost 63 g/mol."
+  },
+  {
+    question: "Proč může být kyselina dusičná za normálních podmínek nažloutlá?",
+    answers: ["Kvůli rozpuštěnému NO2", "Kvůli rozpuštěnému kyslíku", "Kvůli vodíku", "Kvůli sodíku"],
+    correct: 0,
+    explanation: "Nažloutlé zbarvení kyseliny dusičné způsobuje rozpuštěný oxid dusičitý NO2."
+  },
+  {
+    question: "Jak se nazývají soli kyseliny dusičné?",
+    answers: ["Dusičnany", "Sírany", "Chloridy", "Uhličitany"],
+    correct: 0,
+    explanation: "Soli kyseliny dusičné se nazývají dusičnany."
+  },
+  {
+    question: "Jaký problém mohou dusičnany způsobovat v lidském těle?",
+    answers: ["Snižují schopnost krve přenášet kyslík", "Zvyšují množství kyslíku v krvi", "Vytvářejí cukr v krvi", "Zlepšují činnost plic"],
+    correct: 0,
+    explanation: "Dusičnany mohou přispívat ke vzniku methemoglobinemie, při které krev hůře přenáší kyslík."
+  },
+  {
+    question: "Který oxid dusíku se může podílet na vzniku kyselých dešťů?",
+    answers: ["Oxid dusičitý", "Oxid uhličitý", "Oxid vápenatý", "Oxid křemičitý"],
+    correct: 0,
+    explanation: "Oxidy dusíku mohou v atmosféře reagovat s vodou a podílet se na vzniku kyselých dešťů."
+  },
+  {
+    question: "Co jsou kyselé deště?",
+    answers: ["Srážky obsahující kyselé látky", "Déšť bez vody", "Déšť tvořený pouze kyslíkem", "Srážky obsahující jen písek"],
+    correct: 0,
+    explanation: "Kyselé deště vznikají, když se do ovzduší dostanou oxidy síry nebo dusíku a reagují s vodou."
+  },
+  {
+    question: "Jaký dopad mohou mít kyselé deště na životní prostředí?",
+    answers: ["Poškozují lesy, půdu i vodní ekosystémy", "Zlepšují kvalitu půdy", "Zvyšují množství ryb ve vodě", "Nemají žádný vliv"],
+    correct: 0,
+    explanation: "Kyselé deště mohou poškozovat rostliny, okyselovat půdu a škodit vodním organismům."
+  },
+  {
+    question: "Který plyn je hlavní složkou zemního plynu?",
+    answers: ["Methan", "Vodík", "Kyslík", "Dusík"],
+    correct: 0,
+    explanation: "Hlavní složkou zemního plynu je methan."
+  },
+  {
+    question: "Jaký je sumární vzorec methanu?",
+    answers: ["CH4", "CO2", "H2O", "NH3"],
+    correct: 0,
+    explanation: "Methan má sumární vzorec CH4."
+  },
+  {
+    question: "Jaký dopad má methan na klima?",
+    answers: ["Je skleníkovým plynem", "Ochladí Zemi okamžitě", "Nemá žádný vliv", "Mění se na kov"],
+    correct: 0,
+    explanation: "Methan patří mezi skleníkové plyny a přispívá ke změně klimatu."
+  },
+  {
+    question: "Jaký plyn vzniká při dokonalém spalování methanu?",
+    answers: ["Oxid uhličitý", "Amoniak", "Chlor", "Ozón"],
+    correct: 0,
+    explanation: "Při dokonalém spalování methanu vzniká oxid uhličitý a voda."
+  },
+  {
+    question: "Jaký je vzorec oxidu uhličitého?",
+    answers: ["CO2", "CO", "CH4", "NO2"],
+    correct: 0,
+    explanation: "Oxid uhličitý má vzorec CO2."
+  },
+  {
+    question: "Jaký vliv má oxid uhličitý na životní prostředí?",
+    answers: ["Přispívá ke skleníkovému efektu", "Způsobuje okamžité zamrznutí Země", "Je vždy jedovatý v malém množství", "Nemůže být v atmosféře"],
+    correct: 0,
+    explanation: "Oxid uhličitý je skleníkový plyn a jeho zvýšené množství přispívá ke změně klimatu."
+  },
+  {
+    question: "Jaký je vzorec oxidu uhelnatého?",
+    answers: ["CO", "CO2", "H2O", "O2"],
+    correct: 0,
+    explanation: "Oxid uhelnatý má vzorec CO."
+  },
+  {
+    question: "Proč je oxid uhelnatý nebezpečný?",
+    answers: ["Je jedovatý a brání krvi přenášet kyslík", "Je to běžná živina", "Je to pevná látka vhodná k jídlu", "Je vždy viditelný a voňavý"],
+    correct: 0,
+    explanation: "Oxid uhelnatý je jedovatý plyn, který se váže na krevní barvivo a omezuje přenos kyslíku."
+  },
+  {
+    question: "Co je katalyzátor?",
+    answers: ["Látka, která ovlivňuje rychlost reakce a po reakci zůstává nezměněná", "Látka, která se vždy spotřebuje", "Látka, která je pouze palivem", "Látka, která vzniká jen při dešti"],
+    correct: 0,
+    explanation: "Katalyzátor urychluje nebo ovlivňuje chemickou reakci, ale po reakci zůstává v nezměněné podobě."
+  },
+  {
+    question: "Jaký katalyzátor se používá při katalytické oxidaci amoniaku?",
+    answers: ["Platina s příměsí rhodia a palladia", "Sodík", "Vápník", "Uhlík"],
+    correct: 0,
+    explanation: "Při výrobě kyseliny dusičné se používá platinový katalyzátor s příměsí rhodia a palladia."
+  },
+  {
+    question: "Jak se nazývá reakce, při které se uvolňuje energie obvykle ve formě tepla?",
+    answers: ["Exotermická reakce", "Endotermická reakce", "Neutralizace bez tepla", "Dimerizace"],
+    correct: 0,
+    explanation: "Exotermická reakce uvolňuje energii, často ve formě tepla."
+  },
+  {
+    question: "Jak se nazývá reakce, při které se spotřebovává energie?",
+    answers: ["Endotermická reakce", "Exotermická reakce", "Spalování", "Koroze"],
+    correct: 0,
+    explanation: "Endotermická reakce potřebuje ke svému průběhu energii."
+  },
+  {
+    question: "Která látka je významnou sloučeninou vodíku s kyslíkem?",
+    answers: ["Voda", "Methan", "Amoniak", "Oxid uhličitý"],
+    correct: 0,
+    explanation: "Nejvýznamnější sloučeninou vodíku s kyslíkem je voda."
+  },
+  {
+    question: "Proč je ochrana vody důležitá pro životní prostředí?",
+    answers: ["Voda je nezbytná pro život organismů", "Voda není pro život důležitá", "Voda se v přírodě nevyskytuje", "Voda vždy sama zmizí"],
+    correct: 0,
+    explanation: "Voda je nezbytná pro život lidí, živočichů i rostlin."
+  },
+  {
+    question: "Co může způsobit vypouštění nečištěných průmyslových odpadních vod?",
+    answers: ["Znečištění řek a poškození organismů", "Zlepšení kvality vody", "Vznik pitné vody", "Zvýšení množství kyslíku ve vodě"],
+    correct: 0,
+    explanation: "Nečištěné odpadní vody mohou obsahovat škodlivé látky, které ohrožují vodní organismy."
+  },
+  {
+    question: "Jaký je hlavní úkol čistírny odpadních vod?",
+    answers: ["Odstraňovat nečistoty z odpadní vody", "Vyrábět plasty", "Zvyšovat znečištění vody", "Vyrábět zemní plyn"],
+    correct: 0,
+    explanation: "Čistírna odpadních vod slouží k odstranění nečistot před návratem vody do přírody."
+  },
+  {
+    question: "Jak se nazývá směs dvou nebo více kapalin, kterou nelze oddělit obyčejnou destilací?",
+    answers: ["Azeotropická směs", "Suspenze", "Emulze", "Roztok soli"],
+    correct: 0,
+    explanation: "Azeotropická směs má takové složení, že ji nelze jednoduše oddělit destilací."
+  },
+  {
+    question: "Co je podazeotropická kyselina dusičná?",
+    answers: ["Kyselina dusičná o koncentraci přibližně 70 %", "Čistá voda", "Roztok cukru", "Plynný amoniak"],
+    correct: 0,
+    explanation: "Podazeotropická kyselina dusičná má koncentraci přibližně 70 %."
+  },
+  {
+    question: "Který český chemický podnik vyrábí nebo zpracovává chemické látky?",
+    answers: ["Lovochemie", "Národní divadlo", "Botanická zahrada", "Hvězdárna"],
+    correct: 0,
+    explanation: "Lovochemie patří mezi významné chemické podniky v České republice."
+  },
+  {
+    question: "Který podnik v České republice je spojován s výrobou chemických látek?",
+    answers: ["Synthesia", "Česká pošta", "Zoologická zahrada Praha", "Národní muzeum"],
+    correct: 0,
+    explanation: "Synthesia je známý chemický podnik v České republice."
+  },
+  {
+    question: "Jaký typ výrobků vyrábí chemický průmysl kromě kyselin a hnojiv?",
+    answers: ["Plasty", "Dřevěné trámy", "Knihy", "Kamenné sochy"],
+    correct: 0,
+    explanation: "Chemický průmysl vyrábí mimo jiné plasty, barviva, léčiva, hnojiva nebo čisticí prostředky."
+  },
+  {
+    question: "Jaký problém pro přírodu představují některé plasty?",
+    answers: ["Pomalu se rozkládají", "Rychle se mění na kyslík", "Jsou vždy jedlé", "Nikdy se nedostanou do oceánů"],
+    correct: 0,
+    explanation: "Mnohé plasty se v přírodě rozkládají velmi dlouho a mohou znečišťovat prostředí."
+  },
+  {
+    question: "Co jsou mikroplasty?",
+    answers: ["Velmi malé částice plastů", "Malé kapky vody", "Krystaly soli", "Částice čistého kyslíku"],
+    correct: 0,
+    explanation: "Mikroplasty jsou drobné částice plastů, které mohou pronikat do vody, půdy i organismů."
+  },
+  {
+    question: "Jak může člověk snížit množství plastového odpadu?",
+    answers: ["Tříděním a omezením jednorázových plastů", "Vyhazováním plastů do řeky", "Pálením plastů doma", "Mícháním plastů s bioodpadem"],
+    correct: 0,
+    explanation: "Třídění odpadu a omezení jednorázových plastů pomáhá snižovat zátěž životního prostředí."
+  },
+  {
+    question: "Proč není vhodné pálit plasty doma?",
+    answers: ["Mohou vznikat škodlivé látky", "Vzniká pitná voda", "Plasty se změní na hnojivo", "Nevzniká žádný kouř"],
+    correct: 0,
+    explanation: "Při pálení plastů mohou vznikat jedovaté a dráždivé látky škodlivé pro zdraví i ovzduší."
+  },
+  {
+    question: "Co znamená recyklace?",
+    answers: ["Opětovné využití odpadu jako suroviny", "Vyhození odpadu do přírody", "Spalování všeho odpadu", "Míchání chemikálií bez pravidel"],
+    correct: 0,
+    explanation: "Recyklace znamená zpracování odpadu tak, aby mohl být znovu využit."
+  },
+  {
+    question: "Jaký je jeden z hlavních cílů ekologizace chemického průmyslu?",
+    answers: ["Snížit škodlivé dopady na životní prostředí", "Zvýšit množství odpadu", "Vypouštět více kouře", "Znečišťovat řeky"],
+    correct: 0,
+    explanation: "Ekologizace průmyslu se snaží omezit znečištění a šetřit suroviny i energii."
+  },
+  {
+    question: "Co jsou emise?",
+    answers: ["Látky vypouštěné do ovzduší", "Pouze pevné horniny", "Látky uložené v ledovci", "Rostliny ve skleníku"],
+    correct: 0,
+    explanation: "Emise jsou látky, které se vypouštějí do ovzduší, například z továren nebo dopravy."
+  },
+  {
+    question: "Jak mohou továrny snižovat znečištění ovzduší?",
+    answers: ["Používáním filtrů a čištěním spalin", "Vypouštěním kouře bez kontroly", "Spalováním odpadu na volném prostranství", "Zvětšením komínů bez filtrace"],
+    correct: 0,
+    explanation: "Filtry a zařízení na čištění spalin pomáhají zachytit škodlivé látky před vypuštěním do ovzduší."
+  },
+  {
+    question: "Co je havárie v chemickém závodě?",
+    answers: ["Neplánovaná událost, při které mohou uniknout nebezpečné látky", "Běžná školní přestávka", "Řízená výroba pitné vody", "Pěstování rostlin"],
+    correct: 0,
+    explanation: "Chemická havárie může ohrozit zdraví lidí i životní prostředí únikem nebezpečných látek."
+  },
+  {
+    question: "Proč musí být chemické látky správně skladovány?",
+    answers: ["Aby nedošlo k úniku, požáru nebo otravě", "Aby se změnily na potraviny", "Aby se mohly volně odpařovat", "Aby je mohl používat každý bez pravidel"],
+    correct: 0,
+    explanation: "Správné skladování chemikálií chrání lidi, zvířata, vodu, půdu i ovzduší."
+  },
+  {
+    question: "Co označuje pojem udržitelný rozvoj v průmyslu?",
+    answers: ["Výrobu, která bere ohled na přírodu i budoucí generace", "Výrobu bez pravidel", "Co největší těžbu bez omezení", "Znečištění řek kvůli zisku"],
+    correct: 0,
+    explanation: "Udržitelný rozvoj znamená uspokojovat současné potřeby tak, aby nebyly ohroženy potřeby budoucích generací."
+  },
+  {
+    question: "Jak může chemický průmysl šetřit přírodní zdroje?",
+    answers: ["Recyklací surovin a úsporou energie", "Vyhazováním surovin", "Zvyšováním odpadu", "Vypouštěním látek do přírody"],
+    correct: 0,
+    explanation: "Šetření surovin a energie pomáhá snižovat dopady průmyslu na životní prostředí."
+  },
+  {
+    question: "Které chování pomáhá chránit životní prostředí před chemickým znečištěním?",
+    answers: ["Odevzdávání nebezpečného odpadu na sběrná místa", "Vylévání chemikálií do kanalizace", "Vyhazování baterií do přírody", "Pálení barev a rozpouštědel doma"],
+    correct: 0,
+    explanation: "Nebezpečný odpad, například barvy, oleje nebo baterie, se má odevzdávat na určená sběrná místa."
+  }
+          ]
+    }
+    ];
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function makeOptions(correct, allOptions) {
+      const wrongOptions = shuffle(allOptions.filter(option => option !== correct)).slice(0, 3);
+      return shuffle([correct, ...wrongOptions]);
+    }
+
+    function createElementQuestion(element, direction, elements) {
+      if (direction === "nameToSymbol") {
+        const symbolOptions = makeOptions(element.symbol, elements.map(item => item.symbol));
+        return {
+          question: `Jakou chemickou značku má prvek ${element.name}?`,
+          answers: symbolOptions,
+          correct: symbolOptions.indexOf(element.symbol),
+          explanation: `Prvek ${element.name} má chemickou značku ${element.symbol}.`
+        };
+      }
+
+      const nameOptions = makeOptions(element.name, elements.map(item => item.name));
+      return {
+        question: `Jaký název má chemická značka ${element.symbol}?`,
+        answers: nameOptions,
+        correct: nameOptions.indexOf(element.name),
+        explanation: `Chemická značka ${element.symbol} patří prvku ${element.name}.`
+      };
+    }
+
+    function createElementRound(topic, requestedCount) {
+      const total = Math.min(requestedCount, topic.elements.length * 2);
+      const nameToSymbolCount = Math.ceil(total / 2);
+      const symbolToNameCount = Math.floor(total / 2);
+      const shuffledElements = shuffle(topic.elements);
+
+      const nameToSymbol = shuffledElements
+        .slice(0, nameToSymbolCount)
+        .map(element => createElementQuestion(element, "nameToSymbol", topic.elements));
+
+      const symbolToName = shuffledElements
+        .slice(nameToSymbolCount, nameToSymbolCount + symbolToNameCount)
+        .map(element => createElementQuestion(element, "symbolToName", topic.elements));
+
+      return shuffle([...nameToSymbol, ...symbolToName]);
+    }
+
+    const state = {
+      selectedTopic: topics[0],
+      requestedCount: 10,
+      round: [],
+      current: 0,
+      score: 0,
+      lightnings: 0,
+      answered: false,
+      history: []
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const screens = { start: $("startScreen"), game: $("gameScreen"), result: $("resultScreen") };
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
+
+    function populateTopicSelect() {
+      const select = $("topicSelect");
+      select.innerHTML = "";
+      topics.forEach(topic => {
+        const option = document.createElement("option");
+        option.value = topic.id;
+        option.textContent = topic.title;
+        select.appendChild(option);
+      });
+      updateTopicPreview();
+    }
+
+    function getSelectedTopic() {
+      const selectedId = $("topicSelect").value;
+      return topics.find(topic => topic.id === selectedId) || topics[0];
+    }
+
+    function getSelectedCount() {
+      return Number(document.querySelector('input[name="questionCount"]:checked').value);
+    }
+
+    function updateTopicPreview() {
+      const topic = getSelectedTopic();
+      const total = topic.type === "elements" ? topic.elements.length * 2 : topic.questions.length;
+      $("topicPreview").textContent = `${topic.subtitle} • dostupných otázek: ${total}`;
+    }
+
+    function buildRound(topic, requestedCount) {
+      if (topic.type === "elements") return createElementRound(topic, requestedCount);
+      return shuffle(topic.questions).slice(0, Math.min(requestedCount, topic.questions.length));
+    }
+
+    function startGame() {
+      state.selectedTopic = getSelectedTopic();
+      state.requestedCount = getSelectedCount();
+      state.round = buildRound(state.selectedTopic, state.requestedCount);
+      state.current = 0;
+      state.score = 0;
+      state.lightnings = 0;
+      state.answered = false;
+      state.history = [];
+      $("review").hidden = true;
+      $("showReviewBtn").textContent = "Zobrazit přehled";
+      $("headerTitle").textContent = state.selectedTopic.title;
+      $("headerSubtitle").textContent = state.selectedTopic.subtitle;
+      $("topicLabel").textContent = state.selectedTopic.title;
+      showScreen("game");
+      renderQuestion();
+    }
+
+    function updateHeader() {
+      const total = state.round.length;
+      $("roundNow").textContent = total ? Math.min(state.current + 1, total) : 0;
+      $("roundTotal").textContent = total;
+      $("lightnings").textContent = state.lightnings;
+      $("scoreLabel").textContent = `Správně: ${state.score}`;
+      const progress = total ? (state.current / total) * 100 : 0;
+      $("progressBar").style.width = `${progress}%`;
+    }
+
+    function renderQuestion() {
+      const q = state.round[state.current];
+      state.answered = false;
+      $("questionText").textContent = q.question;
+      $("feedback").className = "feedback";
+      $("feedback").textContent = "";
+      $("nextBtn").hidden = true;
+      $("answers").innerHTML = "";
+      updateHeader();
+
+      const mappedAnswers = q.answers.map((text, originalIndex) => ({ text, originalIndex }));
+      shuffle(mappedAnswers).forEach((answer, visibleIndex) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.innerHTML = `<span aria-hidden="true">${String.fromCharCode(65 + visibleIndex)}.</span> ${answer.text}`;
+        button.addEventListener("click", () => chooseAnswer(button, answer.originalIndex));
+        $("answers").appendChild(button);
+      });
+    }
+
+    function chooseAnswer(button, selectedIndex) {
+      if (state.answered) return;
+      state.answered = true;
+
+      const q = state.round[state.current];
+      const isCorrect = selectedIndex === q.correct;
+      const buttons = [...document.querySelectorAll(".answer")];
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        const text = btn.textContent.replace(/^[A-D]\.\s*/, "").trim();
+        const originalIndex = q.answers.indexOf(text);
+        if (originalIndex === q.correct) btn.classList.add("correct");
+      });
+
+      if (isCorrect) {
+        state.score += 1;
+        state.lightnings += 1;
+        button.classList.add("correct");
+        $("feedback").innerHTML = `✅ Správně! Získáváš energii.<br><span class="small">${q.explanation || ""}</span>`;
+      } else {
+        button.classList.add("wrong");
+        $("feedback").innerHTML = `❌ To není správně. Správná odpověď: <strong>${q.answers[q.correct]}</strong>.<br><span class="small">${q.explanation || ""}</span>`;
+      }
+
+      state.history.push({ question: q.question, selected: q.answers[selectedIndex], correct: q.answers[q.correct], isCorrect });
+      $("feedback").classList.add("show");
+      $("nextBtn").hidden = false;
+      updateHeader();
+    }
+
+    function nextQuestion() {
+      state.current += 1;
+      if (state.current >= state.round.length) showResults();
+      else renderQuestion();
+    }
+
+    function showResults() {
+      $("roundNow").textContent = state.round.length;
+      $("roundTotal").textContent = state.round.length;
+      $("progressBar").style.width = "100%";
+      showScreen("result");
+
+      const total = state.round.length;
+      const percent = Math.round((state.score / total) * 100);
+      $("finalScore").textContent = `${state.score}/${total}`;
+      $("finalLightnings").textContent = state.lightnings;
+
+      let message = `Téma: ${state.selectedTopic.title}. Dobrá práce!`;
+      if (percent === 100) message = `Téma: ${state.selectedTopic.title}. Perfektní výsledek! Máš maximum energie.`;
+      else if (percent >= 80) message = `Téma: ${state.selectedTopic.title}. Výborně! Většinu otázek máš správně.`;
+      else if (percent >= 50) message = `Téma: ${state.selectedTopic.title}. Slušný výkon. Ještě pár pokusů a bude to skvělé.`;
+      else message = `Téma: ${state.selectedTopic.title}. Nevadí, zkus další kolo a nasbírej více energie.`;
+      $("resultMessage").textContent = message;
+      renderReview();
+    }
+
+    function renderReview() {
+      const review = $("review");
+      review.innerHTML = "";
+      state.history.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = `review-item ${item.isCorrect ? "good" : "bad"}`;
+        div.innerHTML = `<strong>${index + 1}. ${item.question}</strong><div class="small">Tvoje odpověď: ${item.selected}</div><div class="small">Správně: ${item.correct}</div>`;
+        review.appendChild(div);
+      });
+    }
+
+    function goHome() {
+      showScreen("start");
+      $("headerTitle").textContent = "Chemické kvízy";
+      $("headerSubtitle").textContent = "Vyber téma a počet otázek";
+      $("roundNow").textContent = "0";
+      $("roundTotal").textContent = "0";
+      $("lightnings").textContent = "0";
+      $("progressBar").style.width = "0%";
+    }
+
+    $("topicSelect").addEventListener("change", updateTopicPreview);
+    document.querySelectorAll('input[name="questionCount"]').forEach(input => input.addEventListener("change", updateTopicPreview));
+    $("startBtn").addEventListener("click", startGame);
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("homeBtn").addEventListener("click", goHome);
+    $("backToMenuBtn").addEventListener("click", goHome);
+    $("restartBtn").addEventListener("click", startGame);
+    $("showReviewBtn").addEventListener("click", () => {
+      const review = $("review");
+      review.hidden = !review.hidden;
+      $("showReviewBtn").textContent = review.hidden ? "Zobrazit přehled" : "Skrýt přehled";
+    });
+
+    populateTopicSelect();
+    goHome();
+  </script>
+</body>
+</html>
