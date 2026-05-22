@@ -6,17 +6,21 @@
   <title>Chemické kvízy – výběr tématu</title>
   <style>
     :root {
-      --bg: #fff7d6;
-      --panel: #ffffff;
-      --text: #242424;
-      --muted: #666666;
-      --primary: #ffea00;
-      --accent: #ff2f2f;
-      --accent-dark: #c91414;
-      --ok: #1f9d55;
-      --bad: #d93025;
-      --shadow: 0 18px 45px rgba(120, 45, 0, 0.18);
-      --radius: 24px;
+      --bg: #f6f8ff;
+      --panel: rgba(255, 255, 255, 0.88);
+      --panel-strong: #ffffff;
+      --text: #162033;
+      --muted: #667085;
+      --primary: #5b7cfa;
+      --primary-2: #10b981;
+      --accent: #f97316;
+      --accent-dark: #c2410c;
+      --ok: #16a34a;
+      --bad: #dc2626;
+      --line: rgba(91, 124, 250, 0.18);
+      --shadow: 0 24px 70px rgba(22, 32, 51, 0.14);
+      --shadow-soft: 0 14px 34px rgba(22, 32, 51, 0.10);
+      --radius: 28px;
     }
 
     * { box-sizing: border-box; }
@@ -24,123 +28,246 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(255, 47, 47, 0.18), transparent 34rem),
-        radial-gradient(circle at bottom right, rgba(255, 234, 0, 0.5), transparent 28rem),
-        var(--bg);
+        radial-gradient(circle at 8% 8%, rgba(91, 124, 250, 0.22), transparent 28rem),
+        radial-gradient(circle at 92% 18%, rgba(16, 185, 129, 0.18), transparent 26rem),
+        radial-gradient(circle at 50% 100%, rgba(249, 115, 22, 0.16), transparent 30rem),
+        linear-gradient(135deg, #f7faff 0%, #eef4ff 45%, #f8fbff 100%);
       display: grid;
       place-items: center;
-      padding: 18px;
+      padding: clamp(14px, 3vw, 28px);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(91, 124, 250, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(91, 124, 250, 0.06) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent 72%);
     }
 
     .app {
-      width: min(1040px, 100%);
-      background: rgba(255, 255, 255, 0.86);
-      backdrop-filter: blur(8px);
-      border: 2px solid rgba(255, 47, 47, 0.18);
+      width: min(1120px, 100%);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.72);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      position: relative;
     }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 20px clamp(18px, 4vw, 34px);
-      background: linear-gradient(135deg, var(--primary), #fff6a3);
-      border-bottom: 3px solid rgba(255, 47, 47, 0.3);
+      gap: 20px;
+      padding: clamp(20px, 4vw, 34px);
+      background:
+        linear-gradient(135deg, rgba(91, 124, 250, 0.95), rgba(16, 185, 129, 0.82)),
+        #5b7cfa;
+      color: #fff;
     }
 
-    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand { display: flex; align-items: center; gap: 16px; }
 
     .logo {
-      width: 64px;
+      width: 68px;
       aspect-ratio: 1;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
+      border-radius: 22px;
       display: grid;
       place-items: center;
-      background: var(--primary);
-      box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.36);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.32);
       flex: 0 0 auto;
     }
 
-    .logo svg { width: 45px; height: 45px; }
-    h1 { margin: 0; font-size: clamp(1.45rem, 3vw, 2.35rem); line-height: 1; }
-    .subtitle { margin: 5px 0 0; color: #5f3200; font-weight: 650; font-size: clamp(0.9rem, 1.8vw, 1rem); }
+    .logo svg { width: 46px; height: 46px; filter: drop-shadow(0 8px 14px rgba(0,0,0,0.15)); }
+    .logo polygon { fill: #ffffff; }
+    h1 { margin: 0; font-size: clamp(1.55rem, 3vw, 2.45rem); line-height: 1.02; letter-spacing: -0.04em; }
+    .subtitle { margin: 7px 0 0; color: rgba(255,255,255,0.84); font-weight: 650; font-size: clamp(0.92rem, 1.8vw, 1.03rem); }
 
     .scorebar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-    .pill { background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(201, 20, 20, 0.2); border-radius: 999px; padding: 9px 13px; font-weight: 800; white-space: nowrap; }
+    .pill { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255,255,255,0.26); border-radius: 999px; padding: 10px 14px; font-weight: 850; white-space: nowrap; backdrop-filter: blur(8px); }
 
-    main { padding: clamp(18px, 4vw, 36px); }
+    main { padding: clamp(18px, 4vw, 38px); }
     .screen { display: none; }
-    .screen.active { display: block; animation: fade 220ms ease; }
-    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .screen.active { display: block; animation: fade 240ms ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .intro, .result-card, .question-card {
-      background: var(--panel);
+      background: var(--panel-strong);
       border-radius: var(--radius);
-      padding: clamp(20px, 4vw, 34px);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+      padding: clamp(20px, 4vw, 36px);
+      border: 1px solid rgba(91, 124, 250, 0.12);
+      box-shadow: var(--shadow-soft);
     }
 
-    .intro h2, .result-card h2 { margin-top: 0; font-size: clamp(1.5rem, 3vw, 2.2rem); }
-    .intro p, .result-card p { color: var(--muted); font-size: 1.06rem; line-height: 1.55; }
+    .intro h2, .result-card h2 { margin: 0 0 8px; font-size: clamp(1.55rem, 3vw, 2.35rem); letter-spacing: -0.035em; }
+    .intro p, .result-card p { color: var(--muted); font-size: 1.07rem; line-height: 1.6; margin-top: 0; }
 
-    .settings { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin: 24px 0; }
-    .field { display: grid; gap: 8px; }
-    label { font-weight: 900; color: #5f3200; }
-    select, button { font: inherit; }
-    select { width: 100%; padding: 13px 14px; border-radius: 15px; border: 2px solid rgba(255, 47, 47, 0.22); background: #fff; color: var(--text); font-weight: 750; }
+    .settings { display: grid; grid-template-columns: 1.6fr 0.8fr; gap: 20px; margin: 26px 0; align-items: start; }
+    .field { display: grid; gap: 10px; }
+    label, .field-title { font-weight: 900; color: #24304a; }
+    select { display: none; }
+    button { font: inherit; }
+
+    .topic-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .topic-tile {
+      min-height: 96px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,255,0.98));
+      color: var(--text);
+      text-align: left;
+      padding: 15px;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    .topic-tile:hover { transform: translateY(-2px); border-color: rgba(91, 124, 250, 0.45); box-shadow: 0 16px 28px rgba(91, 124, 250, 0.14); }
+    .topic-tile.active { background: linear-gradient(135deg, rgba(91,124,250,0.98), rgba(16,185,129,0.92)); color: #fff; border-color: transparent; box-shadow: 0 18px 34px rgba(91, 124, 250, 0.28); }
+    .topic-tile strong { font-size: 1rem; line-height: 1.18; }
+    .topic-tile span { color: var(--muted); font-size: 0.9rem; font-weight: 650; line-height: 1.35; }
+    .topic-tile.active span { color: rgba(255,255,255,0.84); }
 
     .count-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .count-options input { position: absolute; opacity: 0; pointer-events: none; }
-    .count-options span { display: grid; place-items: center; min-height: 51px; border-radius: 15px; border: 2px solid rgba(255, 47, 47, 0.22); background: #fff; font-weight: 950; cursor: pointer; }
-    .count-options input:checked + span { background: #ff2f2f; color: #fff; border-color: #ff2f2f; box-shadow: 0 10px 18px rgba(201, 20, 20, 0.18); }
+    .count-options span { display: grid; place-items: center; min-height: 54px; border-radius: 17px; border: 1px solid var(--line); background: #fff; font-weight: 950; cursor: pointer; transition: 140ms ease; }
+    .count-options span:hover { transform: translateY(-1px); border-color: rgba(91, 124, 250, 0.45); }
+    .count-options input:checked + span { background: #162033; color: #fff; border-color: #162033; box-shadow: 0 14px 24px rgba(22, 32, 51, 0.18); }
 
-    .topic-preview { margin-top: 10px; padding: 14px 16px; border-radius: 16px; background: #fff8cf; border: 2px solid rgba(255, 47, 47, 0.14); color: #6c3a00; font-weight: 750; }
+    .topic-preview { margin-top: 12px; padding: 14px 16px; border-radius: 18px; background: #f4f7ff; border: 1px solid var(--line); color: #3b4964; font-weight: 750; }
 
-    .btn { border: 0; border-radius: 16px; padding: 14px 18px; cursor: pointer; font-weight: 900; transition: transform 130ms ease, filter 130ms ease, box-shadow 130ms ease; box-shadow: 0 10px 18px rgba(201, 20, 20, 0.18); }
+    .btn { border: 0; border-radius: 17px; padding: 14px 19px; cursor: pointer; font-weight: 900; transition: transform 130ms ease, filter 130ms ease, box-shadow 130ms ease; }
     .btn:hover { transform: translateY(-1px); filter: brightness(1.02); }
     .btn:active { transform: translateY(1px); }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-secondary { background: #ffe66d; color: #491b00; box-shadow: none; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: white; box-shadow: 0 16px 30px rgba(91, 124, 250, 0.26); }
+    .btn-secondary { background: #eef3ff; color: #24304a; box-shadow: none; }
 
-    .topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; color: var(--muted); font-weight: 800; }
-    .progress { height: 12px; background: #ffe8e8; border-radius: 999px; overflow: hidden; margin: 0 0 24px; }
-    .progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #ff9c00); border-radius: inherit; transition: width 260ms ease; }
-    .question { font-size: clamp(1.3rem, 3vw, 2rem); margin: 0 0 22px; line-height: 1.25; }
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; color: var(--muted); font-weight: 850; }
+    .progress { height: 12px; background: #e9eefb; border-radius: 999px; overflow: hidden; margin: 0 0 24px; }
+    .progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-2)); border-radius: inherit; transition: width 260ms ease; }
+    .question { font-size: clamp(1.28rem, 3vw, 2.05rem); margin: 0 0 22px; line-height: 1.25; letter-spacing: -0.025em; }
     .answers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .answer { min-height: 76px; text-align: left; border: 2px solid rgba(0, 0, 0, 0.08); border-radius: 18px; background: #fff; padding: 16px; cursor: pointer; font-weight: 800; color: var(--text); transition: transform 120ms ease, border-color 120ms ease, background 120ms ease; }
-    .answer:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--accent); background: #fffdf0; }
+    .answer { min-height: 78px; text-align: left; border: 1px solid rgba(22, 32, 51, 0.10); border-radius: 20px; background: #fff; padding: 16px; cursor: pointer; font-weight: 800; color: var(--text); transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, box-shadow 120ms ease; }
+    .answer:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(91, 124, 250, 0.55); background: #f8fbff; box-shadow: 0 14px 25px rgba(91, 124, 250, 0.10); }
     .answer:disabled { cursor: not-allowed; }
-    .answer.correct { border-color: var(--ok); background: #e9f8ef; }
-    .answer.wrong { border-color: var(--bad); background: #fdecea; }
+    .answer.correct { border-color: rgba(22,163,74,0.58); background: #ecfdf3; }
+    .answer.wrong { border-color: rgba(220,38,38,0.58); background: #fef2f2; }
 
-    .feedback { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: #f7f7f7; display: none; line-height: 1.5; font-weight: 650; }
+    .image-answers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .image-answer {
+      min-height: auto;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .image-answer img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid rgba(22, 32, 51, 0.08);
+      padding: 8px;
+    }
+
+    .image-answer span {
+      font-weight: 950;
+      color: #3b4964;
+    }
+
+    .prompt-image-wrap {
+      display: grid;
+      place-items: center;
+      margin: 0 0 22px;
+      padding: 14px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid rgba(22, 32, 51, 0.10);
+    }
+
+    .prompt-image-wrap img {
+      width: min(100%, 430px);
+      max-height: 310px;
+      object-fit: contain;
+      border-radius: 16px;
+      background: #fff;
+      padding: 8px;
+      border: 1px solid rgba(22, 32, 51, 0.08);
+    }
+
+    .review-prompt-image {
+      margin: 10px 0;
+    }
+
+    .review-prompt-image img {
+      width: min(100%, 180px);
+      max-height: 150px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(22, 32, 51, 0.10);
+      padding: 6px;
+    }
+
+    .review-images {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 150px));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .review-images img {
+      width: 100%;
+      max-height: 130px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(22, 32, 51, 0.10);
+      padding: 6px;
+    }
+
+    .feedback { margin-top: 18px; padding: 14px 16px; border-radius: 17px; background: #f5f7fb; display: none; line-height: 1.5; font-weight: 650; border: 1px solid rgba(22,32,51,0.07); }
     .feedback.show { display: block; }
     .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
 
     .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
-    .stat { background: #fff8cf; border: 2px solid rgba(255, 47, 47, 0.18); border-radius: 20px; padding: 22px; text-align: center; }
-    .stat strong { display: block; font-size: clamp(2.2rem, 6vw, 4rem); color: var(--accent-dark); line-height: 1; }
-    .stat span { display: block; margin-top: 8px; color: #6c3a00; font-weight: 900; }
+    .stat { background: #f4f7ff; border: 1px solid var(--line); border-radius: 22px; padding: 22px; text-align: center; }
+    .stat strong { display: block; font-size: clamp(2.2rem, 6vw, 4rem); color: var(--primary); line-height: 1; letter-spacing: -0.05em; }
+    .stat span { display: block; margin-top: 8px; color: #3b4964; font-weight: 900; }
     .review { display: grid; gap: 10px; margin-top: 18px; }
-    .review-item { border-left: 6px solid #ddd; background: #fafafa; border-radius: 14px; padding: 13px 14px; line-height: 1.4; }
+    .review-item { border-left: 6px solid #d0d5dd; background: #f8fafc; border-radius: 14px; padding: 13px 14px; line-height: 1.4; }
     .review-item.good { border-left-color: var(--ok); }
     .review-item.bad { border-left-color: var(--bad); }
     .small { color: var(--muted); font-size: 0.93rem; margin-top: 6px; }
 
-    @media (max-width: 720px) {
+    @media (max-width: 760px) {
       header { align-items: flex-start; flex-direction: column; }
       .scorebar { justify-content: flex-start; }
       .answers, .settings, .result-grid { grid-template-columns: 1fr; }
       .answer { min-height: auto; }
+      .topic-tiles { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -164,12 +291,12 @@
       <section id="startScreen" class="screen active">
         <div class="intro">
           <h2>Vyber si kvíz</h2>
-          <p>Nejdřív zvol téma a počet otázek. Kvíz pak náhodně vybere otázky z daného balíčku.</p>
+          <p>Nejdřív klikni na jeden z obdélníčků s tématem a zvol počet otázek. V každém tématu můžeš kombinovat textové otázky ABCD, otázky s obrázkem a ABCD i otázky s výběrem ze dvou obrázků.</p>
 
           <div class="settings">
             <div class="field">
-              <label for="topicSelect">Téma</label>
-              <select id="topicSelect"></select>
+              <div class="field-title">Téma</div>
+              <div id="topicTiles" class="topic-tiles" role="radiogroup" aria-label="Výběr tématu"></div>
               <div id="topicPreview" class="topic-preview"></div>
             </div>
             <div class="field">
@@ -233,6 +360,13 @@
         correct: 0,
         explanation: "Jaroslav Heyrovský získal Nobelovu cenu za chemii za objev a rozvoj polarografické metody."
       },
+{
+          question: "Co je na obrázku?",
+          promptImage: "kadinka.jpg",
+          answers: ["Kádinka", "Odměrná baňka", "Byreta", "Chladič"],
+          correct: 0,
+          explanation: "Na obrázku je kádinka. Slouží hlavně k míchání a orientačnímu zahřívání roztoků."
+        },
       {
         question: "Jak se nazývá skleněná nádoba používaná alchymisty při destilaci?",
         answers: ["Křivule", "Byreta", "Exsikátor", "Kádinka"],
@@ -4178,9 +4312,1349 @@
     answers: ["Odevzdávání nebezpečného odpadu na sběrná místa", "Vylévání chemikálií do kanalizace", "Vyhazování baterií do přírody", "Pálení barev a rozpouštědel doma"],
     correct: 0,
     explanation: "Nebezpečný odpad, například barvy, oleje nebo baterie, se má odevzdávat na určená sběrná místa."
+   }
+          ]
+    },
+    {
+      id: "MCHO",
+      title: "Otázky z Malé chemické olympiády",
+      subtitle: "Mix: textové otázky, obrázek + ABCD a výběr ze dvou obrázků",
+      type: "questionBank",
+      mixQuestionTypes: true,
+      questions: [
+        // TEXT + ABCD
+  {
+    question: "Kolikaprocentní roztok cukru vznikne rozpuštěním 350 g cukru v 1 litru vody?",
+    answers: ["13 %", "26 %", "35 %", "50 %"],
+    correct: 1,
+    explanation: "1 litr vody má přibližně 1000 g. Celková hmotnost roztoku je 1350 g, takže w = 350 / 1350 ≈ 0,26 = 26 %."
+  },
+  {
+    question: "Jaký je chemický název Al₂O₃?",
+    answers: ["Oxid hlinitý", "Oxid sodný", "Oxid fosforečný", "Fluorid jodistý"],
+    correct: 0,
+    explanation: "Al₂O₃ je oxid hlinitý."
+  },
+  {
+    question: "Jaký je chemický název P₂O₅?",
+    answers: ["Oxid dusitý", "Oxid fosforečný", "Oxid hlinitý", "Oxid sodný"],
+    correct: 1,
+    explanation: "P₂O₅ se nazývá oxid fosforečný."
+  },
+  {
+    question: "Jaký je chemický název Na₂O?",
+    answers: ["Oxid sodný", "Hydroxid sodný", "Chlorid sodný", "Oxid dusitý"],
+    correct: 0,
+    explanation: "Na₂O je oxid sodný."
+  },
+  {
+    question: "Jaký je chemický název NO₂?",
+    answers: ["Oxid dusný", "Oxid dusičitý", "Oxid dusitý", "Oxid dusíkatý"],
+    correct: 2,
+    explanation: "NO₂ se v tomto testu uvádí jako oxid dusitý."
+  },
+  {
+    question: "Jaký je chemický název IF₇?",
+    answers: ["Jodid fluorný", "Fluorid jodistý", "Fluorid jodný", "Jodid fluoristý"],
+    correct: 1,
+    explanation: "IF₇ je fluorid jodistý."
+  },
+  {
+    question: "Co vzniká reakcí Na₂O s vodou?",
+    answers: ["NaOH", "H₂CO₃", "H₂SO₄", "Mg(OH)₂"],
+    correct: 0,
+    explanation: "Oxid sodný reaguje s vodou za vzniku hydroxidu sodného: Na₂O + H₂O → 2 NaOH."
+  },
+  {
+    question: "Co vzniká reakcí CO₂ s vodou?",
+    answers: ["NaOH", "H₂CO₃", "H₂SO₄", "CaCO₃"],
+    correct: 1,
+    explanation: "Oxid uhličitý reaguje s vodou za vzniku kyseliny uhličité."
+  },
+  {
+    question: "Co vzniká reakcí SO₃ s vodou?",
+    answers: ["H₂SO₄", "H₂SO₃", "NaOH", "CO₂"],
+    correct: 0,
+    explanation: "Oxid sírový SO₃ reaguje s vodou za vzniku kyseliny sírové H₂SO₄."
+  },
+  {
+    question: "Co vzniká reakcí MgO s vodou?",
+    answers: ["MgCO₃", "MgCl₂", "Mg(OH)₂", "H₂SO₄"],
+    correct: 2,
+    explanation: "Oxid hořečnatý reaguje s vodou za vzniku hydroxidu hořečnatého Mg(OH)₂."
+  },
+  {
+    question: "Kolik dm³ kyslíku je potřeba k přípravě 12 dm³ oxidu sírového podle rovnice 2 SO₂ + O₂ → 2 SO₃?",
+    answers: ["3 dm³", "6 dm³", "12 dm³", "24 dm³"],
+    correct: 1,
+    explanation: "Poměr objemů O₂ : SO₃ je 1 : 2. Na 12 dm³ SO₃ je tedy potřeba 6 dm³ O₂."
+  },
+  {
+    question: "Jaký je vzorec halitu?",
+    answers: ["NaCl", "N₂O", "CO₂", "CaF₂"],
+    correct: 0,
+    explanation: "Halit je minerální forma chloridu sodného, tedy NaCl."
+  },
+  {
+    question: "Jaký je vzorec rajského plynu?",
+    answers: ["CO₂", "N₂O", "SO₂", "NO₂"],
+    correct: 1,
+    explanation: "Rajský plyn je oxid dusný N₂O."
+  },
+  {
+    question: "Jaký je vzorec suchého ledu?",
+    answers: ["CO₂", "H₂O", "NaCl", "CaO"],
+    correct: 0,
+    explanation: "Suchý led je pevný oxid uhličitý CO₂."
+  },
+  {
+    question: "Jaký je vzorec pyritu?",
+    answers: ["FeS₂", "Fe₂O₃", "CaF₂", "NaCl"],
+    correct: 0,
+    explanation: "Pyrit má vzorec FeS₂."
+  },
+  {
+    question: "Jaký je vzorec kazivce?",
+    answers: ["CaF₂", "CaCO₃", "CaO", "Ca(OH)₂"],
+    correct: 0,
+    explanation: "Kazivec neboli fluorit má vzorec CaF₂."
+  },
+  {
+    question: "Která látka se používá jako hnací plyn ve sprejích se šlehačkou?",
+    answers: ["Rajský plyn", "Suchý led", "Halit", "Kazivec"],
+    correct: 0,
+    explanation: "Rajský plyn N₂O se používá jako hnací plyn ve sprejích se šlehačkou."
+  },
+  {
+    question: "Která látka způsobuje skleníkový efekt?",
+    answers: ["NaCl", "CO₂", "CaF₂", "FeS₂"],
+    correct: 1,
+    explanation: "Oxid uhličitý CO₂ je skleníkový plyn."
+  },
+  {
+    question: "Který minerál se označuje jako kočičí zlato nebo zlato hlupáků?",
+    answers: ["Pyrit", "Halit", "Kazivec", "Korund"],
+    correct: 0,
+    explanation: "Pyrit se pro svůj kovový lesk nazývá kočičí zlato nebo zlato hlupáků."
+  },
+  {
+    question: "Které oxidy se mohou vyskytovat v polodrahokamech nebo v kouři továrních komínů?",
+    answers: ["N₂O, CO₂, SO₂, SiO₂", "NaCl, ZnS, Ca(OH)₂, CuO", "Ca(OH)₂, NaCl, ZnS, P₂O₅", "Fe₂O₃, NaCl, CaF₂, HCl"],
+    correct: 0,
+    explanation: "Z nabídky šlo o oxidy N₂O, CO₂, SO₂ a SiO₂."
+  },
+  {
+    question: "Jakou směsí je suchý vzduch?",
+    answers: ["Heterogenní směs", "Homogenní směs", "Suspenze", "Emulze"],
+    correct: 1,
+    explanation: "Suchý vzduch je stejnorodá, tedy homogenní směs plynů."
+  },
+  {
+    question: "Která složka vzduchu je třetí nejhojnější?",
+    answers: ["Kyslík", "Argon", "Oxid uhličitý", "Vodík"],
+    correct: 1,
+    explanation: "Po dusíku a kyslíku je třetí nejhojnější složkou vzduchu argon."
+  },
+  {
+    question: "Jakou metodou se ze vzduchu získávají jeho složky?",
+    answers: ["Filtrací", "Frakční destilací zkapalněného vzduchu", "Sublimací", "Krystalizací"],
+    correct: 1,
+    explanation: "Složky vzduchu se získávají frakční destilací zkapalněného vzduchu."
+  },
+  {
+    question: "Která složka vzduchu je ve vyšších koncentracích výbušná?",
+    answers: ["Argon", "Dusík", "Vodík", "Oxid uhličitý"],
+    correct: 2,
+    explanation: "Vodík je ve vyšších koncentracích se vzduchem výbušný."
+  },
+  {
+    question: "Jakou metodou oddělíme křídu ze směsi křídy, vody a soli?",
+    answers: ["Filtrací", "Destilací", "Sublimací", "Chromatografií"],
+    correct: 0,
+    explanation: "Křída je ve vodě nerozpustná, proto ji lze oddělit filtrací."
+  },
+  {
+    question: "Jakou metodou získáme sůl z roztoku soli ve vodě?",
+    answers: ["Filtrací", "Krystalizací nebo odpařováním", "Usazováním", "Odstřeďováním"],
+    correct: 1,
+    explanation: "Rozpuštěnou sůl získáme odpařením vody nebo krystalizací."
+  },
+  {
+    question: "Jak zapíšeme tři osmiatomové molekuly síry?",
+    answers: ["3 S₈", "8 S₃", "S₂₄", "3 S"],
+    correct: 0,
+    explanation: "Jedna molekula síry má vzorec S₈, tři molekuly zapíšeme 3 S₈."
+  },
+  {
+    question: "Jak zapíšeme pět atomů mědi?",
+    answers: ["Cu₅", "5 Cu", "5 Cu₂", "Cu + 5"],
+    correct: 1,
+    explanation: "Pět samostatných atomů mědi zapisujeme jako 5 Cu."
+  },
+  {
+    question: "Jak zapíšeme čtyři atomy fosforu?",
+    answers: ["4 P", "P₄", "4 P₂", "P + 4"],
+    correct: 0,
+    explanation: "Čtyři atomy fosforu se zapisují 4 P."
+  },
+  {
+    question: "Jak zapíšeme dvě molekuly kyslíku?",
+    answers: ["2 O", "O₄", "2 O₂", "O₂₂"],
+    correct: 2,
+    explanation: "Kyslík tvoří dvouatomové molekuly O₂, dvě molekuly zapíšeme 2 O₂."
+  },
+  {
+    question: "Kolik protonů má částice Fe³⁺ s protonovým číslem 26?",
+    answers: ["23", "26", "29", "56"],
+    correct: 1,
+    explanation: "Počet protonů je určen protonovým číslem, u železa je to 26."
+  },
+  {
+    question: "Kolik elektronů má ion Fe³⁺?",
+    answers: ["23", "26", "29", "3"],
+    correct: 0,
+    explanation: "Neutrální Fe má 26 elektronů, ion Fe³⁺ ztratil 3 elektrony, má tedy 23 elektronů."
+  },
+  {
+    question: "Kolik elektronů má ion O²⁻ s protonovým číslem 16?",
+    answers: ["14", "16", "18", "20"],
+    correct: 2,
+    explanation: "Ion O²⁻ má o dva elektrony více než neutrální atom, tedy 18 elektronů."
+  },
+  {
+    question: "Jaká směs vznikne smícháním vody a oleje?",
+    answers: ["Roztok", "Emulze", "Suspenze", "Pěna"],
+    correct: 1,
+    explanation: "Voda a olej tvoří emulzi, protože jde o směs dvou nemísitelných kapalin."
+  },
+  {
+    question: "Jakou metodou lze oddělit naftalen od soli?",
+    answers: ["Filtrací", "Sublimací", "Destilací", "Chromatografií"],
+    correct: 1,
+    explanation: "Naftalen sublimuje, proto jej lze oddělit sublimací."
+  },
+  {
+    question: "Jaká směs vznikne smícháním písku s vodou?",
+    answers: ["Roztok", "Emulze", "Suspenze", "Slitina"],
+    correct: 2,
+    explanation: "Písek je ve vodě nerozpustný, vzniká suspenze."
+  },
+  {
+    question: "Jaká směs vznikne rozpuštěním modré skalice ve vodě?",
+    answers: ["Roztok", "Suspenze", "Emulze", "Mlha"],
+    correct: 0,
+    explanation: "Rozpuštěná modrá skalice ve vodě tvoří roztok."
+  },
+  {
+    question: "Jaký je vzorec hydroxidu sodného?",
+    answers: ["NaOH", "HCl", "NaCl", "Na₂O"],
+    correct: 0,
+    explanation: "Hydroxid sodný má vzorec NaOH."
+  },
+  {
+    question: "Jaký je vzorec kyseliny trihydrogenfosforečné?",
+    answers: ["HCl", "H₂SO₄", "H₃PO₄", "HNO₃"],
+    correct: 2,
+    explanation: "Kyselina trihydrogenfosforečná, tedy fosforečná, má vzorec H₃PO₄."
+  },
+  {
+    question: "Čím lze v domácnosti odstranit vodní kámen?",
+    answers: ["Octem", "Líhem", "Mýdlovým roztokem", "Olejovou emulzí"],
+    correct: 0,
+    explanation: "Vodní kámen lze odstranit kyselinou, například octem."
+  },
+  {
+    question: "Jak se nazývají barviva obsažená v červeném zelí, která mění barvu podle pH?",
+    answers: ["Anthokyany", "Karoteny", "Chlorofyly", "Bílkoviny"],
+    correct: 0,
+    explanation: "Barviva červeného zelí měnící barvu podle pH se nazývají anthokyany."
+  },
+  {
+    question: "Jakou barvu mají anthokyany v kyselém prostředí?",
+    answers: ["Červenou", "Zelenou", "Žlutou", "Modrou"],
+    correct: 0,
+    explanation: "V kyselém prostředí mají anthokyany červenou barvu."
+  },
+  {
+    question: "Jakou barvu mají anthokyany v neutrálním prostředí?",
+    answers: ["Červenou", "Fialovou", "Žlutou", "Bezbarvou"],
+    correct: 1,
+    explanation: "V neutrálním prostředí jsou anthokyany fialové."
+  },
+  {
+    question: "Jakou barvu mají anthokyany v zásaditém prostředí?",
+    answers: ["Červenou", "Fialovou", "Zelenou až žlutou", "Černou"],
+    correct: 2,
+    explanation: "V zásaditém prostředí se anthokyany barví zeleně až žlutě."
+  },
+  {
+    question: "Co se stane s červeným zelím po přidání citronové zálivky?",
+    answers: ["Zmodrá", "Zčervená", "Zezelená", "Zčerná"],
+    correct: 1,
+    explanation: "Citron je kyselý, proto se barvivo v červeném zelí zbarví do červena."
+  },
+  {
+    question: "Jaká kyselina je obsažena v žaludku?",
+    answers: ["Kyselina sírová", "Kyselina chlorovodíková", "Kyselina uhličitá", "Kyselina fosforečná"],
+    correct: 1,
+    explanation: "V žaludku se nachází kyselina chlorovodíková HCl."
+  },
+  {
+    question: "Jak se triviálně nazývá hydrogenuhličitan sodný používaný proti pálení žáhy?",
+    answers: ["Jedlá soda", "Kuchyňská sůl", "Modrá skalice", "Pálené vápno"],
+    correct: 0,
+    explanation: "Hydrogenuhličitan sodný NaHCO₃ je známý jako jedlá soda."
+  },
+  {
+    question: "Jaká je rovnice reakce zinku s kyselinou chlorovodíkovou?",
+    answers: ["Zn + 2 HCl → H₂ + ZnCl₂", "Zn + H₂O → ZnO + H₂", "ZnCl₂ + H₂ → Zn + 2 HCl", "Zn + HCl → ZnCl + H₂O"],
+    correct: 0,
+    explanation: "Zinek reaguje s kyselinou chlorovodíkovou za vzniku vodíku a chloridu zinečnatého."
+  },
+  {
+    question: "Co je pálené vápno?",
+    answers: ["CaO", "Ca(OH)₂", "CaCO₃", "CaCl₂"],
+    correct: 0,
+    explanation: "Pálené vápno je oxid vápenatý CaO."
+  },
+  {
+    question: "Co je hašené vápno?",
+    answers: ["CaO", "Ca(OH)₂", "CaCO₃", "CaCl₂"],
+    correct: 1,
+    explanation: "Hašené vápno je hydroxid vápenatý Ca(OH)₂."
+  },
+  {
+    question: "Jaká rovnice popisuje hašení vápna?",
+    answers: ["CaO + H₂O → Ca(OH)₂", "CaCO₃ → CaO + CO₂", "Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaO + CO₂ → CaCO₃"],
+    correct: 0,
+    explanation: "Při hašení vápna reaguje oxid vápenatý s vodou na hydroxid vápenatý."
+  },
+  {
+    question: "S čím reaguje hašené vápno při tvrdnutí omítky?",
+    answers: ["S dusíkem", "S oxidem uhličitým", "S kyslíkem", "S vodíkem"],
+    correct: 1,
+    explanation: "Hašené vápno reaguje s oxidem uhličitým ze vzduchu."
+  },
+  {
+    question: "Jaká rovnice popisuje tvrdnutí vápenné omítky?",
+    answers: ["Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaO + H₂O → Ca(OH)₂", "CaCO₃ → CaO + CO₂", "CaCl₂ + H₂O → Ca(OH)₂"],
+    correct: 0,
+    explanation: "Hydroxid vápenatý reaguje s oxidem uhličitým za vzniku uhličitanu vápenatého a vody."
+  },
+  {
+    question: "Z jakého kovu jsou Nobelovy medaile?",
+    answers: ["Ze stříbra", "Ze zlata", "Z platiny", "Z hliníku"],
+    correct: 1,
+    explanation: "Nobelovy medaile jsou ze zlata."
+  },
+  {
+    question: "Jaká je chemická značka zlata?",
+    answers: ["Ag", "Au", "Al", "Zn"],
+    correct: 1,
+    explanation: "Chemická značka zlata je Au."
+  },
+  {
+    question: "Jak se dnes nazývá lučavka královská?",
+    answers: ["Aqua regia", "Kyselina uhličitá", "Královská voda", "Vápenná voda"],
+    correct: 0,
+    explanation: "Lučavka královská se latinsky označuje jako aqua regia."
+  },
+  {
+    question: "Z jakých kyselin se skládá lučavka královská?",
+    answers: ["Z kyseliny chlorovodíkové a kyseliny dusičné", "Z kyseliny sírové a kyseliny uhličité", "Z kyseliny fosforečné a octové", "Z kyseliny fluorovodíkové a chlorovodíkové"],
+    correct: 0,
+    explanation: "Lučavka královská je směs kyseliny chlorovodíkové a kyseliny dusičné v poměru 3 : 1."
+  },
+  {
+    question: "Jaký je vzorec kyseliny sírové?",
+    answers: ["H₂SO₄", "HNO₃", "HCl", "H₂CO₃"],
+    correct: 0,
+    explanation: "Kyselina sírová má vzorec H₂SO₄."
+  },
+  {
+    question: "Jaký je vzorec kyseliny dusičné?",
+    answers: ["HNO₃", "HNO₂", "HCl", "HI"],
+    correct: 0,
+    explanation: "Kyselina dusičná má vzorec HNO₃."
+  },
+  {
+    question: "Jaký je starší název kyseliny sírové?",
+    answers: ["Vitriol", "Salmiak", "Lučavka", "Soda"],
+    correct: 0,
+    explanation: "Starší označení kyseliny sírové je vitriol."
+  },
+  {
+    question: "Jak se nazývá kation NH₄⁺?",
+    answers: ["Amonný", "Sodný", "Vápenatý", "Hydroniový"],
+    correct: 0,
+    explanation: "Kation NH₄⁺ se nazývá amonný."
+  },
+  {
+    question: "Jak se nazývá kation H₃O⁺ způsobující kyselost roztoku?",
+    answers: ["Hydroxidový", "Hydroniový", "Amonný", "Sodný"],
+    correct: 1,
+    explanation: "Kation H₃O⁺ se nazývá hydroniový neboli oxoniový."
+  },
+  {
+    question: "Jaký hydroxid vzniká reakcí páleného vápna s vodou?",
+    answers: ["Hydroxid sodný", "Hydroxid vápenatý", "Hydroxid draselný", "Hydroxid hořečnatý"],
+    correct: 1,
+    explanation: "Pálené vápno CaO reaguje s vodou za vzniku hydroxidu vápenatého Ca(OH)₂."
+  },
+  {
+    question: "Jaký je jednoslovný český ekvivalent slova karcinogenita?",
+    answers: ["Jedovatost", "Rakovinotvornost", "Slučování", "Nerost"],
+    correct: 1,
+    explanation: "Karcinogenita znamená rakovinotvornost."
+  },
+  {
+    question: "Jaký je jednoslovný český ekvivalent slova toxický?",
+    answers: ["Jedovatý", "Zubní", "Učitelský", "Nerostný"],
+    correct: 0,
+    explanation: "Toxický znamená jedovatý."
+  },
+  {
+    question: "Jaký je jednoslovný český ekvivalent slova syntéza?",
+    answers: ["Rozklad", "Slučování", "Filtrace", "Odpařování"],
+    correct: 1,
+    explanation: "Syntéza znamená slučování."
+  },
+  {
+    question: "Jak se uchovává čerstvě vyrobený fluor?",
+    answers: ["Ve vodě", "V tlakové nádobě pokryté teflonem", "V papírovém sáčku", "V otevřené sklenici"],
+    correct: 1,
+    explanation: "Čerstvě vyrobený fluor se uchovává v tlakových nádobách pokrytých vrstvou teflonu."
+  },
+  {
+    question: "Které rostliny jsou uvedeny jako přirozený zdroj fluoru?",
+    answers: ["Brambory, tabák, paprika, rajčata a lilek", "Pšenice, rýže a kukuřice", "Jablka a hrušky", "Řasy a houby"],
+    correct: 0,
+    explanation: "V textu jsou uvedeny lilkovité rostliny: brambory, tabák, paprika, rajčata a lilek."
+  },
+  {
+    question: "Který GHS symbol označuje oxidační látky?",
+    answers: ["GHS03", "GHS04", "GHS05", "GHS06"],
+    correct: 0,
+    explanation: "GHS03 označuje oxidační látky."
+  },
+  {
+    question: "Který GHS symbol označuje toxické látky?",
+    answers: ["GHS03", "GHS04", "GHS05", "GHS06"],
+    correct: 3,
+    explanation: "GHS06 označuje toxické látky."
+  },
+  {
+    question: "Který GHS symbol označuje plyny pod tlakem?",
+    answers: ["GHS02", "GHS04", "GHS05", "GHS09"],
+    correct: 1,
+    explanation: "GHS04 označuje plyny pod tlakem."
+  },
+  {
+    question: "Který GHS symbol označuje korozivní a žíravé látky?",
+    answers: ["GHS03", "GHS05", "GHS06", "GHS09"],
+    correct: 1,
+    explanation: "GHS05 označuje korozivní a žíravé látky."
+  },
+  {
+    question: "Je fluor za běžných podmínek silně reaktivní zelenožlutý plyn?",
+    answers: ["Ano", "Ne", "Pouze v roztoku", "Pouze při nízké teplotě"],
+    correct: 0,
+    explanation: "Fluor je silně reaktivní zelenožlutý plyn."
+  },
+  {
+    question: "Do které skupiny periodické soustavy patří fluor?",
+    answers: ["Do 17. skupiny", "Do 1. skupiny", "Do 2. skupiny", "Do skupiny alkalických kovů"],
+    correct: 0,
+    explanation: "Fluor patří mezi halogeny, tedy do 17. skupiny."
+  },
+  {
+    question: "Co vznikne reakcí iontů F⁻ a Ca²⁺?",
+    answers: ["CaF₂", "CaCl₂", "NaF", "HF"],
+    correct: 0,
+    explanation: "Dva fluoridové ionty F⁻ se spojí s jedním iontem Ca²⁺ za vzniku fluoridu vápenatého CaF₂."
+  },
+  {
+    question: "Jak se nazývá CaF₂?",
+    answers: ["Fluorid vápenatý", "Chlorid vápenatý", "Oxid vápenatý", "Hydroxid vápenatý"],
+    correct: 0,
+    explanation: "CaF₂ je fluorid vápenatý."
+  },
+  {
+    question: "Co říká zákon zachování hmotnosti?",
+    answers: ["Hmotnost reaktantů se rovná hmotnosti produktů", "Hmota při reakci mizí", "Produkty jsou vždy těžší než reaktanty", "Reakce vždy spotřebuje kyslík"],
+    correct: 0,
+    explanation: "Podle zákona zachování hmotnosti se celková hmotnost látek před reakcí rovná celkové hmotnosti látek po reakci."
+  },
+  {
+    question: "Která kapalina z tabulky je zásaditější, má-li pH kolem 9?",
+    answers: ["Kapalina A", "Kapalina B", "Obě stejně", "Nelze určit"],
+    correct: 1,
+    explanation: "Kapalina B má pH kolem 9, zatímco kapalina A má pH kolem 4, proto je kapalina B zásaditější."
+  },
+  {
+    question: "Která z hodnot pH označuje kyselejší roztok?",
+    answers: ["pH 3,8", "pH 8,2", "pH 9,1", "pH 12"],
+    correct: 0,
+    explanation: "Čím nižší pH pod 7, tím kyselejší roztok."
+  },
+  {
+    question: "Jak může kyselina chlorovodíková disociovat ve vodě?",
+    answers: ["HCl + H₂O → H₃O⁺ + Cl⁻", "HCl → Na⁺ + Cl⁻", "HCl + H₂O → OH⁻ + Cl⁻", "HCl → H₂ + Cl₂"],
+    correct: 0,
+    explanation: "Kyselina chlorovodíková ve vodě odštěpuje proton a vzniká H₃O⁺ a Cl⁻."
+  },
+  {
+    question: "Jak může kyselina dusičná disociovat ve vodě?",
+    answers: ["HNO₃ + H₂O → H₃O⁺ + NO₃⁻", "HNO₃ → H⁺ + NO₂⁻", "HNO₃ + H₂O → OH⁻ + NO₃⁻", "HNO₃ → H₂ + NO₃"],
+    correct: 0,
+    explanation: "Kyselina dusičná disociuje na vodíkový nebo hydroniový kation a dusičnanový anion."
+  },
+  {
+    question: "Které z uvedených prvků jsou za pokojové teploty pevné látky?",
+    answers: ["C a I", "Br a Hg", "N a Ne", "Br a Ne"],
+    correct: 0,
+    explanation: "Uhlík C a jod I jsou za pokojové teploty pevné látky."
+  },
+  {
+    question: "Které z uvedených prvků jsou za pokojové teploty kapaliny?",
+    answers: ["C a I", "Br a Hg", "N a Ne", "C a Ne"],
+    correct: 1,
+    explanation: "Brom Br a rtuť Hg jsou za pokojové teploty kapaliny."
+  },
+  {
+    question: "Které z uvedených prvků jsou za pokojové teploty plyny?",
+    answers: ["N a Ne", "Br a Hg", "C a I", "Hg a I"],
+    correct: 0,
+    explanation: "Dusík N a neon Ne jsou za pokojové teploty plynné látky."
+  },
+  {
+    question: "Čím je minerální voda?",
+    answers: ["Prvkem", "Sloučeninou", "Směsí", "Iontem"],
+    correct: 2,
+    explanation: "Minerální voda obsahuje vodu a rozpuštěné látky, proto je směsí."
+  },
+  {
+    question: "Čím je měď?",
+    answers: ["Prvkem", "Sloučeninou", "Směsí", "Roztokem"],
+    correct: 0,
+    explanation: "Měď je chemický prvek."
+  },
+  {
+    question: "Čím je mléko?",
+    answers: ["Prvkem", "Sloučeninou", "Směsí", "Kovem"],
+    correct: 2,
+    explanation: "Mléko je směs více látek."
+  },
+  {
+    question: "Čím je bronz?",
+    answers: ["Prvkem", "Sloučeninou", "Směsí", "Nekovem"],
+    correct: 2,
+    explanation: "Bronz je slitina, tedy směs kovů."
+  },
+  {
+    question: "Čím je amoniak?",
+    answers: ["Prvkem", "Sloučeninou", "Směsí", "Slitinou"],
+    correct: 1,
+    explanation: "Amoniak NH₃ je chemická sloučenina."
+  },
+  {
+    question: "Jak oddělíme směs oleje a vody?",
+    answers: ["Usazováním nebo dělicí nálevkou", "Sublimací", "Chromatografií", "Magnetem"],
+    correct: 0,
+    explanation: "Olej a voda se nemísí a lze je oddělit po usazení, ideálně dělicí nálevkou."
+  },
+  {
+    question: "Jak oddělíme směs vody a lihu?",
+    answers: ["Filtrací", "Destilací", "Sublimací", "Usazováním"],
+    correct: 1,
+    explanation: "Voda a líh mají odlišné teploty varu, proto je lze oddělit destilací."
+  },
+  {
+    question: "Jak oddělíme směs křídy a vody?",
+    answers: ["Filtrací nebo usazováním", "Destilací", "Chromatografií", "Sublimací"],
+    correct: 0,
+    explanation: "Křída je ve vodě nerozpustná, lze ji oddělit filtrací nebo usazováním."
+  },
+  {
+    question: "Jak oddělíme cukr z vody?",
+    answers: ["Krystalizací", "Filtrací", "Usazováním", "Odstřeďováním"],
+    correct: 0,
+    explanation: "Cukr je ve vodě rozpuštěný, lze jej získat krystalizací po odpaření vody."
+  },
+  {
+    question: "Která kyselina je velmi silná a má dehydratační účinky?",
+    answers: ["Kyselina sírová", "Kyselina uhličitá", "Kyselina fluorovodíková", "Kyselina octová"],
+    correct: 0,
+    explanation: "Kyselina sírová je velmi silná kyselina s dehydratačními účinky."
+  },
+  {
+    question: "Která kyselina leptá sklo?",
+    answers: ["Kyselina sírová", "Kyselina fluorovodíková", "Kyselina uhličitá", "Kyselina citronová"],
+    correct: 1,
+    explanation: "Kyselina fluorovodíková leptá sklo."
+  },
+  {
+    question: "Co je amoniak?",
+    answers: ["Štiplavě páchnoucí plyn", "Silně zásaditý roztok", "Roztok oxidu uhličitého ve vodě", "Součást královské lučavky"],
+    correct: 0,
+    explanation: "Amoniak NH₃ je štiplavě páchnoucí plyn."
+  },
+  {
+    question: "Co je sodovka z chemického hlediska?",
+    answers: ["Roztok oxidu uhličitého ve vodě", "Roztok kyseliny sírové", "Leptavé sklo", "Štiplavý plyn"],
+    correct: 0,
+    explanation: "Sodovka obsahuje oxid uhličitý rozpuštěný ve vodě."
+  },
+  {
+    question: "Jaká rovnice popisuje přeměnu oxidu vápenatého na hydroxid vápenatý?",
+    answers: ["CaO + H₂O → Ca(OH)₂", "Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaCO₃ → CaO + CO₂", "CaO + CO₂ → CaCO₃"],
+    correct: 0,
+    explanation: "Oxid vápenatý reaguje s vodou za vzniku hydroxidu vápenatého."
+  },
+  {
+    question: "Jaká rovnice popisuje vznik uhličitanu vápenatého z hydroxidu vápenatého?",
+    answers: ["Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaO + H₂O → Ca(OH)₂", "CaCO₃ → CaO + CO₂", "Ca + CO₂ → CaCO₃"],
+    correct: 0,
+    explanation: "Hydroxid vápenatý reaguje s CO₂ za vzniku uhličitanu vápenatého a vody."
+  },
+  {
+    question: "Jaká rovnice popisuje tepelný rozklad uhličitanu vápenatého?",
+    answers: ["CaCO₃ → CaO + CO₂", "CaO + H₂O → Ca(OH)₂", "Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaCO₃ + H₂O → Ca(OH)₂"],
+    correct: 0,
+    explanation: "Při žíhání se uhličitan vápenatý rozkládá na oxid vápenatý a oxid uhličitý."
+  },
+  {
+    question: "Jaká je molární hmotnost TiO₂, jestliže M(Ti)=48 g/mol a M(O)=16 g/mol?",
+    answers: ["48 g/mol", "64 g/mol", "80 g/mol", "96 g/mol"],
+    correct: 2,
+    explanation: "M(TiO₂) = 48 + 2 × 16 = 80 g/mol."
+  },
+  {
+    question: "Jaké látkové množství je v 0,5 kg TiO₂, jestliže M(TiO₂)=80 g/mol?",
+    answers: ["0,625 mol", "6,25 mol", "62,5 mol", "80 mol"],
+    correct: 1,
+    explanation: "0,5 kg je 500 g. n = m/M = 500/80 = 6,25 mol."
+  },
+  {
+    question: "Jaká je průměrná hmotnostní koncentrace soli v mořské vodě, pokud je slanost 36 g/l?",
+    answers: ["3,6 g/l", "36 g/l", "360 g/l", "0,36 g/l"],
+    correct: 1,
+    explanation: "Slanost 36 g/l znamená, že v 1 litru mořské vody je rozpuštěno 36 g solí."
+  },
+  {
+    question: "Jaký je hmotnostní zlomek soli v mořské vodě o slanosti 36 g/l a hustotě 1025 g/dm³?",
+    answers: ["0,35 %", "3,5 %", "35 %", "10,25 %"],
+    correct: 1,
+    explanation: "w = 36 / 1025 ≈ 0,035, tedy přibližně 3,5 %."
+  },
+  {
+    question: "Jaká je slanost Mrtvého moře v g/l, pokud je roztok 34,2% a hustota je 1240 g/dm³?",
+    answers: ["34,2 g/l", "124 g/l", "342 g/l", "424,1 g/l"],
+    correct: 3,
+    explanation: "m soli = 0,342 × 1240 = 424,1 g v jednom litru."
+  },
+  {
+    question: "Jaká kyselina se používá v nápoji Coca-Cola ke kyselení?",
+    answers: ["Kyselina trihydrogenfosforečná", "Kyselina sírová", "Kyselina chlorovodíková", "Kyselina fluorovodíková"],
+    correct: 0,
+    explanation: "V Coca-Cole se jako kyselina používá kyselina fosforečná, tedy trihydrogenfosforečná."
+  },
+  {
+    question: "Jaký je vzorec kyseliny fosforečné?",
+    answers: ["H₃PO₄", "H₂SO₄", "HCl", "HNO₃"],
+    correct: 0,
+    explanation: "Kyselina fosforečná má vzorec H₃PO₄."
+  },
+  {
+    question: "Jaká kyselina je elektrolytem v olověném akumulátoru?",
+    answers: ["Kyselina sírová", "Kyselina chlorovodíková", "Kyselina uhličitá", "Kyselina fosforečná"],
+    correct: 0,
+    explanation: "V olověném akumulátoru se jako elektrolyt používá kyselina sírová H₂SO₄."
+  },
+  {
+    question: "Jaká kyselina se používá k odmaštění a čištění kovů před letováním a svařováním?",
+    answers: ["Kyselina chlorovodíková", "Kyselina uhličitá", "Kyselina citronová", "Kyselina boritá"],
+    correct: 0,
+    explanation: "K čištění kovů se používá kyselina chlorovodíková HCl."
+  },
+  {
+    question: "Který chemický děj popisuje rozklad peroxidu vodíku za přítomnosti oxidu manganičitého?",
+    answers: ["Katalytický rozklad", "Neutralizace", "Srážecí reakce", "Rozpouštění ve vodě"],
+    correct: 0,
+    explanation: "Oxid manganičitý působí jako katalyzátor rozkladu peroxidu vodíku."
+  },
+  {
+    question: "Který chemický děj popisuje reakce kyseliny sírové s hydroxidem draselným?",
+    answers: ["Neutralizace", "Termický rozklad", "Srážecí reakce", "Katalytický rozklad"],
+    correct: 0,
+    explanation: "Reakce kyseliny se zásadou je neutralizace."
+  },
+  {
+    question: "Který chemický děj popisuje reakce AgNO₃ s KBr za vzniku sraženiny AgBr?",
+    answers: ["Srážecí reakce", "Neutralizace", "Destilace", "Sublimace"],
+    correct: 0,
+    explanation: "Vznik nerozpustné sraženiny AgBr je srážecí reakce."
+  },
+  {
+    question: "Který chemický děj popisuje zahřívání CaCO₃?",
+    answers: ["Termický rozklad", "Katalytický rozklad", "Rozpouštění ve vodě", "Neutralizace"],
+    correct: 0,
+    explanation: "Uhličitan vápenatý se teplem rozkládá na CaO a CO₂."
+  },
+  {
+    question: "Jaká rovnice popisuje reakci oxidu siřičitého s vodou?",
+    answers: ["SO₂ + H₂O → H₂SO₃", "SO₂ + H₂O → H₂SO₄", "SO₂ + O₂ → SO₃", "SO₂ → S + O₂"],
+    correct: 0,
+    explanation: "Oxid siřičitý se ve vodě rozpouští za vzniku kyseliny siřičité H₂SO₃."
+  },
+  {
+    question: "Jak se nazývá reakce 6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂ za přítomnosti chlorofylu a UV záření?",
+    answers: ["Fotosyntéza", "Neutralizace", "Destilace", "Sublimace"],
+    correct: 0,
+    explanation: "Tato reakce je fotosyntéza."
+  },
+  {
+    question: "Jaké jsou reaktanty při fotosyntéze podle rovnice 6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂?",
+    answers: ["Oxid uhličitý a voda", "Glukóza a kyslík", "Kyselina sírová a voda", "Dusík a kyslík"],
+    correct: 0,
+    explanation: "Na levé straně rovnice fotosyntézy jsou oxid uhličitý a voda."
+  },
+  {
+    question: "Jaké produkty vznikají při fotosyntéze?",
+    answers: ["Glukóza a kyslík", "Oxid uhličitý a voda", "Kyselina uhličitá a kyslík", "Dusík a voda"],
+    correct: 0,
+    explanation: "Při fotosyntéze vzniká glukóza C₆H₁₂O₆ a kyslík O₂."
+  },
+  {
+    question: "Jaký objem zaujímá 1 mol plynu za normálních podmínek?",
+    answers: ["2,24 dm³", "22,4 dm³", "224 dm³", "1 dm³"],
+    correct: 1,
+    explanation: "Jeden mol plynu za normálních podmínek zaujímá objem 22,4 dm³."
+  },
+  {
+    question: "Kolik gramů váží 1 mol kyslíku O₂?",
+    answers: ["16 g", "18 g", "32 g", "44 g"],
+    correct: 2,
+    explanation: "M(O₂) = 2 × 16 = 32 g/mol."
+  },
+  {
+    question: "Jaký je triviální název oxidu titaničitého používaného jako bílý pigment E171?",
+    answers: ["Titanová běloba", "Suchý led", "Pálené vápno", "Modrá skalice"],
+    correct: 0,
+    explanation: "Oxid titaničitý TiO₂ se jako pigment označuje titanová běloba."
+  },
+  {
+    question: "Jaký je systematický název a vzorec titanové běloby?",
+    answers: ["Oxid titaničitý, TiO₂", "Oxid uhličitý, CO₂", "Oxid vápenatý, CaO", "Oxid hlinitý, Al₂O₃"],
+    correct: 0,
+    explanation: "Titanová běloba je oxid titaničitý TiO₂."
+  },
+  {
+    question: "Jaký je sumární vzorec vitaminu D₃ uvedený v textu?",
+    answers: ["C₂₇H₄₄O", "C₆H₁₂O₆", "H₃PO₄", "C₂H₅OH"],
+    correct: 0,
+    explanation: "Vitamin D₃, cholekalciferol, má sumární vzorec C₂₇H₄₄O."
+  },
+  {
+    question: "Který prvek je podle textu důležitý pro správný vývoj kostí?",
+    answers: ["Vápník", "Sodík", "Chlor", "Fluor"],
+    correct: 0,
+    explanation: "Pro vývoj kostí je důležitý vápník, jehož využití souvisí i s vitaminem D."
+  },
+  {
+    question: "Kde se v těle tvoří vitamin D působením slunečního záření?",
+    answers: ["V kůži", "V plicích", "V žaludku", "V kostech"],
+    correct: 0,
+    explanation: "Vitamin D se tvoří v kůži působením slunečního záření."
+  },
+  {
+    question: "Jak se jmenuje vitamin D₃?",
+    answers: ["Cholekalciferol", "Ergokalciferol", "Kyselina askorbová", "Retinol"],
+    correct: 0,
+    explanation: "Vitamin D₃ se nazývá cholekalciferol."
+  },
+  {
+    question: "Jaký účinek má opalovací krém s UV faktorem 25 podle textu?",
+    answers: ["Propustí asi 1/25 UV záření", "Zvýší tvorbu vitaminu D", "Propustí všechno UV záření", "Zabrání pouze viditelnému světlu"],
+    correct: 0,
+    explanation: "UV faktor 25 propustí přibližně jednu pětadvacetinu UV záření."
+  },
+  {
+    question: "Jaký je vzorec chloridu sodného?",
+    answers: ["NaCl", "NaOH", "HCl", "Na₂O"],
+    correct: 0,
+    explanation: "Chlorid sodný, běžná sůl, má vzorec NaCl."
+  },
+  {
+    question: "Jaká rovnice popisuje vznik chloridu sodného neutralizací hydroxidu sodného kyselinou chlorovodíkovou?",
+    answers: ["NaOH + HCl → NaCl + H₂O", "NaCl + H₂O → NaOH + HCl", "Na + Cl₂ → NaCl + H₂O", "NaOH + CO₂ → NaCl + H₂O"],
+    correct: 0,
+    explanation: "Hydroxid sodný reaguje s kyselinou chlorovodíkovou za vzniku chloridu sodného a vody."
+  },
+  {
+    question: "Která látka zapáchá jako zkažená vejce a má jedovatý dech?",
+    answers: ["Sirovodík", "Oxid uhelnatý", "Oxid siřičitý", "Oxid uhličitý"],
+    correct: 0,
+    explanation: "Sirovodík H₂S typicky zapáchá po zkažených vejcích a je jedovatý."
+  },
+  {
+    question: "Jaký je vzorec sirovodíku?",
+    answers: ["H₂S", "SO₂", "CO", "CO₂"],
+    correct: 0,
+    explanation: "Sirovodík má vzorec H₂S."
+  },
+  {
+    question: "Který plyn ničí schopnost krve vázat kyslík a vzniká nedokonalým hořením?",
+    answers: ["Oxid uhelnatý", "Oxid uhličitý", "Oxid siřičitý", "Sirovodík"],
+    correct: 0,
+    explanation: "Oxid uhelnatý CO vzniká při nedokonalém hoření a váže se na hemoglobin."
+  },
+  {
+    question: "Jaký je vzorec oxidu uhelnatého?",
+    answers: ["CO", "CO₂", "SO₂", "H₂S"],
+    correct: 0,
+    explanation: "Oxid uhelnatý má vzorec CO."
+  },
+  {
+    question: "Který plyn ostře zapáchá sírou, dráždí ke kašli a způsobuje kyselý déšť?",
+    answers: ["Oxid siřičitý", "Oxid uhličitý", "Sirovodík", "Oxid uhelnatý"],
+    correct: 0,
+    explanation: "Oxid siřičitý SO₂ dráždí dýchací cesty a podílí se na vzniku kyselých dešťů."
+  },
+  {
+    question: "Jaký je vzorec oxidu siřičitého?",
+    answers: ["SO₂", "SO₃", "H₂S", "CO₂"],
+    correct: 0,
+    explanation: "Oxid siřičitý má vzorec SO₂."
+  },
+  {
+    question: "Který plyn není možné dýchat, ale dýcháním vzniká a v pevné podobě způsobuje omrzliny?",
+    answers: ["Oxid uhličitý", "Oxid uhelnatý", "Sirovodík", "Oxid siřičitý"],
+    correct: 0,
+    explanation: "Oxid uhličitý CO₂ vzniká při dýchání a v pevné podobě je suchý led."
+  },
+  {
+    question: "Jaký je vzorec oxidu uhličitého?",
+    answers: ["CO₂", "CO", "SO₂", "H₂S"],
+    correct: 0,
+    explanation: "Oxid uhličitý má vzorec CO₂."
+  }, 
+{
+    question: "Který prvek prudce reaguje s vodou, plave na hladině a jeho sloučenina způsobuje slanost mořské vody?",
+    answers: ["Sodík", "Platina", "Uhlík", "Vodík"],
+    correct: 0,
+    explanation: "Sodík je alkalický kov, který prudce reaguje s vodou. Jeho sloučenina chlorid sodný způsobuje slanost mořské vody."
+  },
+  {
+    question: "Jaká je chemická značka sodíku?",
+    answers: ["S", "Na", "So", "Sd"],
+    correct: 1,
+    explanation: "Chemická značka sodíku je Na."
+  },
+  {
+    question: "Který kov je velmi ušlechtilý, drahý a používá se například v katalyzátorech aut?",
+    answers: ["Železo", "Měď", "Platina", "Hliník"],
+    correct: 2,
+    explanation: "Platina je ušlechtilý a drahý kov používaný mimo jiné v katalyzátorech automobilů."
+  },
+  {
+    question: "Jaká je chemická značka platiny?",
+    answers: ["Pt", "Pl", "Pa", "Pb"],
+    correct: 0,
+    explanation: "Chemická značka platiny je Pt."
+  },
+  {
+    question: "Z jakého prvku je diamant?",
+    answers: ["Křemík", "Uhlík", "Síra", "Vápník"],
+    correct: 1,
+    explanation: "Diamant je jedna z forem uhlíku."
+  },
+  {
+    question: "Jaká je chemická značka uhlíku?",
+    answers: ["U", "Uh", "C", "Ca"],
+    correct: 2,
+    explanation: "Chemická značka uhlíku je C."
+  },
+  {
+    question: "Který plyn tvoří se vzdušným kyslíkem výbušnou směs?",
+    answers: ["Dusík", "Vodík", "Argon", "Oxid uhličitý"],
+    correct: 1,
+    explanation: "Vodík se vzdušným kyslíkem tvoří výbušnou směs."
+  },
+  {
+    question: "Jaká je chemická značka vodíku?",
+    answers: ["V", "Vo", "H", "Hy"],
+    correct: 2,
+    explanation: "Chemická značka vodíku je H."
+  },
+  {
+    question: "Jak vznikne ion Si⁴⁺ z atomu křemíku?",
+    answers: ["Si + 4e⁻ → Si⁴⁺", "Si − 4e⁻ → Si⁴⁺", "Si + 2e⁻ → Si⁴⁺", "Si − 2e⁻ → Si⁴⁺"],
+    correct: 1,
+    explanation: "Kation Si⁴⁺ vzniká ztrátou čtyř elektronů."
+  },
+  {
+    question: "Jak vznikne ion S²⁻ z atomu síry?",
+    answers: ["S + 2e⁻ → S²⁻", "S − 2e⁻ → S²⁻", "S + 2p⁺ → S²⁻", "S − 2p⁺ → S²⁻"],
+    correct: 0,
+    explanation: "Anion S²⁻ vzniká přijetím dvou elektronů."
+  },
+  {
+    question: "Který z uvedených prvků nepatří mezi nekovy?",
+    answers: ["Chlor", "Dusík", "Křemík", "Lithium"],
+    correct: 3,
+    explanation: "Lithium je kov, zatímco chlor, dusík a kyslík patří mezi nekovy."
+  },
+  {
+    question: "Jaké skupenství má fluor F₂ za laboratorní teploty?",
+    answers: ["Pevné", "Kapalné", "Plynné", "Plazma"],
+    correct: 2,
+    explanation: "Fluor je za běžných podmínek plyn."
+  },
+  {
+    question: "Jaké skupenství má brom Br₂ za laboratorní teploty?",
+    answers: ["Pevné", "Kapalné", "Plynné", "Plazma"],
+    correct: 1,
+    explanation: "Brom je za běžných podmínek kapalina."
+  },
+  {
+    question: "Jaké skupenství má síra S₈ za laboratorní teploty?",
+    answers: ["Pevné", "Kapalné", "Plynné", "Plazma"],
+    correct: 0,
+    explanation: "Síra je za běžných podmínek pevná látka."
+  },
+  {
+    question: "Která rovnice popisuje reakci hliníku s kyselinou chlorovodíkovou?",
+    answers: ["Al + HCl → AlCl + H₂", "2 Al + 6 HCl → 2 AlCl₃ + 3 H₂", "Al + H₂O → Al₂O₃ + H₂", "AlCl₃ + H₂ → Al + HCl"],
+    correct: 1,
+    explanation: "Vyčíslená rovnice reakce je 2 Al + 6 HCl → 2 AlCl₃ + 3 H₂."
+  },
+  {
+    question: "Jak se nazývá látka HCl ve vodném roztoku?",
+    answers: ["Kyselina chlorovodíková", "Chlorid vodný", "Kyselina chlorná", "Chlorovodík sodný"],
+    correct: 0,
+    explanation: "Vodný roztok HCl se nazývá kyselina chlorovodíková."
+  },
+  {
+    question: "Který plyn vzniká při reakci hliníku s kyselinou chlorovodíkovou?",
+    answers: ["Kyslík", "Dusík", "Vodík", "Chlor"],
+    correct: 2,
+    explanation: "Při reakci kovu s kyselinou vzniká sůl a vodík."
+  },
+  {
+    question: "Jaký je chemický název CO₂?",
+    answers: ["Oxid uhelnatý", "Oxid uhličitý", "Oxid uheličitý", "Kyselina uhličitá"],
+    correct: 1,
+    explanation: "CO₂ se nazývá oxid uhličitý."
+  },
+  {
+    question: "Jaký je chemický název Fe₂O₃?",
+    answers: ["Oxid železnatý", "Oxid železitý", "Sulfid železitý", "Chlorid železitý"],
+    correct: 1,
+    explanation: "Fe₂O₃ je oxid železitý."
+  },
+  {
+    question: "Jaký je chemický název TiO₂?",
+    answers: ["Oxid titaničitý", "Oxid titanatý", "Sulfid titaničitý", "Oxid titanný"],
+    correct: 0,
+    explanation: "TiO₂ je oxid titaničitý."
+  },
+  {
+    question: "Jaký je chemický název Ag₂S?",
+    answers: ["Oxid stříbrný", "Sulfid stříbrný", "Chlorid stříbrný", "Sulfid sodný"],
+    correct: 1,
+    explanation: "Ag₂S je sulfid stříbrný."
+  },
+  {
+    question: "Který oxid se ve vodě rozpouští za vzniku hydroxidu sodného?",
+    answers: ["CO₂", "SiO₂", "Na₂O", "SO₃"],
+    correct: 2,
+    explanation: "Oxid sodný reaguje s vodou za vzniku hydroxidu sodného: Na₂O + H₂O → 2 NaOH."
+  },
+  {
+    question: "Která rovnice popisuje reakci oxidu sodného s vodou?",
+    answers: ["Na₂O + H₂O → 2 NaOH", "Na₂O + H₂O → H₂CO₃", "CO₂ + H₂O → NaOH", "NaOH + H₂O → Na₂O"],
+    correct: 0,
+    explanation: "Oxid sodný s vodou tvoří hydroxid sodný."
+  },
+  {
+    question: "Která rovnice popisuje reakci oxidu uhličitého s vodou?",
+    answers: ["CO₂ + H₂O → H₂CO₃", "CO₂ + H₂O → NaOH", "CO₂ + H₂O → CaCO₃", "CO₂ + H₂O → HCl"],
+    correct: 0,
+    explanation: "Oxid uhličitý reaguje s vodou za vzniku kyseliny uhličité."
+  },
+  {
+    question: "Jaký je vzorec hašeného vápna?",
+    answers: ["CaO", "CaCO₃", "Ca(OH)₂", "CaCl₂"],
+    correct: 2,
+    explanation: "Hašené vápno je hydroxid vápenatý, Ca(OH)₂."
+  },
+  {
+    question: "Jak se nazývá ZnS?",
+    answers: ["Oxid zinečnatý", "Sulfid zinečnatý", "Chlorid zinečnatý", "Sulfid sodný"],
+    correct: 1,
+    explanation: "ZnS je sulfid zinečnatý."
+  },
+  {
+    question: "Jak se nazývá KCl?",
+    answers: ["Chlorid draselný", "Chlorid vápenatý", "Oxid draselný", "Sulfid draselný"],
+    correct: 0,
+    explanation: "KCl je chlorid draselný."
+  },
+  {
+    question: "Jak se nazývá Al₂O₃?",
+    answers: ["Oxid hlinitý", "Oxid hlinatý", "Sulfid hlinitý", "Chlorid hlinitý"],
+    correct: 0,
+    explanation: "Al₂O₃ je oxid hlinitý."
+  },
+  {
+    question: "Jak se nazývá SiO₂?",
+    answers: ["Oxid sírový", "Oxid křemičitý", "Sulfid křemičitý", "Oxid křemnatý"],
+    correct: 1,
+    explanation: "SiO₂ je oxid křemičitý."
+  },
+  {
+    question: "Která látka je známá jako suchý led?",
+    answers: ["H₂O", "CO₂", "NaCl", "CaO"],
+    correct: 1,
+    explanation: "Suchý led je pevný oxid uhličitý."
+  },
+  {
+    question: "Který minerál se nazývá kočičí zlato?",
+    answers: ["Pyrit", "Halit", "Křemen", "Bauxit"],
+    correct: 0,
+    explanation: "Pyrit se často označuje jako kočičí zlato nebo zlato hlupáků."
+  },
+  {
+    question: "Jaký je vzorec pyritu?",
+    answers: ["FeS₂", "Fe₂O₃", "ZnS", "Ag₂S"],
+    correct: 0,
+    explanation: "Pyrit má vzorec FeS₂."
+  },
+  {
+    question: "Jak se nazývá NaCl jako minerál?",
+    answers: ["Sádrovec", "Halit", "Kazivec", "Korund"],
+    correct: 1,
+    explanation: "Minerál chlorid sodný NaCl se nazývá halit."
+  },
+  {
+    question: "Jaký je vzorec kazivce?",
+    answers: ["CaF₂", "CaCO₃", "CaO", "Ca(OH)₂"],
+    correct: 0,
+    explanation: "Kazivec neboli fluorit má vzorec CaF₂."
+  },
+  {
+    question: "Jaká je nejhojnější složka suchého vzduchu?",
+    answers: ["Kyslík", "Dusík", "Argon", "Oxid uhličitý"],
+    correct: 1,
+    explanation: "Suchý vzduch obsahuje nejvíce dusíku, přibližně 78 % objemu."
+  },
+  {
+    question: "Která složka vzduchu je třetí nejhojnější?",
+    answers: ["Oxid uhličitý", "Argon", "Vodík", "Neon"],
+    correct: 1,
+    explanation: "Po dusíku a kyslíku je třetí nejhojnější složkou vzduchu argon."
+  },
+  {
+    question: "Jakou metodou se průmyslově získávají složky ze vzduchu?",
+    answers: ["Filtrací", "Krystalizací", "Frakční destilací zkapalněného vzduchu", "Sublimací"],
+    correct: 2,
+    explanation: "Složky vzduchu se oddělují frakční destilací zkapalněného vzduchu."
+  },
+  {
+    question: "Jak oddělíme křídu ze směsi křídy, vody a soli?",
+    answers: ["Filtrací", "Destilací", "Sublimací", "Chromatografií"],
+    correct: 0,
+    explanation: "Nerozpustnou křídu lze od vody se solí oddělit filtrací."
+  },
+  {
+    question: "Jak lze získat sůl z roztoku soli ve vodě?",
+    answers: ["Filtrací", "Krystalizací nebo odpařováním", "Usazováním", "Chromatografií"],
+    correct: 1,
+    explanation: "Rozpuštěnou sůl získáme odpařením vody nebo krystalizací."
+  },
+  {
+    question: "Jak se nazývá směs, která má ve všech částech stejné složení?",
+    answers: ["Heterogenní směs", "Stejnorodá směs", "Suspenze", "Emulze"],
+    correct: 1,
+    explanation: "Stejnorodá neboli homogenní směs má ve všech částech stejné složení."
+  },
+  {
+    question: "Co je suspenze?",
+    answers: ["Směs dvou nemísitelných kapalin", "Směs plynu v kapalině", "Směs nerozpustné pevné látky v kapalině", "Čistá látka"],
+    correct: 2,
+    explanation: "Suspenze je heterogenní směs pevné nerozpustné látky rozptýlené v kapalině."
+  },
+  {
+    question: "Co je emulze?",
+    answers: ["Směs dvou nemísitelných kapalin", "Směs plynu a pevné látky", "Čistá kapalina", "Roztok soli ve vodě"],
+    correct: 0,
+    explanation: "Emulze je směs dvou nemísitelných kapalin, například vody a oleje."
+  },
+  {
+    question: "Kterou metodou lze oddělit vodu a olej?",
+    answers: ["Dělicí nálevkou", "Filtrací přes papír", "Magnetem", "Sublimací"],
+    correct: 0,
+    explanation: "Voda a olej se nemísí a lze je oddělit v dělicí nálevce."
+  },
+  {
+    question: "Která metoda slouží k rozkladu směsi barviv?",
+    answers: ["Filtrace", "Chromatografie", "Usazování", "Odstřeďování"],
+    correct: 1,
+    explanation: "Chromatografie umožňuje oddělovat složky směsí, například barviva."
+  },
+  {
+    question: "Jaký princip využívá destilace?",
+    answers: ["Odlišnou teplotu varu", "Magnetické vlastnosti", "Rozdílnou barvu", "Odlišnou elektrickou vodivost"],
+    correct: 0,
+    explanation: "Destilace odděluje látky podle rozdílných teplot varu."
+  },
+  {
+    question: "Jaký je vzorec hydroxidu sodného?",
+    answers: ["NaCl", "NaOH", "Na₂O", "NaHCO₃"],
+    correct: 1,
+    explanation: "Hydroxid sodný má vzorec NaOH."
+  },
+  {
+    question: "Jaký je vzorec kyseliny trihydrogenfosforečné?",
+    answers: ["HCl", "H₂SO₄", "H₃PO₄", "HNO₃"],
+    correct: 2,
+    explanation: "Kyselina trihydrogenfosforečná má vzorec H₃PO₄."
+  },
+  {
+    question: "Jaká látka se v domácnosti používá ke zmírnění pálení žáhy?",
+    answers: ["Jedlá soda", "Kuchyňská sůl", "Líh", "Cukr"],
+    correct: 0,
+    explanation: "Jedlá soda, tedy hydrogenuhličitan sodný NaHCO₃, může neutralizovat kyselinu v žaludku."
+  },
+  {
+    question: "Jaký je vzorec jedlé sody?",
+    answers: ["NaCl", "NaOH", "NaHCO₃", "Na₂CO₃"],
+    correct: 2,
+    explanation: "Jedlá soda je hydrogenuhličitan sodný, NaHCO₃."
+  },
+  {
+    question: "Jak se nazývá reakce kyseliny se zásadou?",
+    answers: ["Neutralizace", "Sublimace", "Destilace", "Filtrace"],
+    correct: 0,
+    explanation: "Reakce kyseliny se zásadou se nazývá neutralizace."
+  },
+  {
+    question: "Jaká rovnice popisuje reakci jedlé sody s kyselinou chlorovodíkovou?",
+    answers: ["NaHCO₃ + HCl → NaCl + H₂O + CO₂", "NaCl + H₂O → NaOH + HCl", "NaHCO₃ + H₂O → NaOH + CO₂", "HCl + NaOH → NaHCO₃"],
+    correct: 0,
+    explanation: "Hydrogenuhličitan sodný reaguje s kyselinou chlorovodíkovou za vzniku chloridu sodného, vody a oxidu uhličitého."
+  },
+  {
+    question: "Jakou barvu mají anthokyany z červeného zelí v kyselém prostředí?",
+    answers: ["Červenou", "Zelenou", "Modrou", "Žlutou"],
+    correct: 0,
+    explanation: "Anthokyany jsou v kyselém prostředí červené."
+  },
+  {
+    question: "Jakou barvu mají anthokyany z červeného zelí v zásaditém prostředí?",
+    answers: ["Červenou", "Zelenou až žlutou", "Bezbarvou", "Černou"],
+    correct: 1,
+    explanation: "V zásaditém prostředí se barva anthokyanů mění na zelenou až žlutou."
+  },
+  {
+    question: "Jaká kyselina je obsažena v žaludku?",
+    answers: ["Kyselina sírová", "Kyselina chlorovodíková", "Kyselina uhličitá", "Kyselina dusičná"],
+    correct: 1,
+    explanation: "V žaludku je obsažena kyselina chlorovodíková HCl."
+  },
+  {
+    question: "Jaká je rovnice reakce zinku s kyselinou chlorovodíkovou?",
+    answers: ["Zn + 2 HCl → H₂ + ZnCl₂", "Zn + H₂O → ZnO + H₂", "ZnCl₂ + H₂ → Zn + HCl", "Zn + HCl → ZnCl + H₂O"],
+    correct: 0,
+    explanation: "Zinek reaguje s kyselinou chlorovodíkovou za vzniku vodíku a chloridu zinečnatého."
+  },
+  {
+    question: "Co je pálené vápno?",
+    answers: ["CaO", "Ca(OH)₂", "CaCO₃", "CaCl₂"],
+    correct: 0,
+    explanation: "Pálené vápno je oxid vápenatý, CaO."
+  },
+  {
+    question: "Jaká rovnice popisuje hašení vápna?",
+    answers: ["CaO + H₂O → Ca(OH)₂", "CaCO₃ → CaO + CO₂", "Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaO + CO₂ → CaCO₃"],
+    correct: 0,
+    explanation: "Při hašení vápna reaguje oxid vápenatý s vodou za vzniku hydroxidu vápenatého."
+  },
+  {
+    question: "Jaká rovnice popisuje tvrdnutí vápenné omítky?",
+    answers: ["Ca(OH)₂ + CO₂ → CaCO₃ + H₂O", "CaO + H₂O → Ca(OH)₂", "CaCO₃ + H₂O → Ca(OH)₂", "CaCl₂ + CO₂ → CaCO₃"],
+    correct: 0,
+    explanation: "Hydroxid vápenatý reaguje s oxidem uhličitým ze vzduchu za vzniku uhličitanu vápenatého a vody."
+  },
+  {
+    question: "Atom má vždy stejný počet čeho?",
+    answers: ["Protonů a neutronů", "Elektronů a neutronů", "Elektronů a protonů", "Neutronů a iontů"],
+    correct: 2,
+    explanation: "Neutrální atom má stejný počet protonů a elektronů."
+  },
+  {
+    question: "Jaký náboj má atom jako celek?",
+    answers: ["Kladný", "Záporný", "Elektricky neutrální", "Proměnlivý vždy podle teploty"],
+    correct: 2,
+    explanation: "Atom jako celek je elektricky neutrální."
+  },
+  {
+    question: "Jaký náboj má anion?",
+    answers: ["Kladný", "Záporný", "Žádný", "Vždy dvojnásobný"],
+    correct: 1,
+    explanation: "Anion je záporně nabitý ion."
+  },
+  {
+    question: "Jak vzniká kation z atomu?",
+    answers: ["Přijetím elektronu", "Odtržením elektronu", "Přijetím neutronu", "Odtržením protonu"],
+    correct: 1,
+    explanation: "Kation vzniká ztrátou jednoho nebo více elektronů."
+  },
+  {
+    question: "Tvoří-li molekulu atomy více různých prvků, jedná se o co?",
+    answers: ["Prvek", "Sloučeninu", "Směs", "Iont"],
+    correct: 1,
+    explanation: "Molekula složená z atomů různých prvků je molekula sloučeniny."
+  },
+  {
+    question: "Z kolika různých prvků se skládá oxid uhličitý?",
+    answers: ["Z jednoho", "Ze dvou", "Ze tří", "Ze čtyř"],
+    correct: 1,
+    explanation: "Oxid uhličitý CO₂ se skládá z uhlíku a kyslíku."
+  },
+  {
+    question: "Z kolika atomů se skládá molekula oxidu uhličitého CO₂?",
+    answers: ["Ze dvou", "Ze tří", "Ze čtyř", "Z pěti"],
+    correct: 1,
+    explanation: "Molekula CO₂ obsahuje jeden atom uhlíku a dva atomy kyslíku, celkem tři atomy."
+  },
+  {
+    question: "Jak zapíšeme čtyři atomy fosforu?",
+    answers: ["4 P", "P₄", "4 P₂", "P + 4"],
+    correct: 0,
+    explanation: "Čtyři samostatné atomy fosforu zapisujeme jako 4 P."
+  },
+  {
+    question: "Jak zapíšeme tři dvouatomové molekuly chloru?",
+    answers: ["3 Cl", "Cl₃", "3 Cl₂", "Cl₂₃"],
+    correct: 2,
+    explanation: "Chlor tvoří dvouatomové molekuly Cl₂, tři molekuly zapíšeme 3 Cl₂."
+  },
+  {
+    question: "Jak zapíšeme dvě molekuly ozonu?",
+    answers: ["2 O", "2 O₂", "2 O₃", "O₆"],
+    correct: 2,
+    explanation: "Ozon má vzorec O₃, dvě molekuly zapisujeme 2 O₃."
   }
           ]
-    }
+    },
+    {
+      id: "tema-sklo-nadobi",
+      title: "Chemické sklo a nádobí",
+      subtitle: "Mix: textové otázky, obrázek + ABCD a výběr ze dvou obrázků",
+      type: "questionBank",
+      mixQuestionTypes: true,
+      questions: [
+        // TEXT + ABCD
+{ question: "K čemu se nejčastěji používá byreta?", answers: ["K přesnému dávkování kapaliny při titraci", "K zahřívání pevných látek", "K filtraci sraženiny", "K uchovávání plynů"], correct: 0, explanation: "Byreta umožňuje velmi přesně odpouštět kapalinu, hlavně při titracích." },
+        { question: "Která pomůcka slouží k přesnému odměření jednoho daného objemu roztoku?", answers: ["Nedělená pipeta", "Kádinka", "Třecí miska", "Stojan na zkumavky"], correct: 0, explanation: "Nedělená pipeta je kalibrovaná na jeden přesný objem." },
+        { question: "Jak se nazývá baňka s úzkým hrdlem a ryskou pro přípravu přesného objemu roztoku?", answers: ["Odměrná baňka", "Frakční baňka", "Odsávací baňka", "Erlenmeyerova baňka"], correct: 0, explanation: "Odměrná baňka má rysku, ke které se doplňuje roztok na přesný objem." },
+        { question: "K čemu se používá dělicí nálevka?", answers: ["K oddělování nemísitelných kapalin", "K drcení krystalů", "K měření teploty", "K upevnění zkumavky"], correct: 0, explanation: "Dělicí nálevka odděluje kapaliny s různou hustotou, které se spolu nemísí." },
+        { question: "Která nádoba je vhodná pro orientační míchání a zahřívání roztoků, ale ne pro přesné měření objemu?", answers: ["Kádinka", "Odměrná baňka", "Byreta", "Nedělená pipeta"], correct: 0, explanation: "Kádinka je univerzální nádoba, její stupnice je pouze orientační." },
+        { question: "K čemu slouží chladič v laboratorní aparatuře?", answers: ["Ke kondenzaci par zpět na kapalinu", "K vážení chemikálií", "K oddělení pevných látek", "K bezpečnému skladování kyselin"], correct: 0, explanation: "Chladič ochlazuje páry, které se tím mění zpět na kapalinu." },
+        { question: "Jaká pomůcka se používá k uchycení zkumavky při zahřívání?", answers: ["Držák na zkumavky", "Exsikátor", "Odměrný válec", "Navažovací lodička"], correct: 0, explanation: "Držák na zkumavky chrání ruce před horkem a umožňuje bezpečné zahřívání." },
+        { question: "Která pomůcka slouží k vysoušení látek v suchém prostředí?", answers: ["Exsikátor", "Promývačka", "Kahan", "Železný kruh"], correct: 0, explanation: "Exsikátor obsahuje vysoušedlo a udržuje látky v suchu." },
+        { question: "Co je Erlenmeyerova baňka?", answers: ["Kuželová baňka vhodná k míchání roztoků", "Trubice ve tvaru U", "Trychtýř s kohoutem", "Kelímek na žíhání"], correct: 0, explanation: "Erlenmeyerova, neboli kuželová, baňka má tvar kužele a dobře se v ní promíchává." },
+        { question: "K čemu slouží žíhací kelímek?", answers: ["K silnému zahřívání malého množství látky", "K odměřování objemu kapalin", "K promývání plynů", "K chlazení par"], correct: 0, explanation: "Žíhací kelímek odolává vysokým teplotám." },
+        { question: "Která pomůcka je vhodná pro odměření přibližného objemu kapaliny ve svislé válcové nádobě?", answers: ["Odměrný válec", "Třecí miska", "Svorka", "Alonž"], correct: 0, explanation: "Odměrný válec slouží k měření objemu, obvykle přesněji než kádinka." },
+        { question: "K čemu slouží třecí miska s tloučkem?", answers: ["K roztírání a drcení pevných látek", "K titraci", "K odsávání filtrátu", "K uchovávání zkumavek"], correct: 0, explanation: "Třecí miska s tloučkem slouží k rozmělňování pevných vzorků." },
+        { question: "Co je střička?", answers: ["Plastová lahvička k oplachování destilovanou vodou", "Skleněná nádoba s ryskou", "Kovový stojan", "Hořák na zemní plyn"], correct: 0, explanation: "Střička se používá k oplachování a doplňování malého množství vody." },
+        { question: "K čemu se používá stojan na zkumavky?", answers: ["K uložení zkumavek ve svislé poloze", "K přesnému dávkování roztoku", "K mletí pevných látek", "K chlazení par"], correct: 0, explanation: "Stojan drží zkumavky přehledně a bezpečně." },
+        { question: "K čemu slouží kahan?", answers: ["K zahřívání látek plamenem", "K měření hmotnosti", "K odměření přesného objemu", "K oddělení nemísitelných kapalin"], correct: 0, explanation: "Kahan je laboratorní zdroj plamene." },
+        { question: "Co je odsávací baňka?", answers: ["Baňka se silnou stěnou a bočním vývodem pro vakuovou filtraci", "Baňka s ryskou pro přesný objem", "Trychtýř s kohoutem", "Lahvička na oplachování"], correct: 0, explanation: "Odsávací baňka se používá při filtraci za sníženého tlaku." },
+        { question: "Jakou funkci má nálevka?", answers: ["Usnadňuje přelévání nebo filtraci kapalin", "Měří přesný objem 25 ml", "Drtí krystaly", "Uchovává vysoušedlo"], correct: 0, explanation: "Nálevka pomáhá přelévat kapaliny a s filtračním papírem i filtrovat." },
+        { question: "Co je navažovací lodička?", answers: ["Malá miska pro odvažování chemikálií", "Skleněná trubice ve tvaru U", "Kovový kroužek na stojan", "Zařízení k chlazení par"], correct: 0, explanation: "Navažovací lodička se používá při vážení pevných látek." },
+        { question: "Která pomůcka se upevňuje ke stojanu a drží aparaturu?", answers: ["Svorka", "Kádinka", "Promývačka", "Zkumavka"], correct: 0, explanation: "Svorka slouží k upevnění skla nebo jiných částí aparatury ke stojanu." },
+        { question: "K čemu může sloužit U-trubice?", answers: ["K vedení nebo zachycování plynů a kapalin v aparatuře", "K přesnému měření objemu roztoku", "K drcení látek", "K zahřívání plamenem"], correct: 0, explanation: "U-trubice je součástí různých aparatur, často pro plyny nebo kapaliny." },
+
+        // OBRÁZEK V ZADÁNÍ + ABCD
+{
+          question: "Co je na obrázku?",
+          promptImage: "kadinka.jpg",
+          answers: ["Kádinka", "Odměrná baňka", "Byreta", "Chladič"],
+          correct: 0,
+          explanation: "Na obrázku je kádinka. Slouží hlavně k míchání a orientačnímu zahřívání roztoků."
+        },
+        {
+          question: "K čemu se používá pomůcka na obrázku?",
+          promptImage: "byreta.jpg",
+          answers: ["K přesnému dávkování kapaliny při titraci", "K drcení pevných látek", "K promývání plynů", "K uchování zkumavek"],
+          correct: 0,
+          explanation: "Byreta umožňuje přesné dávkování kapaliny, například při titraci."
+        },
+        {
+          question: "Jak se jmenuje tato laboratorní pomůcka?",
+          promptImage: "odmerny_valec.jpg",
+          answers: ["Odměrný válec", "Zkumavka", "Dělicí nálevka", "Navažovací lodička"],
+          correct: 0,
+          explanation: "Odměrný válec se používá k odměřování objemu kapalin."
+        },
+        {
+          question: "Vyber správný název pomůcky na obrázku.",
+          promptImage: "delici_nalevka.jpg",
+          answers: ["Dělicí nálevka", "Nálevka", "Promývačka", "U-trubice"],
+          correct: 0,
+          explanation: "Dělicí nálevka slouží k oddělování dvou nemísitelných kapalin."
+        },
+        {
+          question: "Které tvrzení nejlépe odpovídá obrázku?",
+          promptImage: "chladic.jpg",
+          answers: ["Pomůcka ochlazuje páry při destilaci", "Pomůcka slouží k vážení pevných látek", "Pomůcka slouží k zapálení kahanu", "Pomůcka je určena k uskladnění zkumavek"],
+          correct: 0,
+          explanation: "Chladič ochlazuje páry, které se mění zpět na kapalinu."
+        },
+        {
+          question: "Co vidíš na obrázku?",
+          promptImage: "treci_miska.jpg",
+          answers: ["Třecí miska s tloučkem", "Exsikátor", "Frakční baňka", "Železný kruh"],
+          correct: 0,
+          explanation: "Třecí miska s tloučkem se používá k drcení a roztírání pevných látek."
+        },
+
+        // TEXT V ZADÁNÍ + VÝBĚR ZE DVOU OBRÁZKŮ
+{question:"Alonž", images:["chladic.jpg","alonz.jpg"], correct:1},
+{question:"Byreta", images:["byreta.jpg","delena_pipeta.jpg"], correct:0},
+{question:"Chladič", images:["promyvacka.jpg","chladic.jpg"], correct:1},
+{question:"Dělená pipeta", images:["pipeta_nedelena.jpg","delena_pipeta.jpg"], correct:1},
+{question:"Dělená pipeta", images:["delena_pipeta.jpg","pipeta_nedelena.jpg"], correct:0},
+{question:"Dělicí nálevka", images:["nalevka.jpg","delici_nalevka.jpg"], correct:1},
+{question:"Držák na zkumavky", images:["drzak.jpg","stojan_zkumavek.jpg"], correct:0},
+{question:"Exsikátor", images:["u_trubice.jpg","exsikator.jpg"], correct:1},
+{question:"Erlenmayerova baňka", images:["kuzelova_banka.jpg","frakcni_banka.jpg"], correct:0},
+{question:"Frakční baňka", images:["frakcni_banka.jpg","odsavaci_banka.jpg"], correct:0},
+{question:"Kádinka", images:["kuzelova_banka.jpg","kadinka.jpg"], correct:1},
+{question:"Kahan", images:["zelezny_kruh.jpg","kahan.jpg"], correct:1},
+{question:"Žíhací kelímek", images:["kelimek.jpg","lodicka.jpg"], correct:0},
+{question:"Kuželová baňka", images:["frakcni_banka.jpg","kuzelova_banka.jpg"], correct:1},
+{question:"Navažovací lodička", images:["lodicka.jpg","alonz.jpg"], correct:0},
+{question:"Nálevka", images:["nalevka.jpg","odmerna_banka.jpg"], correct:0},
+{question:"Odměrná baňka", images:["odmerny_valec.jpg","odmerna_banka.jpg"], correct:1},
+{question:"Odměrný válec", images:["odmerny_valec.jpg","delena_pipeta.jpg"], correct:0},
+{question:"Odsávací baňka", images:["odsavaci_banka.jpg","frakcni_banka.jpg"], correct:0},
+{question:"Nedělená pipeta", images:["lodicka.jpg","pipeta_nedelena.jpg"], correct:1},
+{question:"Promývačka", images:["exsikator.jpg","promyvacka.jpg"], correct:1},
+{question:"Stojan na zkumavky", images:["drzak.jpg","stojan_zkumavek.jpg"], correct:1},
+{question:"Střička", images:["promyvacka.jpg","stricka.jpg"], correct:1},
+{question:"Svorka", images:["drzak.jpg","svorka.jpg"], correct:1},
+{question:"Třecí miska s tloučkem", images:["lodicka.jpg","treci_miska.jpg"], correct:1},
+{question:"Nálevka", images:["nalevka.jpg","delici_nalevka.jpg"], correct:0},
+{question:"U-trubice", images:["kelimek.jpg","u_trubice.jpg"], correct:1},
+{question:"Skleněná vana", images:["vana.jpg","stojan_zkumavek.jpg"], correct:0},
+{question:"Železný kruh", images:["triangl.jpg","zelezny_kruh.jpg"], correct:1},
+{question:"Zkumavka", images:["u_trubice.jpg","zkumavka.jpg"], correct:1}
+      ]
+    },
     ];
 
     function shuffle(array) {
@@ -4229,6 +5703,87 @@
       return shuffle([...nameToSymbol, ...symbolToName]);
     }
 
+    function normalizeQuestion(question) {
+      const normalized = { ...question };
+
+      // Podporované zápisy otázky v libovolném tématu:
+      // 1) Text + ABCD:
+      //    { question: "Otázka?", answers: ["A", "B", "C", "D"], correct: 0 }
+      // 2) Obrázek v zadání + ABCD:
+      //    { question: "Co je na obrázku?", promptImage: "obrazek.jpg", answers: ["A", "B", "C", "D"], correct: 0 }
+      //    Funguje i kratší alias image: "obrazek.jpg".
+      // 3) Text v zadání + výběr ze 2 obrázků:
+      //    { question: "Vyber kádinku", images: ["spatne.jpg", "spravne.jpg"], correct: 1 }
+      //    Funguje i alias answerImages: ["spatne.jpg", "spravne.jpg"].
+      if (!normalized.promptImage && normalized.image) normalized.promptImage = normalized.image;
+      if (!normalized.images && normalized.answerImages) normalized.images = normalized.answerImages;
+      if (!normalized.type) {
+        if (normalized.images) normalized.type = "imageChoice";
+        else if (normalized.promptImage) normalized.type = "imagePromptABCD";
+        else normalized.type = "textABCD";
+      }
+      return normalized;
+    }
+
+    function prepareQuestionForRound(question) {
+      const q = normalizeQuestion(question);
+      const prepared = { ...q };
+
+      if (Array.isArray(q.answers)) {
+        prepared.answers = [...q.answers];
+      }
+
+      if (Array.isArray(q.images)) {
+        prepared.images = [...q.images];
+        // U otázek se dvěma obrázky se možnosti v každém kole promíchají,
+        // aby správná odpověď nebyla pořád na stejné straně.
+        if (prepared.images.length === 2 && Math.random() > 0.5) {
+          [prepared.images[0], prepared.images[1]] = [prepared.images[1], prepared.images[0]];
+          prepared.correct = prepared.correct === 0 ? 1 : 0;
+        }
+      }
+
+      return prepared;
+    }
+
+    function createQuestionRound(topic, requestedCount) {
+      const questions = topic.questions.map(normalizeQuestion);
+      const uniqueQuestions = Array.from(new Map(questions.map(q => [
+        `${q.question}|${q.promptImage || ""}|${Array.isArray(q.answers) ? q.answers.join("|") : ""}|${Array.isArray(q.images) ? q.images.join("|") : ""}`,
+        q
+      ])).values());
+
+      // U témat s mixem typů otázek se otázky skládají do kola tak,
+      // aby se střídaly: text + ABCD → obrázek + ABCD → text + 2 obrázky.
+      if (topic.mixQuestionTypes) {
+        const typeOrder = ["textABCD", "imagePromptABCD", "imageChoice"];
+        const groups = Object.fromEntries(typeOrder.map(type => [
+          type,
+          shuffle(uniqueQuestions.filter(q => q.type === type))
+        ]));
+        const total = Math.min(requestedCount, uniqueQuestions.length);
+        const mixedRound = [];
+
+        while (mixedRound.length < total && typeOrder.some(type => groups[type].length)) {
+          for (const type of typeOrder) {
+            if (mixedRound.length >= total) break;
+            const next = groups[type].shift();
+            if (next) mixedRound.push(next);
+          }
+        }
+
+        return mixedRound.map(prepareQuestionForRound);
+      }
+
+      return shuffle(uniqueQuestions)
+        .slice(0, Math.min(requestedCount, uniqueQuestions.length))
+        .map(prepareQuestionForRound);
+    }
+
+    function createImageRound(topic, requestedCount) {
+      return createQuestionRound(topic, requestedCount);
+    }
+
     const state = {
       selectedTopic: topics[0],
       requestedCount: 10,
@@ -4248,21 +5803,35 @@
       screens[name].classList.add("active");
     }
 
-    function populateTopicSelect() {
-      const select = $("topicSelect");
-      select.innerHTML = "";
-      topics.forEach(topic => {
-        const option = document.createElement("option");
-        option.value = topic.id;
-        option.textContent = topic.title;
-        select.appendChild(option);
+    function populateTopicTiles() {
+      const tiles = $("topicTiles");
+      tiles.innerHTML = "";
+      topics.forEach((topic, index) => {
+        const total = topic.type === "elements" ? topic.elements.length * 2 : topic.questions.length;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `topic-tile${topic.id === state.selectedTopic.id ? " active" : ""}`;
+        button.setAttribute("role", "radio");
+        button.setAttribute("aria-checked", topic.id === state.selectedTopic.id ? "true" : "false");
+        button.innerHTML = `<strong>${topic.title}</strong><span>${topic.subtitle}<br>${total} otázek</span>`;
+        button.addEventListener("click", () => {
+          state.selectedTopic = topic;
+          document.querySelectorAll(".topic-tile").forEach(tile => {
+            tile.classList.remove("active");
+            tile.setAttribute("aria-checked", "false");
+          });
+          button.classList.add("active");
+          button.setAttribute("aria-checked", "true");
+          updateTopicPreview();
+        });
+        if (index === 0) button.tabIndex = 0;
+        tiles.appendChild(button);
       });
       updateTopicPreview();
     }
 
     function getSelectedTopic() {
-      const selectedId = $("topicSelect").value;
-      return topics.find(topic => topic.id === selectedId) || topics[0];
+      return state.selectedTopic || topics[0];
     }
 
     function getSelectedCount() {
@@ -4277,7 +5846,7 @@
 
     function buildRound(topic, requestedCount) {
       if (topic.type === "elements") return createElementRound(topic, requestedCount);
-      return shuffle(topic.questions).slice(0, Math.min(requestedCount, topic.questions.length));
+      return createQuestionRound(topic, requestedCount);
     }
 
     function startGame() {
@@ -4316,15 +5885,50 @@
       $("feedback").textContent = "";
       $("nextBtn").hidden = true;
       $("answers").innerHTML = "";
+      $("answers").className = "answers";
+      const oldPromptImage = document.getElementById("promptImageWrap");
+      if (oldPromptImage) oldPromptImage.remove();
+      if (q.promptImage) {
+        const wrap = document.createElement("div");
+        wrap.id = "promptImageWrap";
+        wrap.className = "prompt-image-wrap";
+        wrap.innerHTML = `<img src="${q.promptImage}" alt="Obrázek k otázce">`;
+        $("answers").before(wrap);
+      }
       updateHeader();
+
+      if (Array.isArray(q.images) && q.images.length) {
+        renderImageQuestion(q);
+        return;
+      }
+
+      if (!Array.isArray(q.answers) || q.answers.length < 2) {
+        $("feedback").innerHTML = "U této otázky chybí odpovědi. Zkontroluj pole <strong>answers</strong>.";
+        $("feedback").classList.add("show");
+        $("nextBtn").hidden = false;
+        return;
+      }
 
       const mappedAnswers = q.answers.map((text, originalIndex) => ({ text, originalIndex }));
       shuffle(mappedAnswers).forEach((answer, visibleIndex) => {
         const button = document.createElement("button");
         button.className = "answer";
         button.type = "button";
+        button.dataset.originalIndex = answer.originalIndex;
         button.innerHTML = `<span aria-hidden="true">${String.fromCharCode(65 + visibleIndex)}.</span> ${answer.text}`;
         button.addEventListener("click", () => chooseAnswer(button, answer.originalIndex));
+        $("answers").appendChild(button);
+      });
+    }
+
+    function renderImageQuestion(q) {
+      $("answers").classList.add("image-answers");
+      q.images.forEach((src, index) => {
+        const button = document.createElement("button");
+        button.className = "answer image-answer";
+        button.type = "button";
+        button.innerHTML = `<img src="${src}" alt="Možnost ${String.fromCharCode(65 + index)}"><span>${String.fromCharCode(65 + index)}. Obrázek ${index + 1}</span>`;
+        button.addEventListener("click", () => chooseImageAnswer(button, index));
         $("answers").appendChild(button);
       });
     }
@@ -4339,8 +5943,7 @@
 
       buttons.forEach(btn => {
         btn.disabled = true;
-        const text = btn.textContent.replace(/^[A-D]\.\s*/, "").trim();
-        const originalIndex = q.answers.indexOf(text);
+        const originalIndex = Number(btn.dataset.originalIndex);
         if (originalIndex === q.correct) btn.classList.add("correct");
       });
 
@@ -4354,7 +5957,45 @@
         $("feedback").innerHTML = `❌ To není správně. Správná odpověď: <strong>${q.answers[q.correct]}</strong>.<br><span class="small">${q.explanation || ""}</span>`;
       }
 
-      state.history.push({ question: q.question, selected: q.answers[selectedIndex], correct: q.answers[q.correct], isCorrect });
+      state.history.push({ question: q.question, promptImg: q.promptImage, selected: q.answers[selectedIndex], correct: q.answers[q.correct], isCorrect });
+      $("feedback").classList.add("show");
+      $("nextBtn").hidden = false;
+      updateHeader();
+    }
+
+    function chooseImageAnswer(button, selectedIndex) {
+      if (state.answered) return;
+      state.answered = true;
+
+      const q = state.round[state.current];
+      const isCorrect = selectedIndex === q.correct;
+      const buttons = [...document.querySelectorAll(".image-answer")];
+
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === q.correct) btn.classList.add("correct");
+      });
+
+      const selectedLabel = `${String.fromCharCode(65 + selectedIndex)}. obrázek ${selectedIndex + 1}`;
+      const correctLabel = `${String.fromCharCode(65 + q.correct)}. obrázek ${q.correct + 1}`;
+
+      if (isCorrect) {
+        state.score += 1;
+        state.lightnings += 1;
+        $("feedback").innerHTML = `✅ Správně! Vybrala jsi správný obrázek.<br><span class="small">${q.explanation || ""}</span>`;
+      } else {
+        button.classList.add("wrong");
+        $("feedback").innerHTML = `❌ To není správně. Správně je <strong>${correctLabel}</strong>.<br><span class="small">${q.explanation || ""}</span>`;
+      }
+
+      state.history.push({
+        question: q.question,
+        selected: selectedLabel,
+        correct: correctLabel,
+        selectedImg: q.images[selectedIndex],
+        correctImg: q.images[q.correct],
+        isCorrect
+      });
       $("feedback").classList.add("show");
       $("nextBtn").hidden = false;
       updateHeader();
@@ -4392,7 +6033,13 @@
       state.history.forEach((item, index) => {
         const div = document.createElement("div");
         div.className = `review-item ${item.isCorrect ? "good" : "bad"}`;
-        div.innerHTML = `<strong>${index + 1}. ${item.question}</strong><div class="small">Tvoje odpověď: ${item.selected}</div><div class="small">Správně: ${item.correct}</div>`;
+        const promptReview = item.promptImg
+          ? `<div class="review-prompt-image"><div class="small">Obrázek v zadání</div><img src="${item.promptImg}" alt="Obrázek v zadání"></div>`
+          : "";
+        const imageReview = item.correctImg
+          ? `<div class="review-images"><div><div class="small">Tvoje volba</div><img src="${item.selectedImg}" alt="Tvoje odpověď"></div><div><div class="small">Správně</div><img src="${item.correctImg}" alt="Správná odpověď"></div></div>`
+          : "";
+        div.innerHTML = `<strong>${index + 1}. ${item.question}</strong>${promptReview}<div class="small">Tvoje odpověď: ${item.selected}</div><div class="small">Správně: ${item.correct}</div>${imageReview}`;
         review.appendChild(div);
       });
     }
@@ -4407,7 +6054,6 @@
       $("progressBar").style.width = "0%";
     }
 
-    $("topicSelect").addEventListener("change", updateTopicPreview);
     document.querySelectorAll('input[name="questionCount"]').forEach(input => input.addEventListener("change", updateTopicPreview));
     $("startBtn").addEventListener("click", startGame);
     $("nextBtn").addEventListener("click", nextQuestion);
@@ -4420,7 +6066,7 @@
       $("showReviewBtn").textContent = review.hidden ? "Zobrazit přehled" : "Skrýt přehled";
     });
 
-    populateTopicSelect();
+    populateTopicTiles();
     goHome();
   </script>
 </body>
