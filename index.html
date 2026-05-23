@@ -316,7 +316,7 @@
       <section id="startScreen" class="screen active">
         <div class="intro">
           <h2>Vyber si kvíz</h2>
-          <p>Nejdřív klikni na jeden z obdélníčků s tématem a zvol počet otázek. V každém tématu můžeš kombinovat textové otázky ABCD, otázky s obrázkem a ABCD i otázky s výběrem ze dvou obrázků.</p>
+          <p>Nejdřív klikni na jeden z obdélníčků s tématem a zvol počet otázek. V každém tématu můžeš kombinovat textové otázky ABCD, otázky s obrázkem a ABCD i otázky s výběrem ze dvou obrázků. Okýnko Názvosloví otevře původní samostatnou hru.</p>
 
           <div class="settings">
             <div class="field count-field">
@@ -4587,9 +4587,9 @@
   },
   {
     question: "Jaký náboj má částice vápníku, která obsahuje 20 protonů a 18 elektronů?",
-    answers: ["+2", "-2", "0", "+1"],
+    answers: ["2⁺", "2⁻", "0", "1⁺"],
     correct: 0,
-    explanation: "Částice má o dva protony více než elektronů, proto má náboj +2."
+    explanation: "Částice má o dva protony více než elektronů, proto má náboj 2⁺."
   },
   {
     question: "Jaké pH má neutrální vodný roztok?",
@@ -6370,6 +6370,17 @@
         if (index === 0) button.tabIndex = 0;
         (isCompetition ? competitionTiles : tiles).appendChild(button);
       });
+
+      const nomenclatureButton = document.createElement("button");
+      nomenclatureButton.type = "button";
+      nomenclatureButton.className = "topic-tile";
+      nomenclatureButton.setAttribute("role", "button");
+      nomenclatureButton.innerHTML = `<strong>Názvosloví anorganických sloučenin</strong><span>Samostatná hra otevřená z dalšího okýnka<br>spustí původní HTML</span>`;
+      nomenclatureButton.addEventListener("click", () => {
+        window.location.href = "nazvoslovi/index.html";
+      });
+      tiles.appendChild(nomenclatureButton);
+
       updateTopicPreview();
     }
 
